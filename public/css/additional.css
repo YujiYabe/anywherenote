@@ -1,0 +1,39 @@
+@font-face {
+	font-family: 'NotoSansMono';
+	/* src: url(mplus-1m-regular.ttf); */
+	src: url(NotoSansMonoCJKjp-Regular.otf);
+}
+
+body{
+	/* margin: 15px auto 10px auto; */
+	/* font-family: Consolas, 'Courier New', Courier, Monaco, monospace; */
+	font-family: NotoSansMono, Consolas, 'Courier New', Courier, Monaco, monospace;
+}
+
+
+.my_class{
+	font-family: NotoSansMono, Consolas, 'Courier New', Courier, Monaco, monospace;
+
+}
+
+.row {
+    position: relative;
+}
+
+.buttonBox {
+    position: absolute;
+    bottom:0;
+    right:0;
+}
+
+
+.notedb_datetime {
+	font-size: 5px
+}
+
+.notedb_address {
+	font-size: 5px
+}
+.notedb_button {
+	text-align: left;
+}

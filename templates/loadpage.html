@@ -1,0 +1,71 @@
+<!-- -->{{define "content"}}
+<!-- -->{{.}}
+<!-- -->{{end}}
+
+<!-- -->{{define "left_pane"}}
+<span id='table_parent'></span>
+<!-- -->{{end}}
+
+
+<!-- -->{{define "right_pane"}}
+
+<!-- ============================================================ -->
+<div id="edit_page" class="right_pane" style="display: none;">
+
+    <input type="text" style="display: none;" readonly id='note_address'></input>
+    <input type="text" style="display: none;" readonly id='page_id'></input>
+
+    <br>
+    <h3>ページ編集</h3>
+    <span>last updated</span>
+    <span id="update_time"></span>
+    <br>
+    <h5></h5>
+    <button onclick="updatePage()" class="btn btn-success">更新</button>
+    <span class='update_successed' style="display: none;">更新しました</span>
+    <button onclick="deletePage()" class="btn btn-danger float-right">削除</button>
+    <h5></h5>
+
+    <input type="text" id='page_title' class="form-control" placeholder="タイトル" />
+    <h5></h5>
+
+    <!-- <div id='page_body' class="form-control" placeholder="コンテンツ" contenteditable="true"></div> -->
+    <textarea id='page_body' name='page_body' class="form-control" placeholder="コンテンツ"></textarea >
+    <h5></h5>
+
+    <button onclick="updatePage()" class="btn btn-success">更新</button>
+    <span class='update_successed' style="display: none;">更新しました</span>
+    <h5></h5>
+
+
+    <!-- Initialize Quill editor -->
+</div>
+<!-- ============================================================ -->
+
+
+
+
+<!-- ============================================================ -->
+<div id="add_note" class="right_pane">
+    <br>
+
+    <h3>新規ノート追加</h3>
+
+    <span>ノート名</span>
+    <input id='new_note_name' type="text" class="form-control" />
+    <br>
+
+    <span>ノート格納パス</span>
+    <input id='new_note_address' type="text" class="form-control" />
+    <h5></h5>
+
+    <span onclick="addNote()" class="btn btn-info">追加</span>
+    <h5></h5>
+    <br>
+    <hr>
+
+    <span id="parent_note_table"></span>
+    
+</div>
+<!-- ============================================================ -->
+{{end}}

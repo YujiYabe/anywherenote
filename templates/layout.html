@@ -1,0 +1,80 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>anywhere note</title>
+
+
+    <!-- BootstrapのCSS読み込み -->
+    <link rel="stylesheet" href="/public/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/split-pane.css">
+    <link rel="stylesheet" href="/public/css/pretty-split-pane.css">
+
+    <!-- jQuery読み込み -->
+    <script src="/public/js/jquery.min.js"></script>
+    <!-- BootstrapのJS読み込み -->
+    <script src="/public/js/bootstrap/bootstrap.min.js"></script>
+    <script src="/public/js/moment.min.js?v=20170907"></script>
+
+    <script src="/public/js/split-pane.js"></script>
+    <script src="/public/js/jquery.quicksearch.js"></script>
+    <script src="/public/js/tinymce/tinymce.min.js"></script>
+
+    <script src="/public/js/additional.js?ver=1232"></script>
+    <script src="/public/js/livecheck.js?ver=1232"></script>
+    <link rel="stylesheet" href="/public/css/additional.css">
+
+
+</head>
+
+<body>
+
+
+    <div class="pretty-split-pane-frame">
+        <!-- ================================================================================================ -->
+        <div class="split-pane fixed-left" style="min-width: 5px;">
+            <div class="split-pane-component" id="left-component" style="width: 322px;">
+                <div class="pretty-split-pane-component-inner">
+
+                    <div id="common_item">
+                        <br>
+                        <span class="col-lg-12 btn float-right btn-info" onclick="switchRightPane('add_note');">ノート編集</span>
+                        <br>
+                        <br>
+                        <form>
+                            <input type="text" id="search" class="form-control" placeholder="検索">
+                        </form>
+
+                        <h5></h5>
+                    </div>
+
+                    {{template "left_pane" .}}
+
+                </div>
+            </div>
+            <div class="split-pane-divider" id="my-divider" style="left: 322px;">
+                <div class="split-pane-divider-inner"></div>
+            </div>
+            <!-- ================================================================================================ -->
+            <div class="split-pane-component" id="right-component" style="left: 322px;">
+                <div class="pretty-split-pane-component-inner">
+                    <!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
+                    {{template "right_pane" .}}
+
+                </div>
+            </div>
+            <div class="split-pane-resize-shim" style="display: none;"></div>
+            <!-- ================================================================================================ -->
+
+
+        </div>
+    </div>
+
+    <span id='source_return_value' style="display: none;">{{template "content" .}}</span>
+
+
+</body>
+
+</html>
