@@ -504,11 +504,7 @@ func loadTemplates() {
     templates["loadpage"]       = template.Must(template.ParseFiles(baseTemplate, "templates/loadpage.html"))
 } //--------------------------------------------
 
-
-// HandleLoadPageGet は /hello_form のGet時のHTMLデータ生成処理を行います。
-func HandleLoadPageGet(c echo.Context) error {
-    // return nil
-
+func getSettingData() string {
     // ノート情報の取得
     settingdb, err := gorm.Open( useDBMSName , settingDBName )
 	// DBログモードon
@@ -538,7 +534,7 @@ func HandleLoadPageGet(c echo.Context) error {
         }
     
         stringjsonreturnmap := string(jsonreturnmap)
-        return c.Render(http.StatusOK, "loadpage", stringjsonreturnmap)
+        return stringjsonreturnmap
 
         // return nil
     }
@@ -581,17 +577,25 @@ func HandleLoadPageGet(c echo.Context) error {
     }
     stringjsonreturnmap := string(jsonreturnmap)
 
-    return c.Render(http.StatusOK, "loadpage", stringjsonreturnmap)
+    return stringjsonreturnmap
+} //--------------------------------------------
+
+// HandleLoadPageGet は /hello_form のGet時のHTMLデータ生成処理を行います。
+func HandleLoadPageGet(c echo.Context) error {
+    // return nil
+
+    returnjson := getSettingData()
+    return c.Render(http.StatusOK, "loadpage", returnjson)
 
 } //--------------------------------------------
 
-// ==============================================
+//--------------------------------------------
 func endProcess() {
     os.Exit(0)
-}// ==============================================
+} //--------------------------------------------
 
 
-// ==============================================
+//--------------------------------------------
 func calcTime() {
 
 
@@ -615,7 +619,7 @@ func calcTime() {
             }
         }
     }
-}// ==============================================
+    } //--------------------------------------------
 
 
 
