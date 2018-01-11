@@ -13,18 +13,18 @@ import (
 // getData →ノート情報、ページ情報を取得
 func getData() string {
     // ノート情報の取得
-    settingdb, err := gorm.Open( useDBMSName , settingDBName )
+    confdb, err := gorm.Open( useDBMSName , confDBName )
 	// DBログモードon
-	settingdb.LogMode(true)
+	confdb.LogMode(true)
 
-    defer settingdb.Close()
+    defer confdb.Close()
 
     if err != nil {
         panic("failed to connect database")
     }
 
     var count = 0
-    settingdb.Table("settings").Count(&count)
+    confdb.Table("confs").Count(&count)
     
     //設定DBの中にレコードがなければ処理をスキップ
 
@@ -46,14 +46,14 @@ func getData() string {
         // return nil
     }
     
-    var setting []Setting
-    settingdb.Table("settings").Order("updated_at desc").Find(&setting)
+    var conf []Conf
+    confdb.Table("confs").Order("updated_at desc").Find(&conf)
 
     var data2 = ReturnValue{}
     var DataSetList = DataSet{}
     data2.Key0 = "0"
 
-    for _ ,value := range setting {
+    for _ ,value := range conf {
 
         NoteDbAddress := value.Address + directorySeparator + noteDBName
 
@@ -114,22 +114,22 @@ func addNote( argMap map[string]string ) error {
 
 
     //------------------------------
-    settingdb, err := gorm.Open( useDBMSName , settingDBName )
-    defer settingdb.Close()
-	settingdb.LogMode(true)
+    confdb, err := gorm.Open( useDBMSName , confDBName )
+    defer confdb.Close()
+	confdb.LogMode(true)
 
     if err != nil {
         panic("failed to connect database2")
     }
 
-    var setting Setting
+    var conf Conf
 
-    setting.Name = newNoteName
-    setting.Address = newNoteAddress
+    conf.Name = newNoteName
+    conf.Address = newNoteAddress
 
 
     // INSERTを実行
-    settingdb.Create(&setting)
+    confdb.Create(&conf)
 
 
 	return nil
@@ -171,23 +171,23 @@ func updateNote( argMap map[string]string  ) error {
     postNoteID  :=argMap[ "postNoteID"]
 
     //------------------------------
-    settingdb, err := gorm.Open( useDBMSName , settingDBName )
-    defer settingdb.Close()
-	settingdb.LogMode(true)
+    confdb, err := gorm.Open( useDBMSName , confDBName )
+    defer confdb.Close()
+	confdb.LogMode(true)
 
     if err != nil {
         panic("failed to connect database2")
     }
 
-    var setting Setting
+    var conf Conf
     // noteID := int(noteID)
     var noteID int
     noteID, _ = strconv.Atoi(postNoteID)
 
-    settingdb.Where("id = ?", noteID ).First(&setting)
+    confdb.Where("id = ?", noteID ).First(&conf)
 
-    setting.Name = newNoteName
-    settingdb.Save(&setting)
+    conf.Name = newNoteName
+    confdb.Save(&conf)
 
 	return nil
 } //--------------------------------------------
@@ -245,19 +245,19 @@ func deleteNote( argMap map[string]string ) error {
     postNoteID  := argMap["postNoteID"]
 
     //------------------------------
-    settingdb, err := gorm.Open( useDBMSName , settingDBName )
-    defer settingdb.Close()
-	settingdb.LogMode(true)
+    confdb, err := gorm.Open( useDBMSName , confDBName )
+    defer confdb.Close()
+	confdb.LogMode(true)
 
     if err != nil {
         panic("failed to connect database")
     }
 
-    var setting Setting
+    var conf Conf
     var noteID int
     noteID, _ = strconv.Atoi(postNoteID)
 
-    settingdb.Where("id = ?", noteID ).Delete(&setting)
+    confdb.Where("id = ?", noteID ).Delete(&conf)
 
 	return nil
 } //--------------------------------------------
@@ -293,20 +293,20 @@ func deletePage( argMap map[string]string) error {
 // updateNoteFromPage のコメントアウト
 func updateNoteFromPage(noteAddress string)  {
 
-    settingdb, err := gorm.Open("sqlite3", settingDBName )
-    defer settingdb.Close()
-	settingdb.LogMode(true)
+    confdb, err := gorm.Open("sqlite3", confDBName )
+    defer confdb.Close()
+	confdb.LogMode(true)
 
     if err != nil {
         panic("failed to connect database")
     }
 
-    var setting Setting
+    var conf Conf
 
-    settingdb.Where("address = ?", noteAddress ).First(&setting)
+    confdb.Where("address = ?", noteAddress ).First(&conf)
 
-    setting.Address = noteAddress
-    settingdb.Save(&setting)
+    conf.Address = noteAddress
+    confdb.Save(&conf)
 
 
 
@@ -315,20 +315,20 @@ func updateNoteFromPage(noteAddress string)  {
 
 // ===============================================
 
-// MakeSettingDb は設定データベースの初期化
-func MakeSettingDB() {
+// MakeConfDb は設定データベースの初期化
+func MakeConfDB() {
 
-    file, err := os.OpenFile( settingDBName , os.O_WRONLY|os.O_CREATE, 0666 )
+    file, err := os.OpenFile( confDBName , os.O_WRONLY|os.O_CREATE, 0666 )
     if err != nil {
         //エラー処理
         log.Fatal(err)
     }
     defer file.Close()
-    db, err := gorm.Open( useDBMSName , settingDBName )
+    db, err := gorm.Open( useDBMSName , confDBName )
     if err != nil {
         panic("failed to connect database")
     }
     // Migrate the schema
-    db.AutoMigrate(&Setting{})
+    db.AutoMigrate(&Conf{})
 
 }

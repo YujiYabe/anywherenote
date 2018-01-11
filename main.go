@@ -31,17 +31,19 @@ const waitSecondLiveCheck = 8
 const waitSecondInterval = 1 
 const dateTimeFormat = "2006-01-02 15:04:05"
 
-const settingDBName = "setting.db"
+
+const useDBMSName = "sqlite3"
+const confDBName = "conf.db"
 const noteDBName = "note.db"
 
-const usePortNumber = "3000"
-const useDBMSName = "sqlite3"
 
-// Setting 初期読み込み用設定
-type Setting struct {
+const usePortNumber = "3000"
+
+// Conf 初期読み込み用設定
+type Conf struct {
     gorm.Model
-    Name    string  `json:"setting_name"`
-    Address string  `json:"setting_address"`
+    Name    string  `json:"conf_name"`
+    Address string  `json:"conf_address"`
 } //--------------------------------------------
 
 
@@ -275,19 +277,19 @@ func checkConfig() {
     //=============================================
     // 初期設定
     // 設定DB読み込み
-    _, err := os.Stat(settingDBName)
+    _, err := os.Stat(confDBName)
     if err != nil {
-        MakeSettingDB()
+        MakeConfDB()
     }
 
     // 共有ファイルの場所情報を取得
-	db, err := gorm.Open( useDBMSName , settingDBName)
+	db, err := gorm.Open( useDBMSName , confDBName)
 	if err != nil {
 	  panic("failed to connect database")
 	}
 	defer db.Close()
-	var setting Setting
-	db.First(&setting) // find product with id 1
+	var conf Conf
+	db.First(&conf) // find product with id 1
 
 
 } //--------------------------------------------
