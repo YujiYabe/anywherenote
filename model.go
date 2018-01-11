@@ -9,6 +9,20 @@ import (
     "strconv"
 
 )
+// Conf 初期読み込み用設定
+type Conf struct {
+    gorm.Model
+    Name    string  `json:"conf_name"`
+    Address string  `json:"conf_address"`
+} //--------------------------------------------
+
+
+// Note ページの内容
+type Note struct {
+    gorm.Model
+    PageTitle   string `json:"page_title"`
+    PageBody    string `json:"page_body"`
+} //--------------------------------------------
 
 // getData →ノート情報、ページ情報を取得
 func getData() string {

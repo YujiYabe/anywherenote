@@ -10,8 +10,8 @@ import (
     "time"
     "github.com/labstack/echo"
     "github.com/labstack/echo/middleware"
-    "github.com/jinzhu/gorm"
-    _ "github.com/mattn/go-sqlite3"
+    // "github.com/jinzhu/gorm"
+    // _ "github.com/mattn/go-sqlite3"
 
     "github.com/skratchdot/open-golang/open"
 
@@ -33,27 +33,12 @@ const dateTimeFormat = "2006-01-02 15:04:05"
 
 
 const useDBMSName = "sqlite3"
-const confDBName = "conf.db"
-const noteDBName = "note.db"
+const confDBName  = "conf.db"
+const noteDBName  = "note.db"
 
 
 const usePortNumber = "3000"
 
-// Conf 初期読み込み用設定
-type Conf struct {
-    gorm.Model
-    Name    string  `json:"conf_name"`
-    Address string  `json:"conf_address"`
-} //--------------------------------------------
-
-
-
-// Note ページの内容
-type Note struct {
-    gorm.Model
-    PageTitle   string `json:"page_title"`
-    PageBody    string `json:"page_body"`
-} //--------------------------------------------
 
 
 // DataSet DBファイルの情報とノート情報のセット
@@ -138,17 +123,19 @@ func main() {
 
 // HandleLoadPageGet のコメントアウト
 func HandleLoadPageGet(c echo.Context) error {
+    printEvent("start" , "データ取得 開始")
 
     returnjson := getData()
 
+    printEvent("end" , "データ取得 終了")
     return c.Render(http.StatusOK, "loadpage", returnjson)
 
 } //--------------------------------------------
 
 //HandleAddNotePost は /hello のPost時のHTMLデータ生成処理を行います。
 func HandleAddNotePost(c echo.Context) error {
-    log.Println("______________________________________________________________________________" )
-    log.Println("ノート追加 開始")
+
+    printEvent("start" , "ノート追加 開始")
 
     argMap := make(map[string]string)
     argMap["newNoteName"]    = c.FormValue("new_note_name")
@@ -262,37 +249,12 @@ func HandleLiveCheckGet(c echo.Context) error {
 
     recieveString = afterTime
 
-
     //チャネルへ時刻情報を送信
     // liveChannel <- c.FormValue("expireLiveTime")
-
-
 
     return nil
 } //--------------------------------------------
 
-
-
-func checkConfig() {
-    //=============================================
-    // 初期設定
-    // 設定DB読み込み
-    _, err := os.Stat(confDBName)
-    if err != nil {
-        MakeConfDB()
-    }
-
-    // 共有ファイルの場所情報を取得
-	db, err := gorm.Open( useDBMSName , confDBName)
-	if err != nil {
-	  panic("failed to connect database")
-	}
-	defer db.Close()
-	var conf Conf
-	db.First(&conf) // find product with id 1
-
-
-} //--------------------------------------------
 
 
 
@@ -316,7 +278,6 @@ func endProcess() {
 //--------------------------------------------
 func calcTime() {
 
-
     //ブラウザが起動して、pingを発行するまでn秒まつ
     time.Sleep( waitSecondLiveCheck * time.Second)
 
@@ -326,7 +287,6 @@ func calcTime() {
         t := time.Now()
         beforeTime := t.Add(time.Duration(1) * time.Second).Format(dateTimeFormat)
         now, _ := time.Parse(dateTimeFormat ,beforeTime)
-
 
         old, _ := time.Parse(dateTimeFormat , recieveString)
 
