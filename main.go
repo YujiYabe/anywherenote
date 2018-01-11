@@ -23,12 +23,22 @@ var (
     // liveChannel = make(chan string)
 
     recieveString string
-    settingDbName = "setting.db"
     directorySeparator  = "/" // linux separator
 )
 
+// 定数
+const isEnableAppMode = true // for debug
+const waitSecondLiveCheck = 8
+const waitSecondInterval = 1 
+const dateTimeFormat = "2006-01-02 15:04:05"
 
-// Setting is note
+const settingDBName = "setting.db"
+const noteDBName = "note.db"
+
+const usePortNumber = "3000"
+const useDBMSName = "sqlite3"
+
+// Setting 初期読み込み用設定
 type Setting struct {
     gorm.Model
     Name    string  `json:"setting_name"`
@@ -37,7 +47,7 @@ type Setting struct {
 
 
 
-// Note is note
+// Note オンラインストレージのノート
 type Note struct {
     gorm.Model
     PageTitle   string `json:"page_title"`
@@ -45,7 +55,7 @@ type Note struct {
 } //--------------------------------------------
 
 
-// DataSet 構造体の配列Item
+// DataSet DBファイルの情報とノート情報のセット
 type DataSet struct {
 	NoteDbID         uint   `json:"NoteDbID"`
 	NoteDbName       string `json:"NoteDbName"`
@@ -54,7 +64,7 @@ type DataSet struct {
     List             []Note `json:"list"`
 }
 
-// ReturnValue 構造体の配列Item
+// ReturnValue 戻り値とDataSetのセット Key0がリターンコード 
 type ReturnValue struct {
     Key0   string    `json:"key0"`
 	Key1   []DataSet `json:"key1"`
@@ -65,10 +75,10 @@ type ReturnValue struct {
 // レイアウト適用済のテンプレートを保存するmap
 var templates map[string]*template.Template
 
-// Template はHTMLテンプレートを利用するためのRenderer Interfaceです。
+// Template はHTMLテンプレートを利用するためのRenderer Interface
 type Template struct {}
 
-// Render はHTMLテンプレートにデータを埋め込んだ結果をWriterに書き込みます。
+// Render はHTMLテンプレートにデータを埋め込んだ結果をWriterに書き込み
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
     return templates[name].ExecuteTemplate(w, "layout.html", data)
 } //--------------------------------------------
@@ -111,33 +121,39 @@ func main() {
     e.POST("/deletepage", HandleDeletePagePost)
     e.POST("/deletenote", HandleDeleteNotePost)
 
-    e.GET("/", HandleLoadPageGet)
     e.GET("/livecheck", HandleLiveCheckGet)
+    e.GET("/", HandleLoadPageGet)
+ 
 
+    open.Run("http://localhost:" + usePortNumber)
 
-    open.Run("http://localhost:3000/")
-	go updateTime()
 	go calcTime()
 
+
     // サーバーを開始
-    e.Logger.Fatal(e.Start(":3000"))
+    e.Logger.Fatal(e.Start(":" + usePortNumber))
 } //--------------------------------------------
 
+// HandleLiveCheckGet のコメントアウト
 func HandleLiveCheckGet(c echo.Context) error {
-    //現在時刻取得
+    // //現在時刻取得
     t := time.Now()
 
-    //現在から3秒後の時刻を取得
-    afterTime := t.Add(time.Duration(5) * time.Second).Format("2006-01-02 15:04:05")
+    //現在からn秒後の時刻を取得
+    afterTime := t.Add(time.Duration( waitSecondLiveCheck ) * time.Second).Format(dateTimeFormat)
+
+    recieveString = afterTime
 
 
     //チャネルへ時刻情報を送信
-    // liveChannel <- afterTime
-    recieveString = afterTime
+    // liveChannel <- c.FormValue("expireLiveTime")
+
+
+
     return nil
 } //--------------------------------------------
 
-// HandleDeletePagePost は /hello_form のGet時のHTMLデータ生成処理を行います。
+// HandleDeletePagePost のコメントアウト
 func HandleDeletePagePost(c echo.Context) error {
     log.Println("==============================================================================" )
     log.Println("==============================================================================" )
@@ -148,7 +164,7 @@ func HandleDeletePagePost(c echo.Context) error {
     noteAddress := c.FormValue("note_address")
     pageID      := c.FormValue("page_id")
 
-    notedb, err := gorm.Open("sqlite3", noteAddress + directorySeparator + "note.db")
+    notedb, err := gorm.Open("sqlite3", noteAddress + directorySeparator + noteDBName )
     if err != nil {
         panic("failed to connect database")
     }
@@ -174,14 +190,14 @@ func HandleDeletePagePost(c echo.Context) error {
 } //--------------------------------------------
 
 
-// HandleUpdateNoteFromPage--------------------------------------------
+// HandleUpdateNoteFromPage のコメントアウト
 func HandleUpdateNoteFromPage(noteAddress string)  {
     log.Println("==============================================================================" )
     log.Println("==============================================================================" )
     log.Println("ノート更新日時更新 開始")
 
 
-    settingdb, err := gorm.Open("sqlite3", settingDbName )
+    settingdb, err := gorm.Open("sqlite3", settingDBName )
     defer settingdb.Close()
 	settingdb.LogMode(true)
 
@@ -224,15 +240,13 @@ func HandleUpdatePagePost(c echo.Context) error {
         pageBody =  " "
     }
     
-    notedb, err := gorm.Open("sqlite3", noteAddress + directorySeparator + "note.db" )
+    notedb, err := gorm.Open("sqlite3", noteAddress + directorySeparator + noteDBName )
     if err != nil {
         panic("failed to connect database")
     }
 
     defer notedb.Close()
 	notedb.LogMode(true)
-
-
 
 
 	// __________________________________
@@ -270,7 +284,7 @@ func HandleUpdateNotePost(c echo.Context) error {
 
     
     //------------------------------
-    settingdb, err := gorm.Open("sqlite3", settingDbName )
+    settingdb, err := gorm.Open( useDBMSName , settingDBName )
     defer settingdb.Close()
 	settingdb.LogMode(true)
 
@@ -310,7 +324,7 @@ func HandleDeleteNotePost(c echo.Context) error {
     postNoteID  := c.FormValue("note_id")
 
     //------------------------------
-    settingdb, err := gorm.Open("sqlite3", settingDbName )
+    settingdb, err := gorm.Open( useDBMSName , settingDBName )
     defer settingdb.Close()
 	settingdb.LogMode(true)
 
@@ -347,7 +361,7 @@ func HandleAddNotePost(c echo.Context) error {
     // タスク パスが存在するかの確認
 
 
-    notefullAddress := newNoteAddress + directorySeparator +"note.db" 
+    notefullAddress := newNoteAddress + directorySeparator + noteDBName
 
     file, err := os.OpenFile( notefullAddress , os.O_WRONLY|os.O_CREATE, 0666 )
     if err != nil {
@@ -356,7 +370,7 @@ func HandleAddNotePost(c echo.Context) error {
     }
     defer file.Close()
 
-    notedb, err := gorm.Open("sqlite3", notefullAddress )
+    notedb, err := gorm.Open( useDBMSName , notefullAddress )
     defer notedb.Close()
 
     if err != nil {
@@ -367,7 +381,7 @@ func HandleAddNotePost(c echo.Context) error {
 
 
     //------------------------------
-    settingdb, err := gorm.Open("sqlite3", settingDbName )
+    settingdb, err := gorm.Open( useDBMSName , settingDBName )
     defer settingdb.Close()
 	settingdb.LogMode(true)
 
@@ -405,7 +419,7 @@ func HandleAddPagePost(c echo.Context) error {
     //指定したディレクトリにDBファイルを作成
     noteAddress   := c.FormValue("note_address")
 
-    notedb, err := gorm.Open("sqlite3", noteAddress + directorySeparator + "note.db" )
+    notedb, err := gorm.Open( useDBMSName , noteAddress + directorySeparator +  noteDBName )
     if err != nil {
         panic("failed to connect database")
     }
@@ -437,13 +451,13 @@ func checkConfig() {
     //=============================================
     // 初期設定
     // 設定DB読み込み
-    _, err := os.Stat(settingDbName)
+    _, err := os.Stat(settingDBName)
     if err != nil {
         MakeSettingDb()
     }
 
     // 共有ファイルの場所情報を取得
-	db, err := gorm.Open("sqlite3", settingDbName)
+	db, err := gorm.Open( useDBMSName , settingDBName)
 	if err != nil {
 	  panic("failed to connect database")
 	}
@@ -465,13 +479,13 @@ func MakeSettingDb() {
     log.Println("==============================================================================" )
     log.Println("設定DB作成 開始")
 
-    file, err := os.OpenFile( settingDbName , os.O_WRONLY|os.O_CREATE, 0666 )
+    file, err := os.OpenFile( settingDBName , os.O_WRONLY|os.O_CREATE, 0666 )
     if err != nil {
         //エラー処理
         log.Fatal(err)
     }
     defer file.Close()
-    db, err := gorm.Open("sqlite3", settingDbName )
+    db, err := gorm.Open( useDBMSName , settingDBName )
     if err != nil {
         panic("failed to connect database")
     }
@@ -496,7 +510,7 @@ func HandleLoadPageGet(c echo.Context) error {
     // return nil
 
     // ノート情報の取得
-    settingdb, err := gorm.Open("sqlite3", settingDbName )
+    settingdb, err := gorm.Open( useDBMSName , settingDBName )
 	// DBログモードon
 	settingdb.LogMode(true)
 
@@ -538,9 +552,9 @@ func HandleLoadPageGet(c echo.Context) error {
 
     for _ ,value := range setting {
 
-        NoteDbAddress := value.Address + directorySeparator + "note.db"
+        NoteDbAddress := value.Address + directorySeparator + noteDBName
 
-        notedb, err := gorm.Open("sqlite3", NoteDbAddress )
+        notedb, err := gorm.Open( useDBMSName , NoteDbAddress )
         notedb.LogMode(true)
         defer notedb.Close()
     
@@ -581,55 +595,27 @@ func endProcess() {
 func calcTime() {
 
 
-    //ブラウザが起動して、pingを発行するまで５秒まつ
-    time.Sleep( 5 * time.Second)
+    //ブラウザが起動して、pingを発行するまでn秒まつ
+    time.Sleep( waitSecondLiveCheck * time.Second)
 
     for {
-        time.Sleep( 1 * time.Second)
-        // now := time.Now()
+        time.Sleep( waitSecondInterval * time.Second)
 
         t := time.Now()
-        beforeTime := t.Add(time.Duration(1) * time.Second).Format("2006-01-02 15:04:05")
-        now, _ := time.Parse("2006-01-02 15:04:05",beforeTime)
+        beforeTime := t.Add(time.Duration(1) * time.Second).Format(dateTimeFormat)
+        now, _ := time.Parse(dateTimeFormat ,beforeTime)
 
 
-        old, _ := time.Parse("2006-01-02 15:04:05",recieveString)
-        // log.Println("=========================")
-        // log.Println( old )
-        // log.Println(now)
-        // log.Println("=========================")
-
+        old, _ := time.Parse(dateTimeFormat , recieveString)
 
         if !old.After(now) {    // old <= now --- ! old > now
-            log.Println("アプリ終了")
-            endProcess()
+            if isEnableAppMode {
+                log.Println("アプリ終了")
+                endProcess()
+            }
         }
     }
 }// ==============================================
 
 
-
-// ==============================================
-func updateTime() {
-
-    for {
-        // recieveString = <- liveChannel
-        time.Sleep( 1 * time.Second)
-    }
-
-}
-
-
-func living() {
-    //現在時刻取得
-    t := time.Now()
-
-    //現在から3秒後の時刻を取得
-    afterTime := t.Add(time.Duration(5) * time.Second).Format("2006-01-02 15:04:05")
-
-
-    //チャネルへ時刻情報を送信
-    // liveChannel <- afterTime
-    recieveString = afterTime
-}// ==============================================
 
