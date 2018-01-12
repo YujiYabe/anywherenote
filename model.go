@@ -27,7 +27,8 @@ type Note struct {
 // getData →ノート情報、ページ情報を取得
 func getData() string {
     // ノート情報の取得
-    confdb, err := gorm.Open( useDBMSName , confDBName )
+
+    confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
 	// DBログモードon
 	confdb.LogMode(true)
 
@@ -128,7 +129,7 @@ func addNote( argMap map[string]string ) error {
 
 
     //------------------------------
-    confdb, err := gorm.Open( useDBMSName , confDBName )
+    confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
     defer confdb.Close()
 	confdb.LogMode(true)
 
@@ -185,7 +186,7 @@ func updateNote( argMap map[string]string  ) error {
     postNoteID  :=argMap[ "postNoteID"]
 
     //------------------------------
-    confdb, err := gorm.Open( useDBMSName , confDBName )
+    confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
     defer confdb.Close()
 	confdb.LogMode(true)
 
@@ -259,7 +260,7 @@ func deleteNote( argMap map[string]string ) error {
     postNoteID  := argMap["postNoteID"]
 
     //------------------------------
-    confdb, err := gorm.Open( useDBMSName , confDBName )
+    confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
     defer confdb.Close()
 	confdb.LogMode(true)
 
@@ -307,7 +308,7 @@ func deletePage( argMap map[string]string) error {
 // updateNoteFromPage のコメントアウト
 func updateNoteFromPage(noteAddress string)  {
 
-    confdb, err := gorm.Open("sqlite3", confDBName )
+    confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
     defer confdb.Close()
 	confdb.LogMode(true)
 
@@ -332,13 +333,15 @@ func updateNoteFromPage(noteAddress string)  {
 // MakeConfDb は設定データベースの初期化
 func MakeConfDB() {
 
-    file, err := os.OpenFile( confDBName , os.O_WRONLY|os.O_CREATE, 0666 )
+
+    file, err := os.OpenFile( dataDirName + directorySeparator + confDBName , os.O_WRONLY|os.O_CREATE, 0666 )
     if err != nil {
         //エラー処理
         log.Fatal(err)
     }
     defer file.Close()
-    db, err := gorm.Open( useDBMSName , confDBName )
+
+    db, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName  )
     if err != nil {
         panic("failed to connect database")
     }

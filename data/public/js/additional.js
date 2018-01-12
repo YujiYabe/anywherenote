@@ -216,7 +216,7 @@ function updateNote(Obj) {
         .then(
         // 1つめは通信成功時のコールバック
         function (data) {
-            // location.reload();
+            location.reload();
         },
         // 2つめは通信失敗時のコールバック
         function () {
@@ -241,7 +241,7 @@ function deleteNote(Obj) {
         .then(
         // 1つめは通信成功時のコールバック
         function (data) {
-            // location.reload();
+            location.reload();
         },
         // 2つめは通信失敗時のコールバック
         function () {

@@ -4,12 +4,13 @@ import (
     "html/template"
     "io"
     "net/http"
-    "os"
     "runtime"
-    "log"
     "time"
     "github.com/labstack/echo"
     "github.com/labstack/echo/middleware"
+
+    // "os"
+    // "log"
     // "github.com/jinzhu/gorm"
     // _ "github.com/mattn/go-sqlite3"
 
@@ -26,7 +27,7 @@ var (
 )
 
 // 定数
-const isEnableAppMode = true // for debug
+const isEnableAppMode = false // for debug
 const waitSecondLiveCheck = 8
 const waitSecondInterval = 1 
 const dateTimeFormat = "2006-01-02 15:04:05"
@@ -36,6 +37,7 @@ const useDBMSName = "sqlite3"
 const confDBName  = "conf.db"
 const noteDBName  = "note.db"
 
+const dataDirName  = "data"
 
 const usePortNumber = "3000"
 
@@ -93,8 +95,8 @@ func main() {
     e.Use(middleware.Recover())
 
     // 静的ファイルのパスを設定
-    e.Static("/public", "public")
-    e.File("/favicon.ico", "public/favicon.ico")
+    e.Static("/public", "data/public")
+    e.File("/favicon.ico", "data/public/favicon.ico")
 
     // 各ルーティングに対するハンドラを設定
 
@@ -123,19 +125,18 @@ func main() {
 
 // HandleLoadPageGet のコメントアウト
 func HandleLoadPageGet(c echo.Context) error {
-    printEvent("start" , "データ取得 開始")
+    printEventLog("start" , "データ取得 開始")
 
     returnjson := getData()
 
-    printEvent("end" , "データ取得 終了")
+    printEventLog("end" , "データ取得 終了")
     return c.Render(http.StatusOK, "loadpage", returnjson)
 
 } //--------------------------------------------
 
 //HandleAddNotePost は /hello のPost時のHTMLデータ生成処理を行います。
 func HandleAddNotePost(c echo.Context) error {
-
-    printEvent("start" , "ノート追加 開始")
+    printEventLog("start" , "ノート追加 開始")
 
     argMap := make(map[string]string)
     argMap["newNoteName"]    = c.FormValue("new_note_name")
@@ -144,50 +145,40 @@ func HandleAddNotePost(c echo.Context) error {
     addNote(argMap)
 
     // タスク パスが存在するかの確認
-    log.Println("ノート追加 終了")
-    log.Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" )
+    printEventLog("end" , "ノート追加 終了")
     return nil
-    
 } //--------------------------------------------
 
 //HandleAddPagePost は /hello のPost時のHTMLデータ生成処理を行います。
 func HandleAddPagePost(c echo.Context) error {
-    log.Println("______________________________________________________________________________" )
-    log.Println("ページ追加 開始")
+    printEventLog("start" , "ページ追加 開始")
 
     argMap := make(map[string]string)
     argMap["noteAddress"] = c.FormValue("note_address")
 
     addPage(argMap)
 
-    log.Println("ページ追加 終了")
-    log.Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" )
-
+    printEventLog("end" , "ページ追加 終了")
     return nil
-
 } //--------------------------------------------
 
 
 //HandleUpdateNotePost は /hello のPost時のHTMLデータ生成処理を行います。
 func HandleUpdateNotePost(c echo.Context) error {
-    log.Println("______________________________________________________________________________" )
-    log.Println("ノート更新 開始")
+    printEventLog("start" , "ノート更新 開始")
 
     argMap := make(map[string]string)
     argMap["newNoteName"] = c.FormValue("new_note_name")
-    argMap["postNoteID"] = c.FormValue("note_id")
+    argMap["postNoteID"]  = c.FormValue("note_id")
     updateNote(argMap)
 
-    log.Println("ノート更新 終了")
-    log.Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" )
-
+    printEventLog("end" , "ノート更新 終了")
     return nil
 } //--------------------------------------------
 
 //HandleUpdatePagePost は /hello のPost時のHTMLデータ生成処理を行います。
 func HandleUpdatePagePost(c echo.Context) error {
-    log.Println("______________________________________________________________________________" )
-    log.Println("ページ更新 開始")
+    printEventLog("start" , "ページ更新 開始")
 
     argMap := make(map[string]string)
     argMap["noteAddress"] = c.FormValue("note_address")
@@ -197,18 +188,13 @@ func HandleUpdatePagePost(c echo.Context) error {
 
     updatePage(argMap)
 
-
-    log.Println("ページ更新 終了")
-    log.Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" )
-
+    printEventLog("end" , "ページ更新 終了")
     return nil
 } //--------------------------------------------
 
 // HandleDeletePagePost のコメントアウト
 func HandleDeletePagePost(c echo.Context) error {
-    log.Println("______________________________________________________________________________" )
-    log.Println("ページ削除 開始")
-
+    printEventLog("start" , "ページ削除 開始")
 
     argMap := make(map[string]string)
     argMap["noteAddress"] = c.FormValue("note_address")
@@ -216,24 +202,19 @@ func HandleDeletePagePost(c echo.Context) error {
 
     deletePage(argMap)
     
-    log.Println("ページ削除 終了")
-    log.Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" )
-
+    printEventLog("end" , "ページ削除 終了")
     return nil
-
 } //--------------------------------------------
 
 //HandleDeleteNotePost は /hello のPost時のHTMLデータ生成処理を行います。
 func HandleDeleteNotePost(c echo.Context) error {
-    log.Println("______________________________________________________________________________" )
-    log.Println("ノート削除 開始")
+    printEventLog("start" , "ノート削除 開始")
 
     argMap := make(map[string]string)
     argMap["postNoteID"] = c.FormValue("note_id")
+    deleteNote(argMap)
 
-    log.Println("ノート削除 終了")
-    log.Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" )
-
+    printEventLog("end" , "ノート削除 終了")
     return nil
 } //--------------------------------------------
 
@@ -256,48 +237,13 @@ func HandleLiveCheckGet(c echo.Context) error {
 } //--------------------------------------------
 
 
-
-
-
-
 // 各HTMLテンプレートに共通レイアウトを適用した結果を保存します（初期化時に実行）。
 func loadTemplates() {
-    var baseTemplate = "templates/layout.html"
+    var baseTemplate = "data/templates/layout.html"
     templates = make(map[string]*template.Template)
-    templates["loadpage"]       = template.Must(template.ParseFiles(baseTemplate, "templates/loadpage.html"))
+    templates["loadpage"]  = template.Must(template.ParseFiles(baseTemplate, "data/templates/loadpage.html"))
 } //--------------------------------------------
 
-
-
-//--------------------------------------------
-func endProcess() {
-    os.Exit(0)
-} //--------------------------------------------
-
-
-//--------------------------------------------
-func calcTime() {
-
-    //ブラウザが起動して、pingを発行するまでn秒まつ
-    time.Sleep( waitSecondLiveCheck * time.Second)
-
-    for {
-        time.Sleep( waitSecondInterval * time.Second)
-
-        t := time.Now()
-        beforeTime := t.Add(time.Duration(1) * time.Second).Format(dateTimeFormat)
-        now, _ := time.Parse(dateTimeFormat ,beforeTime)
-
-        old, _ := time.Parse(dateTimeFormat , recieveString)
-
-        if !old.After(now) {    // old <= now --- ! old > now
-            if isEnableAppMode {
-                log.Println("アプリ終了")
-                endProcess()
-            }
-        }
-    }
-    } //--------------------------------------------
 
 
 
