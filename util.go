@@ -12,7 +12,7 @@ func checkConfig() {
     // 設定DB読み込み
     _, err := os.Stat( dataDirName + directorySeparator + confDBName )
     if err != nil {
-        MakeConfDB()
+        makeConfDB()
     }
 
 } //--------------------------------------------

@@ -70,9 +70,9 @@ func getData() string {
 
     for _ ,value := range conf {
 
-        NoteDbAddress := value.Address + directorySeparator + noteDBName
+        NoteDBAddress := value.Address + directorySeparator + noteDBName
 
-        notedb, err := gorm.Open( useDBMSName , NoteDbAddress )
+        notedb, err := gorm.Open( useDBMSName , NoteDBAddress )
         notedb.LogMode(true)
         defer notedb.Close()
     
@@ -83,10 +83,10 @@ func getData() string {
     
         notedb.Table("notes").Order("updated_at desc").Find(&NoteList)
     
-        DataSetList.NoteDbID = value.ID
-        DataSetList.NoteDbName = value.Name
-        DataSetList.NoteDbAddress = value.Address
-        DataSetList.NoteDbUpdateTime = value.UpdatedAt 
+        DataSetList.NoteDBID = value.ID
+        DataSetList.NoteDBName = value.Name
+        DataSetList.NoteDBAddress = value.Address
+        DataSetList.NoteDBUpdateTime = value.UpdatedAt 
         DataSetList.List = NoteList 
 
         data2.Key1 = append(data2.Key1, DataSetList)
@@ -330,8 +330,8 @@ func updateNoteFromPage(noteAddress string)  {
 
 // ===============================================
 
-// MakeConfDb は設定データベースの初期化
-func MakeConfDB() {
+// makeConfDB は設定データベースの初期化
+func makeConfDB() {
 
 
     file, err := os.OpenFile( dataDirName + directorySeparator + confDBName , os.O_WRONLY|os.O_CREATE, 0666 )

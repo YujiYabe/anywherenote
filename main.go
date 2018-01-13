@@ -9,10 +9,6 @@ import (
     "github.com/labstack/echo"
     "github.com/labstack/echo/middleware"
 
-    // "os"
-    // "log"
-    // "github.com/jinzhu/gorm"
-    // _ "github.com/mattn/go-sqlite3"
 
     "github.com/skratchdot/open-golang/open"
 
@@ -45,10 +41,10 @@ const usePortNumber = "3000"
 
 // DataSet DBファイルの情報とノート情報のセット
 type DataSet struct {
-	NoteDbID         uint   `json:"NoteDbID"`
-	NoteDbName       string `json:"NoteDbName"`
-	NoteDbAddress    string `json:"NoteDbAddress"`
-	NoteDbUpdateTime time.Time
+	NoteDBID         uint   `json:"NoteDBID"`
+	NoteDBName       string `json:"NoteDBName"`
+	NoteDBAddress    string `json:"NoteDBAddress"`
+	NoteDBUpdateTime time.Time
     List             []Note `json:"list"`
 }
 
