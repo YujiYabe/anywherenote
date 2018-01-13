@@ -25,7 +25,7 @@ type Note struct {
 } //--------------------------------------------
 
 // getData →ノート情報、ページ情報を取得
-func getData(selectPosition SelectPosition) string {
+func getData( selectPosition SelectPosition ) string {
     // ノート情報の取得
 
     confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
@@ -100,8 +100,6 @@ func getData(selectPosition SelectPosition) string {
 
      // 選択中のページIDがなければ最新のページIDを返却
         if selectPosition.PageID == 0 {
- 
-
 
             if value.ID == selectPosition.NoteID {
     

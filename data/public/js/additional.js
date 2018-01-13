@@ -37,7 +37,7 @@ function switchRightPane(pane_name) {
 }
 
 function makePageList() {
-
+    $('#table_parent').empty();
     var json_return_value = JSON.parse($('#source_return_value').text());
 
     // statuscode == '1' 保存先が一つもない場合、ノート追加を表示、ページ追加を非表示
@@ -112,7 +112,7 @@ function makePageList() {
         var h5 = $('<h5>'); parent_div.append(h5);
         //---------------
 
-        var span = $('<span>'); parent_div.append(span); span.addClass("btn  btn-secondary "); span.text('ページ追加'); span.attr('data-address', note_address); span.attr('onclick', "addPage(this);");
+        var span = $('<span>'); parent_div.append(span); span.addClass("btn  btn-secondary "); span.text('ページ追加'); span.attr('data-select_note_id', note_id); span.attr('data-address', note_address); span.attr('onclick', "addPage(this);");
 
         var h5 = $('<h5>'); parent_div.append(h5);
 
@@ -229,6 +229,7 @@ function updateNote(Obj) {
         // 1つめは通信成功時のコールバック
         function (data) {
             location.reload();
+
         },
         // 2つめは通信失敗時のコールバック
         function () {
@@ -333,11 +334,11 @@ function updatePage() {
 function addPage(Obj) {
 
 
-
-    console.log($(Obj).attr('data-address'));
+    // console.log($(Obj).attr('data-address'));
     var target_url = 'addpage';
     var post_data = {
         'note_address': $(Obj).attr('data-address'),
+        'note_id': $(Obj).attr('data-note_id'),
     };
 
     $.ajax({
@@ -348,7 +349,10 @@ function addPage(Obj) {
         .then(
         // 1つめは通信成功時のコールバック
         function (data) {
-            location.reload();
+            // location.reload();
+            console.log(data);
+            $('#source_return_value').text(data)
+            makePageList();
         },
         // 2つめは通信失敗時のコールバック
         function () {

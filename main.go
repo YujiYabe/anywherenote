@@ -8,6 +8,7 @@ import (
     "time"
     "github.com/labstack/echo"
     "github.com/labstack/echo/middleware"
+    "strconv"
 
 
     "github.com/skratchdot/open-golang/open"
@@ -137,17 +138,21 @@ func HandleLoadPageGet(c echo.Context) error {
     if c.FormValue("select_note_id") == "" {
         selectPosition.NoteID = 0
     }else{
-        selectPosition.NoteID = strconv.Atoi(c.FormValue("select_note_id") )
+        tempnid, _ := strconv.Atoi(c.FormValue("select_note_id"))
+        nid := uint(tempnid)
+        selectPosition.NoteID = nid
     }
     
     if c.FormValue("select_page_id") == "" {
         selectPosition.PageID = 0
     }else{
-        selectPosition.PageID = c.FormValue("select_page_id") 
+        temppid, _ := strconv.Atoi(c.FormValue("select_page_id"))
+        pid := uint(temppid)
+        selectPosition.PageID = pid
     }
 
 
-    returnjson := getData(selectPosition)
+    returnjson := getData( selectPosition )
 
     printEventLog("end" , "データ取得 終了")
     return c.Render(http.StatusOK, "loadpage", returnjson)
@@ -176,13 +181,27 @@ func HandleAddNotePost(c echo.Context) error {
 func HandleAddPagePost(c echo.Context) error {
     printEventLog("start" , "ページ追加 開始")
 
+    //対象のノートにページを追加
     argMap := make(map[string]string)
     argMap["noteAddress"] = c.FormValue("note_address")
 
     addPage(argMap)
 
     printEventLog("end" , "ページ追加 終了")
-    return nil
+
+    var selectPosition = SelectPosition{}
+
+    tempnid, _ := strconv.Atoi(c.FormValue("note_id"))
+    nid := uint(tempnid)
+
+    selectPosition.NoteID = nid
+
+
+    returnValue := getData( selectPosition )
+
+    return c.JSON(http.StatusCreated, returnValue )
+
+    // return nil
 } //--------------------------------------------
 
 
