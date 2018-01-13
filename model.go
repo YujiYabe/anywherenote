@@ -62,7 +62,8 @@ func getData(selectPosition SelectPosition) string {
     }
     
     var conf []Conf
-    confdb.Table("confs").Order("updated_at desc").Find(&conf)
+    // confdb.Table("confs").Order("updated_at desc").Find(&conf)
+    confdb.Table("confs").Order("id desc").Find(&conf)
 
     // 選択中のノートIDがなければ最新のノートIDを返却
     if selectPosition.NoteID == 0 {

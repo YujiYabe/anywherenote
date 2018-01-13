@@ -133,8 +133,19 @@ func HandleLoadPageGet(c echo.Context) error {
     printEventLog("start" , "データ取得 開始")
 
     var selectPosition = SelectPosition{}
-    selectPosition.NoteID = 0
-    selectPosition.PageID = 0
+
+    if c.FormValue("select_note_id") == "" {
+        selectPosition.NoteID = 0
+    }else{
+        selectPosition.NoteID = strconv.Atoi(c.FormValue("select_note_id") )
+    }
+    
+    if c.FormValue("select_page_id") == "" {
+        selectPosition.PageID = 0
+    }else{
+        selectPosition.PageID = c.FormValue("select_page_id") 
+    }
+
 
     returnjson := getData(selectPosition)
 

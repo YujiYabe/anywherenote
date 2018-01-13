@@ -54,8 +54,8 @@ function makePageList() {
     var select_note_id = json_return_value["key2"].NoteID
     var select_page_id = json_return_value["key2"].PageID
 
-    console.log(select_note_id + ":" + select_page_id);
-    console.log("=================");
+    // console.log(select_note_id + ":" + select_page_id);
+    // console.log("=================");
 
     var parent_note_table = $('#parent_note_table');
 
