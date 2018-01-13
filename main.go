@@ -50,7 +50,7 @@ type DataSet struct {
 }
 
 
-// SelectPosition
+// SelectPosition 選択中情報
 type SelectPosition struct {
     NoteID  uint   `json:"NoteID"`
     PageID  uint   `json:"PageID"`

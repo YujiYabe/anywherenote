@@ -65,10 +65,15 @@ func getData( selectPosition SelectPosition ) string {
     // confdb.Table("confs").Order("updated_at desc").Find(&conf)
     confdb.Table("confs").Order("id desc").Find(&conf)
 
+    printEventLog("z" , selectPosition.NoteID)
+
     // 選択中のノートIDがなければ最新のノートIDを返却
     if selectPosition.NoteID == 0 {
-        // selectPosition.NoteDBID = conf[len(conf) - 1].ID
-        selectPosition.NoteID = conf[0].ID
+
+        if len(conf) != 0 {
+            selectPosition.NoteID = conf[0].ID
+        }
+
     }
     
     var data2 = ReturnValue{}
@@ -93,13 +98,11 @@ func getData( selectPosition SelectPosition ) string {
     
         // notedb.Table("notes").Order("updated_at desc").Find(&NoteList)
         notedb.Table("notes").Find(&NoteList)
-    
 
         DataSetList.NoteDBID         = value.ID
         DataSetList.NoteDBName       = value.Name
         DataSetList.NoteDBAddress    = value.Address
         DataSetList.NoteDBUpdateTime = value.UpdatedAt 
-
 
         if len(NoteList) != 0 {
             DataSetList.List             = NoteList 
@@ -139,6 +142,8 @@ func getData( selectPosition SelectPosition ) string {
     printEventLog("debug" , stringjsonreturnmap )
 
     return stringjsonreturnmap
+
+
 } //--------------------------------------------
 
 // addNote →ノート情報を追加
