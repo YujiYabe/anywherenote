@@ -12,25 +12,27 @@
 <!-- ============================================================ -->
 <div id="edit_page" class="right_pane" style="display: none;">
 
-    <input type="text" style="display: none;" readonly id='page_id'></input>
 
-
+    <!-- style="display: none;" -->
+    <span id='note_id'>0</span>
     <span id="note_name" class="right_pane_note_name"></span>
-    <span id='note_address'></span>
-    <h5></h5>
-    <h5></h5>
+    <span id='note_address'>address</span>
 
 
-    <h5></h5>
+    <br>
+    <br>
     <button onclick="updatePage()" class="btn btn-success">更新</button>
     <span>last updated</span>
+
+    <span id='page_id'>0</span>
     <span id="update_time"></span>
+
     <span class='update_successed' style="display: none;">更新しました</span>
 
     <button onclick="deletePage()" class="btn btn-danger float-right">削除</button>
     <h5></h5>
 
-    <input type="text" id='page_title' class="form-control" placeholder="タイトル" />
+    <input id='page_title' type="text" class="form-control" placeholder="タイトル" />
     <h5></h5>
 
     <!-- <div id='page_body' class="form-control" placeholder="コンテンツ" contenteditable="true"></div> -->

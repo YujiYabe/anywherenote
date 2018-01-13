@@ -96,17 +96,17 @@ function makePageList() {
 
         //---------------
 
-        var span = $('<div>'); element.append(span); span.addClass("btn btn-primary btn-lg notedb_button"); span.attr('data-target_table', index); span.attr('onclick', 'switchShowHideDataList(this);');
+        var span = $('<div>'); element.append(span); span.addClass("btn btn-primary btn-lg notedb_button"); span.attr('data-target_table', note_id); span.attr('onclick', 'switchShowHideDataList(this);');
         var child_span = $('<div>'); span.append(child_span); child_span.addClass("notedb_datetime"); child_span.text(note_updatetime);
         var child_span = $('<div>'); span.append(child_span); child_span.addClass(""); child_span.text(note_name);
         var child_span = $('<div>'); span.append(child_span); child_span.addClass("notedb_address"); child_span.text(note_address);
 
 
         //---------------
-        var parent_div = $('<div>'); element.append(parent_div); parent_div.attr('id', index); parent_div.hide();
+        var parent_div = $('<div>'); element.append(parent_div); parent_div.attr('id', note_id); parent_div.hide();
         // if (index != 0) {
-        console.log(index);
-        console.log(select_note_id);
+        // console.log(index);
+        // console.log(select_note_id);
 
         if (note_id == select_note_id) {
             parent_div.show();
@@ -121,6 +121,7 @@ function makePageList() {
 
         var table = $('<table>'); parent_div.append(table);
         table.attr('id', note_address);
+        table.attr('data-note_id', note_id);
         table.attr('data-note_name', note_name);
         table.attr('data-note_address', note_address);
         table.addClass('table table-bordered table-hover');
@@ -160,12 +161,14 @@ function makePageList() {
                 select_page_id == page_list[item]['ID']
             ) {
 
-                $('#update_time').text(updateDateTime);
-                $('#page_id').val(page_list[item]['ID']);
+                $('#note_id').text(note_id);
+                $('#note_name').text(note_name);
+                $('#note_address').text(note_address);
+
+                $('#page_id').text(page_list[item]['ID']);
                 $('#page_title').val(page_list[item]['page_title']);
                 $('#page_body').val(page_list[item]['page_body']);
-                $('#note_address').text(note_address);
-                $('#note_name').text(note_name);
+                $('#update_time').text(updateDateTime);
 
                 $('#edit_page').show();
 
@@ -194,18 +197,19 @@ function showDataToRightPane(obj) {
     tinymce.remove('#page_body');
 
 
-
-    var note_address = $(obj).parent().parent().parent().attr('data-address');
+    var note_id = $(obj).parent().parent().parent().attr('data-note_id');
     var note_name = $(obj).parent().parent().parent().attr('data-note_name');
+    var note_address = $(obj).parent().parent().parent().attr('data-address');
 
     console.log(note_name);
     $('#update_time').text($(obj).nextAll().eq(0).text());
-    $('#page_id').val($(obj).nextAll().eq(1).text());
+    $('#page_id').text($(obj).nextAll().eq(1).text());
     $('#page_title').val($(obj).nextAll().eq(2).text());
     $('#page_body').val($(obj).nextAll().eq(3).text());
 
     $('#note_address').text(note_address);
     $('#note_name').text(note_name);
+    $('#note_id').text(note_id);
 
     tinymce.init({
         selector: "#page_body",

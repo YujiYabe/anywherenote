@@ -139,7 +139,7 @@ func getData( selectPosition SelectPosition ) string {
 
     stringjsonreturnmap := string(jsonreturnmap)
 
-    printEventLog("debug" , stringjsonreturnmap )
+    // printEventLog("debug" , stringjsonreturnmap )
 
     return stringjsonreturnmap
 

@@ -187,17 +187,16 @@ func HandleAddPagePost(c echo.Context) error {
 
     addPage(argMap)
 
-    printEventLog("end" , "ページ追加 終了")
-
-    var selectPosition = SelectPosition{}
-
     tempnid, _ := strconv.Atoi(c.FormValue("note_id"))
     nid := uint(tempnid)
 
+    var selectPosition = SelectPosition{}
     selectPosition.NoteID = nid
 
 
     returnValue := getData( selectPosition )
+
+    printEventLog("end" , "ページ追加 終了")
 
     return c.JSON(http.StatusCreated, returnValue )
 
@@ -230,8 +229,20 @@ func HandleUpdatePagePost(c echo.Context) error {
 
     updatePage(argMap)
 
+
+    tempnid, _ := strconv.Atoi(c.FormValue("note_id"))
+    nid := uint(tempnid)
+
+    var selectPosition = SelectPosition{}
+    selectPosition.NoteID = nid
+
+    returnValue := getData( selectPosition )
+
     printEventLog("end" , "ページ更新 終了")
-    return nil
+
+    return c.JSON(http.StatusCreated, returnValue )
+
+    // return nil
 } //--------------------------------------------
 
 // HandleDeletePagePost のコメントアウト

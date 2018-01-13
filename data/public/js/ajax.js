@@ -47,7 +47,7 @@ function addPage(Obj) {
         // 1つめは通信成功時のコールバック
         function (data) {
             // location.reload();
-            console.log(data);
+            // console.log(data);
             $('#source_return_value').text(data);
             makePageList();
         },
@@ -97,8 +97,9 @@ function updatePage() {
 
     var target_url = 'updatepage';
     var post_data = {
+        'note_id': $('#note_id').text(),
         'note_address': $('#note_address').text(),
-        'page_id': $('#page_id').val(),
+        'page_id': $('#page_id').text(),
         'page_title': $('#page_title').val(),
         'page_body': data
     };
@@ -112,7 +113,8 @@ function updatePage() {
         // 1つめは通信成功時のコールバック
         function (data) {
             // location.reload();
-
+            $('#source_return_value').text(data);
+            makePageList();
 
             $('.update_successed').show();
             $('.update_successed').fadeOut(3000);
@@ -162,7 +164,7 @@ function deletePage() {
     var target_url = 'deletepage';
     var post_data = {
         'note_address': $('#note_address').text(),
-        'page_id': $('#page_id').val(),
+        'page_id': $('#page_id').text(),
     };
 
     $.ajax({
