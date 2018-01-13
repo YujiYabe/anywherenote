@@ -6,7 +6,7 @@ function addNote(Obj) {
     var target_url = 'addnote';
     var post_data = {
         'new_note_name': $('#new_note_name').val(),
-        'new_note_address': $('#new_note_address').text(),
+        'new_note_address': $('#new_note_address').val(),
     };
 
     $.ajax({

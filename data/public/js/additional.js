@@ -37,6 +37,8 @@ function switchRightPane(pane_name) {
 }
 
 function makePageList() {
+    tinymce.remove('#page_body');
+
     $('#table_parent').empty();
     var json_return_value = JSON.parse($('#source_return_value').text());
 
@@ -171,6 +173,26 @@ function makePageList() {
                 $('#update_time').text(updateDateTime);
 
                 $('#edit_page').show();
+
+                tinymce.init({
+                    selector: "#page_body",
+                    plugins: "autoresize",
+                    language: "ja",
+                    autoresize_bottom_margin: 1,
+                    // font_formats: 'Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;AkrutiKndPadmini=Akpdmi-n'
+                    font_formats: 'NotoSansMono;monospace;AkrutiKndPadmini=Akpdmi-n',
+                    // font_formats: 'Consolas, Courier, Monaco, monospace'
+                    toolbar: [ // ツールバー(2段)
+                        // 戻る 進む | フォーマット | 太字 斜体 | 左寄せ 中央寄せ 右寄せ 均等割付 | 箇条書き 段落番号 インデントを減らす インデント
+                        "undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+                        // 文字サイズ 文字色 画像 リンク
+                        "fontsizeselect forecolor image link"
+                    ],
+                    statusbar: false, // ステータスバーを隠す
+                    body_class: 'my_class'
+
+                })
+
 
             }
 

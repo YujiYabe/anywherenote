@@ -106,26 +106,26 @@ func main() {
 
     // 各ルーティングに対するハンドラを設定
 
-    e.GET("/", HandleLoadPageGet)
-    e.POST("/addnote", HandleAddNotePost)
-    e.POST("/addpage", HandleAddPagePost)
+    e.GET( "/", HandleLoadPageGet )
+    e.GET( "/livecheck", HandleLiveCheckGet )
+    e.POST( "/addnote", HandleAddNotePost )
+    e.POST( "/addpage", HandleAddPagePost )
+ 
+    e.POST( "/updatenote", HandleUpdateNotePost )
+    e.POST( "/updatepage", HandleUpdatePagePost )
+ 
+    e.POST( "/deletenote", HandleDeleteNotePost )
+    e.POST( "/deletepage", HandleDeletePagePost )
 
-    e.POST("/updatenote", HandleUpdateNotePost)
-    e.POST("/updatepage", HandleUpdatePagePost)
-
-    e.POST("/deletenote", HandleDeleteNotePost)
-    e.POST("/deletepage", HandleDeletePagePost)
-
-    e.GET("/livecheck", HandleLiveCheckGet)
  
 
-    open.Run("http://localhost:" + usePortNumber)
+    open.Run("http://localhost:" + usePortNumber )
 
     go calcTime()
 
 
     // サーバーを開始
-    e.Logger.Fatal(e.Start(":" + usePortNumber))
+    e.Logger.Fatal(e.Start( ":" + usePortNumber ))
 } //--------------------------------------------
 
 
@@ -296,7 +296,6 @@ func loadTemplates() {
     templates = make(map[string]*template.Template)
     templates["loadpage"]  = template.Must(template.ParseFiles(baseTemplate, "data/templates/loadpage.html"))
 } //--------------------------------------------
-
 
 
 
