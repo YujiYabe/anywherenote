@@ -39,7 +39,9 @@ function switchRightPane(pane_name) {
 function makePageList() {
     tinymce.remove('#page_body');
 
+    $('#parent_note_table').empty();
     $('#table_parent').empty();
+
     var json_return_value = JSON.parse($('#source_return_value').text());
 
     // statuscode == '1' 保存先が一つもない場合、ノート追加を表示、ページ追加を非表示
@@ -117,7 +119,12 @@ function makePageList() {
         var h5 = $('<h5>'); parent_div.append(h5);
         //---------------
 
-        var span = $('<span>'); parent_div.append(span); span.addClass("btn  btn-secondary "); span.text('ページ追加'); span.attr('data-select_note_id', note_id); span.attr('data-address', note_address); span.attr('onclick', "addPage(this);");
+        var span = $('<span>'); parent_div.append(span);
+        span.addClass("btn  btn-secondary ");
+        span.text('ページ追加');
+        span.attr('data-select_note_id', note_id);
+        span.attr('data-address', note_address);
+        span.attr('onclick', "addPage(this);");
 
         var h5 = $('<h5>'); parent_div.append(h5);
 
