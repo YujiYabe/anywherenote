@@ -160,7 +160,7 @@ function makePageList() {
                 select_note_id == note_id &&
                 select_page_id == page_list[item]['ID']
             ) {
-
+                tr.addClass("currentItem");
                 $('#note_id').text(note_id);
                 $('#note_name').text(note_name);
                 $('#note_address').text(note_address);

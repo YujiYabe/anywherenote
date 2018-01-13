@@ -107,7 +107,7 @@ function updatePage() {
     $.ajax({
         type: 'POST',
         url: target_url,
-        data: post_data
+        data: post_data,
     })
         .then(
         // 1つめは通信成功時のコールバック
