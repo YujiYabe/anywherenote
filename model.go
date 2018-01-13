@@ -75,6 +75,9 @@ func getData( selectPosition SelectPosition ) string {
     var DataSetList = DataSet{}
     data2.Key0 = "0"
 
+
+    
+
     for _ ,value := range conf {
 
         NoteDBAddress := value.Address + directorySeparator + noteDBName
@@ -88,20 +91,29 @@ func getData( selectPosition SelectPosition ) string {
         }
         NoteList := []Note{}
     
-        notedb.Table("notes").Order("updated_at desc").Find(&NoteList)
+        // notedb.Table("notes").Order("updated_at desc").Find(&NoteList)
+        notedb.Table("notes").Find(&NoteList)
     
+
         DataSetList.NoteDBID         = value.ID
         DataSetList.NoteDBName       = value.Name
         DataSetList.NoteDBAddress    = value.Address
         DataSetList.NoteDBUpdateTime = value.UpdatedAt 
-        DataSetList.List             = NoteList 
+
+
+        if len(NoteList) != 0 {
+            DataSetList.List             = NoteList 
+        }
 
         data2.Key1 = append(data2.Key1, DataSetList)
 
-     // 選択中のページIDがなければ最新のページIDを返却
+        // printEventLog("z" , )
+
+
+        // 選択中のページIDがなければ最新のページIDを返却
         if selectPosition.PageID == 0 {
 
-            if value.ID == selectPosition.NoteID {
+            if value.ID == selectPosition.NoteID && len(NoteList) != 0 {
     
                 // printEventLog("debug" , len(NoteList))
                 // printEventLog("debug" , NoteList )
