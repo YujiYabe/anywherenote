@@ -64,10 +64,10 @@ function makePageList() {
     var note_tbody = $('<tbody>'); note_table.append(note_tbody);
 
     $.each(json_return_value["key1"], function (index, val) {
-        var note_id = json_return_value["key1"][index]["NoteDbID"];
-        var note_name = json_return_value["key1"][index]["NoteDbName"];
-        var note_address = json_return_value["key1"][index]["NoteDbAddress"];
-        var temp_note_updatetime = json_return_value["key1"][index]["NoteDbUpdateTime"];
+        var note_id = json_return_value["key1"][index]["NoteDBID"];
+        var note_name = json_return_value["key1"][index]["NoteDBName"];
+        var note_address = json_return_value["key1"][index]["NoteDBAddress"];
+        var temp_note_updatetime = json_return_value["key1"][index]["NoteDBUpdateTime"];
         var note_updatetime = moment(temp_note_updatetime).format('YYYY/MM/DD HH:mm:ss');
 
         var page_list = json_return_value["key1"][index]["list"];

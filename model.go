@@ -83,11 +83,17 @@ func getData() string {
     
         notedb.Table("notes").Order("updated_at desc").Find(&NoteList)
     
-        DataSetList.NoteDBID = value.ID
-        DataSetList.NoteDBName = value.Name
-        DataSetList.NoteDBAddress = value.Address
+        DataSetList.NoteDBID         = value.ID
+        DataSetList.NoteDBName       = value.Name
+        DataSetList.NoteDBAddress    = value.Address
         DataSetList.NoteDBUpdateTime = value.UpdatedAt 
         DataSetList.List = NoteList 
+
+        log.Println("------------------------------")
+        log.Println(value.Name)
+        log.Println(DataSetList.NoteDBName)
+        log.Println(DataSetList)
+        log.Println("------------------------------")
 
         data2.Key1 = append(data2.Key1, DataSetList)
     
@@ -98,6 +104,9 @@ func getData() string {
         panic("not convert json array")
     }
     stringjsonreturnmap := string(jsonreturnmap)
+    log.Println("------------------------------")
+    log.Println(stringjsonreturnmap)
+    log.Println("------------------------------")
 
     return stringjsonreturnmap
 } //--------------------------------------------
@@ -188,7 +197,8 @@ func updateNote( argMap map[string]string  ) error {
     //------------------------------
     confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
     defer confdb.Close()
-	confdb.LogMode(true)
+
+    confdb.LogMode(true)
 
     if err != nil {
         panic("failed to connect database2")
