@@ -73,8 +73,8 @@ function makePageList() {
         var note_id = json_return_value["key1"][index]["NoteDBID"];
         var note_name = json_return_value["key1"][index]["NoteDBName"];
         var note_address = json_return_value["key1"][index]["NoteDBAddress"];
-        var temp_note_updatetime = json_return_value["key1"][index]["NoteDBUpdateTime"];
-        var note_updatetime = moment(temp_note_updatetime).format('YYYY/MM/DD HH:mm:ss');
+        // var temp_note_updatetime = json_return_value["key1"][index]["NoteDBUpdateTime"];
+        var note_updatetime = moment(json_return_value["key1"][index]["NoteDBUpdateTime"]).format('YYYY/MM/DD HH:mm:ss');
 
         var page_list = json_return_value["key1"][index]["list"];
 
@@ -103,10 +103,13 @@ function makePageList() {
 
 
         //---------------
+        var parent_div = $('<div>'); element.append(parent_div); parent_div.attr('id', index); parent_div.hide();
+        // if (index != 0) {
+        console.log(index);
+        console.log(select_note_id);
 
-        var parent_div = $('<div>'); element.append(parent_div); parent_div.attr('id', index);
-        if (index != 0) {
-            parent_div.hide();
+        if (note_id == select_note_id) {
+            parent_div.show();
         }
 
         var h5 = $('<h5>'); parent_div.append(h5);
@@ -116,7 +119,11 @@ function makePageList() {
 
         var h5 = $('<h5>'); parent_div.append(h5);
 
-        var table = $('<table>'); parent_div.append(table); table.attr('id', note_address); table.attr('data-address', note_address); table.addClass('table table-bordered table-hover');
+        var table = $('<table>'); parent_div.append(table);
+        table.attr('id', note_address);
+        table.attr('data-note_name', note_name);
+        table.attr('data-note_address', note_address);
+        table.addClass('table table-bordered table-hover');
 
         var thead = $('<thead>'); table.append(thead);
 
@@ -157,7 +164,8 @@ function makePageList() {
                 $('#page_id').val(page_list[item]['ID']);
                 $('#page_title').val(page_list[item]['page_title']);
                 $('#page_body').val(page_list[item]['page_body']);
-                $('#note_address').val(note_address);
+                $('#note_address').text(note_address);
+                $('#note_name').text(note_name);
 
                 $('#edit_page').show();
 
@@ -173,22 +181,31 @@ function makePageList() {
 function switchShowHideDataList(obj) {
     var target_table = $(obj).attr('data-target_table');
     $('#' + target_table).toggle();
+
+
 } // =======================================
 
 
 // ページを右ペインに表示
 function showDataToRightPane(obj) {
+    $(".currentItem").removeClass("currentItem");
+
     switchRightPane('edit_page');
     tinymce.remove('#page_body');
 
-    var note_address = $(obj).parent().parent().parent().attr('data-address');
 
+
+    var note_address = $(obj).parent().parent().parent().attr('data-address');
+    var note_name = $(obj).parent().parent().parent().attr('data-note_name');
+
+    console.log(note_name);
     $('#update_time').text($(obj).nextAll().eq(0).text());
     $('#page_id').val($(obj).nextAll().eq(1).text());
     $('#page_title').val($(obj).nextAll().eq(2).text());
     $('#page_body').val($(obj).nextAll().eq(3).text());
 
-    $('#note_address').val(note_address);
+    $('#note_address').text(note_address);
+    $('#note_name').text(note_name);
 
     tinymce.init({
         selector: "#page_body",
@@ -208,184 +225,30 @@ function showDataToRightPane(obj) {
         body_class: 'my_class'
 
     })
-} // =======================================
+
+    $(obj).addClass("currentItem");
 
 
-
-function updateNote(Obj) {
-
-    var target_url = 'updatenote';
-    var post_data = {
-        'new_note_name': $(Obj).next().children('input').val(),
-        'note_id': $(Obj).next().children('input').attr('data-note_id'),
-    };
-
-    $.ajax({
-        type: 'POST',
-        url: target_url,
-        data: post_data
-    })
-        .then(
-        // 1つめは通信成功時のコールバック
-        function (data) {
-            location.reload();
-
-        },
-        // 2つめは通信失敗時のコールバック
-        function () {
-            console.log("読み込み失敗");
-        });
-    ;
-
-} // =======================================
-
-function deleteNote(Obj) {
-
-    var target_url = 'deletenote';
-    var post_data = {
-        'note_id': $(Obj).prevAll().eq(1).children('input').attr('data-note_id'),
-    };
-
-    $.ajax({
-        type: 'POST',
-        url: target_url,
-        data: post_data
-    })
-        .then(
-        // 1つめは通信成功時のコールバック
-        function (data) {
-            location.reload();
-        },
-        // 2つめは通信失敗時のコールバック
-        function () {
-            console.log("読み込み失敗");
-        });
-    ;
-
-} // =======================================
-
-function deletePage() {
-
-
-    var target_url = 'deletepage';
-    var post_data = {
-        'note_address': $('#note_address').val(),
-        'page_id': $('#page_id').val(),
-    };
-
-    $.ajax({
-        type: 'POST',
-        url: target_url,
-        data: post_data
-    })
-        .then(
-        // 1つめは通信成功時のコールバック
-        function (data) {
-            location.reload();
-        },
-        // 2つめは通信失敗時のコールバック
-        function () {
-            console.log("読み込み失敗");
-        });
-    ;
-
-
-} // =======================================
-
-function updatePage() {
-
-    var ed = tinyMCE.get('page_body');
-    var data = ed.getContent();
-
-    var target_url = 'updatepage';
-    var post_data = {
-        'note_address': $('#note_address').val(),
-        'page_id': $('#page_id').val(),
-        'page_title': $('#page_title').val(),
-        'page_body': data
-    };
-
-    $.ajax({
-        type: 'POST',
-        url: target_url,
-        data: post_data
-    })
-        .then(
-        // 1つめは通信成功時のコールバック
-        function (data) {
-            // location.reload();
-
-
-            $('.update_successed').show();
-            $('.update_successed').fadeOut(3000);
-
-        },
-        // 2つめは通信失敗時のコールバック
-        function () {
-            console.log("読み込み失敗");
-        });
-    ;
+    //ID重複チェック ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+    var idArr = [];
+    var duplicateIdArr = [];
+    [].forEach.call(document.querySelectorAll('[id]'), function (elm) {
+        var id = elm.getAttribute('id');
+        if (idArr.indexOf(id) !== -1) {
+            duplicateIdArr.push(id);
+        } else {
+            idArr.push(id);
+        }
+    });
+    if (duplicateIdArr.length > 0) {
+        console.log('IDの重複があります:', duplicateIdArr);
+    } else {
+        console.log('IDの重複はありません。');
+    }
+    //ID重複チェック ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
 
 } // =======================================
 
 
 
-function addPage(Obj) {
-
-
-    // console.log($(Obj).attr('data-address'));
-    var target_url = 'addpage';
-    var post_data = {
-        'note_address': $(Obj).attr('data-address'),
-        'note_id': $(Obj).attr('data-note_id'),
-    };
-
-    $.ajax({
-        type: 'POST',
-        url: target_url,
-        data: post_data
-    })
-        .then(
-        // 1つめは通信成功時のコールバック
-        function (data) {
-            // location.reload();
-            console.log(data);
-            $('#source_return_value').text(data)
-            makePageList();
-        },
-        // 2つめは通信失敗時のコールバック
-        function () {
-            console.log("読み込み失敗");
-        });
-    ;
-} // =======================================
-
-
-function addNote(Obj) {
-
-
-    var target_url = 'addnote';
-    var post_data = {
-        'new_note_name': $('#new_note_name').val(),
-        'new_note_address': $('#new_note_address').val(),
-    };
-
-    $.ajax({
-        type: 'POST',
-        url: target_url,
-        data: post_data
-    })
-        .then(
-        // 1つめは通信成功時のコールバック
-        function (data) {
-            location.reload();
-        },
-        // 2つめは通信失敗時のコールバック
-        function () {
-            console.log("読み込み失敗");
-        });
-    ;
-
-
-} // =======================================

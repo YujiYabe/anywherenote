@@ -96,8 +96,8 @@ func getData( selectPosition SelectPosition ) string {
         }
         NoteList := []Note{}
     
-        // notedb.Table("notes").Order("updated_at desc").Find(&NoteList)
-        notedb.Table("notes").Find(&NoteList)
+        notedb.Table("notes").Order("updated_at desc").Find(&NoteList)
+        // notedb.Table("notes").Find(&NoteList)
 
         DataSetList.NoteDBID         = value.ID
         DataSetList.NoteDBName       = value.Name

@@ -12,17 +12,21 @@
 <!-- ============================================================ -->
 <div id="edit_page" class="right_pane" style="display: none;">
 
-    <input type="text" style="display: none;" readonly id='note_address'></input>
     <input type="text" style="display: none;" readonly id='page_id'></input>
 
-    <br>
-    <h3>ページ編集</h3>
-    <span>last updated</span>
-    <span id="update_time"></span>
-    <br>
+
+    <span id="note_name" class="right_pane_note_name"></span>
+    <span id='note_address'></span>
+    <h5></h5>
+    <h5></h5>
+
+
     <h5></h5>
     <button onclick="updatePage()" class="btn btn-success">更新</button>
+    <span>last updated</span>
+    <span id="update_time"></span>
     <span class='update_successed' style="display: none;">更新しました</span>
+
     <button onclick="deletePage()" class="btn btn-danger float-right">削除</button>
     <h5></h5>
 

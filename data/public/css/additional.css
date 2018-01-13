@@ -37,3 +37,12 @@ body{
 .notedb_button {
 	text-align: left;
 }
+
+
+.currentItem {
+	background-color: paleturquoise;
+}
+.right_pane_note_name{
+	font-size: 40px;
+
+}
