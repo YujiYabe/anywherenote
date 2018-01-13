@@ -1,8 +1,8 @@
 package main
 import (
 
-	"encoding/json"
-	"github.com/jinzhu/gorm"
+    "encoding/json"
+    "github.com/jinzhu/gorm"
     _ "github.com/mattn/go-sqlite3"
     "os"
     "log"
@@ -25,12 +25,12 @@ type Note struct {
 } //--------------------------------------------
 
 // getData →ノート情報、ページ情報を取得
-func getData() string {
+func getData(selectPosition SelectPosition) string {
     // ノート情報の取得
 
     confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
-	// DBログモードon
-	confdb.LogMode(true)
+    // DBログモードon
+    confdb.LogMode(true)
 
     defer confdb.Close()
 
@@ -64,6 +64,12 @@ func getData() string {
     var conf []Conf
     confdb.Table("confs").Order("updated_at desc").Find(&conf)
 
+    // 選択中のノートIDがなければ最新のノートIDを返却
+    if selectPosition.NoteID == 0 {
+        // selectPosition.NoteDBID = conf[len(conf) - 1].ID
+        selectPosition.NoteID = conf[0].ID
+    }
+    
     var data2 = ReturnValue{}
     var DataSetList = DataSet{}
     data2.Key0 = "0"
@@ -87,60 +93,93 @@ func getData() string {
         DataSetList.NoteDBName       = value.Name
         DataSetList.NoteDBAddress    = value.Address
         DataSetList.NoteDBUpdateTime = value.UpdatedAt 
-        DataSetList.List = NoteList 
-
-        log.Println("------------------------------")
-        log.Println(value.Name)
-        log.Println(DataSetList.NoteDBName)
-        log.Println(DataSetList)
-        log.Println("------------------------------")
+        DataSetList.List             = NoteList 
 
         data2.Key1 = append(data2.Key1, DataSetList)
+
+     // 選択中のページIDがなければ最新のページIDを返却
+        if selectPosition.PageID == 0 {
+ 
+
+
+            if value.ID == selectPosition.NoteID {
     
+                // printEventLog("debug" , len(NoteList))
+                // printEventLog("debug" , NoteList )
+                // printEventLog("debug" , NoteList[len(NoteList) - 1].ID )
+                // printEventLog("debug" , NoteList[0].ID )
+                // selectPosition.PageID = strconv.Atoi(NoteList[0].ID)
+                selectPosition.PageID = NoteList[0].ID
+
+            }
+        }
     }
 
+    data2.Key2 = selectPosition
+
     jsonreturnmap, err := json.Marshal(data2)
+
     if err != nil {
         panic("not convert json array")
     }
+
     stringjsonreturnmap := string(jsonreturnmap)
-    log.Println("------------------------------")
-    log.Println(stringjsonreturnmap)
-    log.Println("------------------------------")
+
+    printEventLog("debug" , stringjsonreturnmap )
 
     return stringjsonreturnmap
 } //--------------------------------------------
 
 // addNote →ノート情報を追加
-func addNote( argMap map[string]string ) error {
+func addNote( rcvMap map[string]string ) error {
 
-	//指定したディレクトリにDBファイルを作成
-	newNoteName    := argMap["newNoteName"]
-	newNoteAddress := argMap["newNoteAddress"]
-	
+    //指定したディレクトリにDBファイルを作成
+    newNoteName    := rcvMap["newNoteName"]
+    newNoteAddress := rcvMap["newNoteAddress"]
+    
+    //フォルダが存在確認
+    _, errAddress := os.Stat(newNoteAddress)
+    if errAddress != nil {
+        return errAddress
+    }
+
     notefullAddress := newNoteAddress + directorySeparator + noteDBName
+    _, errFullAddress := os.Stat(notefullAddress)
 
-    file, err := os.OpenFile( notefullAddress , os.O_WRONLY|os.O_CREATE, 0666 )
-    if err != nil {
-        //エラー処理
-        log.Fatal(err)
+    //新規ノートDB作成
+    if errFullAddress != nil {
+
+        // file, err := os.OpenFile( notefullAddress , os.O_WRONLY|os.O_CREATE, 0666 )
+        // if err != nil {
+        //     //エラー処理
+        //     log.Fatal(err)
+        // }
+        // defer file.Close()
+    
+        notedb, err := gorm.Open( useDBMSName , notefullAddress )
+        defer notedb.Close()
+    
+        if err != nil {
+            panic("failed to connect database")
+        }
+        // Migrate the schema
+        notedb.AutoMigrate(&Note{})
+
+
+        // 新規DBの場合、最初のページ作成
+        argMap := make(map[string]string)
+        argMap["noteAddress"] = newNoteAddress
+    
+        addPage( argMap )
+    
     }
-    defer file.Close()
 
-    notedb, err := gorm.Open( useDBMSName , notefullAddress )
-    defer notedb.Close()
-
-    if err != nil {
-        panic("failed to connect database")
-    }
-    // Migrate the schema
-    notedb.AutoMigrate(&Note{})
 
 
     //------------------------------
     confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
     defer confdb.Close()
-	confdb.LogMode(true)
+    confdb.LogMode(true)
 
     if err != nil {
         panic("failed to connect database2")
@@ -148,22 +187,23 @@ func addNote( argMap map[string]string ) error {
 
     var conf Conf
 
-    conf.Name = newNoteName
+    conf.Name    = newNoteName
     conf.Address = newNoteAddress
-
+    log.Println("#############################")
+    log.Println(conf.Name )
+    log.Println("#############################")
 
     // INSERTを実行
     confdb.Create(&conf)
 
-
-	return nil
+    return nil
 } //--------------------------------------------
 
 // addPage →ページ情報を追加
-func addPage(argMap map[string]string ) error {
+func addPage(rcvMap map[string]string ) error {
 
-	//指定したディレクトリにDBファイルを作成
-	noteAddress    := argMap["noteAddress"]
+    //指定したディレクトリにDBファイルを作成
+    noteAddress    := rcvMap["noteAddress"]
 
 
     notedb, err := gorm.Open( useDBMSName , noteAddress + directorySeparator +  noteDBName )
@@ -183,16 +223,16 @@ func addPage(argMap map[string]string ) error {
     updateNoteFromPage(noteAddress) 
 
 
-	return nil
+    return nil
 } //--------------------------------------------
 
 // updateNote →ノート情報を更新
-func updateNote( argMap map[string]string  ) error {
-//	
-	// __________________________________
-	// ポスト内容取得
-    newNoteName :=argMap[ "newNoteName"]
-    postNoteID  :=argMap[ "postNoteID"]
+func updateNote( rcvMap map[string]string  ) error {
+//    
+    // __________________________________
+    // ポスト内容取得
+    newNoteName :=rcvMap[ "newNoteName"]
+    postNoteID  :=rcvMap[ "postNoteID"]
 
     //------------------------------
     confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
@@ -214,19 +254,19 @@ func updateNote( argMap map[string]string  ) error {
     conf.Name = newNoteName
     confdb.Save(&conf)
 
-	return nil
+    return nil
 } //--------------------------------------------
 
 // updatePage →ページ情報を更新
-func updatePage( argMap map[string]string ) error {
-//	 
+func updatePage( rcvMap map[string]string ) error {
+//     
 
-	// __________________________________
-	// ポスト内容取得
-    noteAddress := argMap["noteAddress"]
-    pageID      := argMap["pageID"]     
-    pageTitle   := argMap["pageTitle"]  
-    pageBody    := argMap["pageBody"]   
+    // __________________________________
+    // ポスト内容取得
+    noteAddress := rcvMap["noteAddress"]
+    pageID      := rcvMap["pageID"]     
+    pageTitle   := rcvMap["pageTitle"]  
+    pageBody    := rcvMap["pageBody"]   
 
     if pageTitle == "" {
         pageTitle =  " "
@@ -242,37 +282,37 @@ func updatePage( argMap map[string]string ) error {
     }
 
     defer notedb.Close()
-	notedb.LogMode(true)
+    notedb.LogMode(true)
 
 
-	// __________________________________
-	// DB内容取得
+    // __________________________________
+    // DB内容取得
     NoteList := []Note{}
 
-	notedb.Model(&NoteList).Where("id = ?", pageID).Update(&Note{PageTitle: pageTitle, PageBody: pageBody})
+    notedb.Model(&NoteList).Where("id = ?", pageID).Update(&Note{PageTitle: pageTitle, PageBody: pageBody})
 
 
     
-	if err != nil {
-		panic("failed to connect database")
-	}
+    if err != nil {
+        panic("failed to connect database")
+    }
 
     updateNoteFromPage(noteAddress)
 
-	return nil
+    return nil
 } //--------------------------------------------
 
 // deleteNote →ノート情報を追加
-func deleteNote( argMap map[string]string ) error {
+func deleteNote( rcvMap map[string]string ) error {
 
-	// __________________________________
-	// ポスト内容取得
-    postNoteID  := argMap["postNoteID"]
+    // __________________________________
+    // ポスト内容取得
+    postNoteID  := rcvMap["postNoteID"]
 
     //------------------------------
     confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
     defer confdb.Close()
-	confdb.LogMode(true)
+    confdb.LogMode(true)
 
     if err != nil {
         panic("failed to connect database")
@@ -284,17 +324,17 @@ func deleteNote( argMap map[string]string ) error {
 
     confdb.Where("id = ?", noteID ).Delete(&conf)
 
-	return nil
+    return nil
 } //--------------------------------------------
 
 // deletePage →ページ情報を追加
-func deletePage( argMap map[string]string) error {
-//	argMap map[string]string 
+func deletePage( rcvMap map[string]string) error {
+//    rcvMap map[string]string 
 
-	// __________________________________
-	// ポスト内容取得
-    noteAddress := argMap["noteAddress"]
-    pageID      := argMap["pageID"]     
+    // __________________________________
+    // ポスト内容取得
+    noteAddress := rcvMap["noteAddress"]
+    pageID      := rcvMap["pageID"]     
 
     notedb, err := gorm.Open("sqlite3", noteAddress + directorySeparator + noteDBName )
     if err != nil {
@@ -302,17 +342,17 @@ func deletePage( argMap map[string]string) error {
     }
 
     defer notedb.Close()
-	notedb.LogMode(true)
+    notedb.LogMode(true)
 
-	// __________________________________
-	// DB内容取得
+    // __________________________________
+    // DB内容取得
     notedb.Where("id = ?", pageID).Delete(&Note{})
     
-	if err != nil {
-		panic("failed to connect database")
-	}
+    if err != nil {
+        panic("failed to connect database")
+    }
 
-	return nil
+    return nil
 } //--------------------------------------------
 
 // updateNoteFromPage のコメントアウト
@@ -320,7 +360,7 @@ func updateNoteFromPage(noteAddress string)  {
 
     confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
     defer confdb.Close()
-	confdb.LogMode(true)
+    confdb.LogMode(true)
 
     if err != nil {
         panic("failed to connect database")

@@ -18,16 +18,29 @@ func checkConfig() {
 } //--------------------------------------------
 
 
-func printEventLog(flagName string , message string) {
+func printEventLog(flagName string , message interface{}) {
 
     separateLine := "------------------------------------------------------------------------------"
     if flagName == "start" {
-		log.Println( separateLine )
-		log.Println(message)
-	}else if flagName == "end" {
-		log.Println(message)
-		log.Println( separateLine )
-	}
+        log.Println( separateLine )
+        log.Println(message)
+    }else if flagName == "end" {
+        log.Println(message)
+        log.Println( separateLine )
+    }else if flagName == "returnFuncStatus" {
+        log.Println( separateLine )
+        log.Println(message)
+        log.Println( separateLine )
+        
+    }else{
+        log.Println( separateLine )
+        log.Println( separateLine )
+        log.Println( separateLine )
+        log.Println(message)
+        log.Println( separateLine )
+        log.Println( separateLine )
+        log.Println( separateLine )
+    }
 
 } //--------------------------------------------
 

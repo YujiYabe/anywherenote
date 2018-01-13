@@ -41,17 +41,26 @@ const usePortNumber = "3000"
 
 // DataSet DBファイルの情報とノート情報のセット
 type DataSet struct {
-	NoteDBID         uint   `json:"NoteDBID"`
-	NoteDBName       string `json:"NoteDBName"`
-	NoteDBAddress    string `json:"NoteDBAddress"`
-	NoteDBUpdateTime time.Time
+    NoteDBID         uint   `json:"NoteDBID"`
+    NoteDBName       string `json:"NoteDBName"`
+    NoteDBAddress    string `json:"NoteDBAddress"`
+    NoteDBUpdateTime time.Time
     List             []Note `json:"list"`
+}
+
+
+// SelectPosition
+type SelectPosition struct {
+    NoteID  uint   `json:"NoteID"`
+    PageID  uint   `json:"PageID"`
+
 }
 
 // ReturnValue 戻り値とDataSetのセット Key0がリターンコード 
 type ReturnValue struct {
-    Key0   string    `json:"key0"`
-	Key1   []DataSet `json:"key1"`
+    Key0   string           `json:"key0"`
+    Key1   []DataSet        `json:"key1"`
+    Key2   SelectPosition   `json:"key2"`
 } //--------------------------------------------
 
 
@@ -111,7 +120,7 @@ func main() {
 
     open.Run("http://localhost:" + usePortNumber)
 
-	go calcTime()
+    go calcTime()
 
 
     // サーバーを開始
@@ -123,7 +132,11 @@ func main() {
 func HandleLoadPageGet(c echo.Context) error {
     printEventLog("start" , "データ取得 開始")
 
-    returnjson := getData()
+    var selectPosition = SelectPosition{}
+    selectPosition.NoteID = 0
+    selectPosition.PageID = 0
+
+    returnjson := getData(selectPosition)
 
     printEventLog("end" , "データ取得 終了")
     return c.Render(http.StatusOK, "loadpage", returnjson)
@@ -138,10 +151,13 @@ func HandleAddNotePost(c echo.Context) error {
     argMap["newNoteName"]    = c.FormValue("new_note_name")
     argMap["newNoteAddress"] = c.FormValue("new_note_address")
 
-    addNote(argMap)
+    // ★ todo 対象ディレクトリが存在しない場合エラーを返却
+    returnvalue := addNote(argMap)
+    printEventLog( "returnFuncStatus" , returnvalue )
+
 
     // タスク パスが存在するかの確認
-    printEventLog("end" , "ノート追加 終了")
+    printEventLog( "end" , "ノート追加 終了")
     return nil
 } //--------------------------------------------
 

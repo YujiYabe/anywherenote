@@ -51,6 +51,12 @@ function makePageList() {
 
     }
 
+    var select_note_id = json_return_value["key2"].NoteID
+    var select_page_id = json_return_value["key2"].PageID
+
+    console.log(select_note_id + ":" + select_page_id);
+    console.log("=================");
+
     var parent_note_table = $('#parent_note_table');
 
     var note_table = $('<div>'); parent_note_table.append(note_table); note_table.addClass('container'); //table.attr('id', note_address); table.attr('data-address', note_address); 
@@ -129,7 +135,7 @@ function makePageList() {
             var temp_date = Date.parse(page_list[item]['UpdatedAt']);
             var updateDateTime = moment(temp_date).format('YYYY/MM/DD HH:mm:ss');
 
-            var tr = $('<tr>'); tbody.append(tr);
+            var tr = $('<tr>'); tbody.append(tr); tr.attr('data-note_id', note_id); tr.attr('data-page_id', page_list[item]['ID']);
 
             var td = $('<td>'); tr.append(td); td.attr('onclick', 'showDataToRightPane(this)');
             var div = $('<div>'); td.append(div); div.text(updateDateTime);
@@ -140,15 +146,21 @@ function makePageList() {
             var td = $('<td>'); tr.append(td); td.hide(); td.text(page_list[item]['page_title']);
             var td = $('<td>'); tr.append(td); td.hide(); td.text(page_list[item]['page_body']);
 
-            if (index == 0 && item == 0) {
-                // 右ペインに初期値を入力
-                $('#edit_page').show();
+
+            // 選択済のページを表示
+            if (
+                select_note_id == note_id &&
+                select_page_id == page_list[item]['ID']
+            ) {
 
                 $('#update_time').text(updateDateTime);
                 $('#page_id').val(page_list[item]['ID']);
                 $('#page_title').val(page_list[item]['page_title']);
                 $('#page_body').val(page_list[item]['page_body']);
                 $('#note_address').val(note_address);
+
+                $('#edit_page').show();
+
             }
 
         }

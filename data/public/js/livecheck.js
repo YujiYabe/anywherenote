@@ -4,7 +4,7 @@ function exitApp() {
 }
 
 window.onload = function () {
-    isEnableAppMode = false; // for debug
+    isEnableAppMode = true; // for debug
     waitSecondLiveCheck = 5; // for debug
     // 処理
     setInterval(function () { liveCheck() }, 1000);
