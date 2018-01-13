@@ -81,8 +81,6 @@ func getData( selectPosition SelectPosition ) string {
     data2.Key0 = "0"
 
 
-    
-
     for _ ,value := range conf {
 
         NoteDBAddress := value.Address + directorySeparator + noteDBName
@@ -103,10 +101,12 @@ func getData( selectPosition SelectPosition ) string {
         DataSetList.NoteDBName       = value.Name
         DataSetList.NoteDBAddress    = value.Address
         DataSetList.NoteDBUpdateTime = value.UpdatedAt 
+        DataSetList.List         = NoteList 
 
-        if len(NoteList) != 0 {
-            DataSetList.List             = NoteList 
-        }
+        // if len(NoteList) != 0 {
+        // }else{
+
+        // }
 
         data2.Key1 = append(data2.Key1, DataSetList)
 
@@ -183,10 +183,10 @@ func addNote( rcvMap map[string]string ) error {
 
 
         // 新規DBの場合、最初のページ作成
-        argMap := make(map[string]string)
-        argMap["noteAddress"] = newNoteAddress
+        // argMap := make(map[string]string)
+        // argMap["noteAddress"] = newNoteAddress
     
-        addPage( argMap )
+        // addPage( argMap )
     
     }
 

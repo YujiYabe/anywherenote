@@ -254,9 +254,21 @@ func HandleDeletePagePost(c echo.Context) error {
     argMap["pageID"]      = c.FormValue("page_id")
 
     deletePage(argMap)
-    
+
+    tempnid, _ := strconv.Atoi(c.FormValue("note_id"))
+    nid := uint(tempnid)
+
+    var selectPosition = SelectPosition{}
+    selectPosition.NoteID = nid
+
+    returnValue := getData( selectPosition )
+
     printEventLog("end" , "ページ削除 終了")
-    return nil
+
+    return c.JSON(http.StatusCreated, returnValue )
+    
+    // printEventLog("end" , "ページ削除 終了")
+    // return nil
 } //--------------------------------------------
 
 //HandleDeleteNotePost は /hello のPost時のHTMLデータ生成処理を行います。

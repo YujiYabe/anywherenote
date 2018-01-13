@@ -221,7 +221,7 @@ function showDataToRightPane(obj) {
 
     var note_id = $(obj).parent().parent().parent().attr('data-note_id');
     var note_name = $(obj).parent().parent().parent().attr('data-note_name');
-    var note_address = $(obj).parent().parent().parent().attr('data-address');
+    var note_address = $(obj).parent().parent().parent().attr('data-note_address');
 
     console.log(note_name);
     $('#update_time').text($(obj).nextAll().eq(0).text());

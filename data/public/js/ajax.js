@@ -35,13 +35,13 @@ function addPage(Obj) {
     var target_url = 'addpage';
     var post_data = {
         'note_address': $(Obj).attr('data-address'),
-        'note_id': $(Obj).attr('data-note_id'),
+        'note_id': $(Obj).attr('data-select_note_id'),
     };
 
     $.ajax({
         type: 'POST',
         url: target_url,
-        data: post_data
+        data: post_data,
     })
         .then(
         // 1つめは通信成功時のコールバック
@@ -99,9 +99,10 @@ function updatePage() {
     var post_data = {
         'note_id': $('#note_id').text(),
         'note_address': $('#note_address').text(),
+
         'page_id': $('#page_id').text(),
         'page_title': $('#page_title').val(),
-        'page_body': data
+        'page_body': data,
     };
 
     $.ajax({
@@ -163,8 +164,10 @@ function deletePage() {
 
     var target_url = 'deletepage';
     var post_data = {
+        'note_id': $('#note_id').text(),
         'note_address': $('#note_address').text(),
         'page_id': $('#page_id').text(),
+
     };
 
     $.ajax({
@@ -175,7 +178,11 @@ function deletePage() {
         .then(
         // 1つめは通信成功時のコールバック
         function (data) {
-            location.reload();
+            // location.reload();
+
+            $('#source_return_value').text(data);
+            makePageList();
+
         },
         // 2つめは通信失敗時のコールバック
         function () {
