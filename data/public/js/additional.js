@@ -45,18 +45,18 @@ function makePageList() {
     var json_return_value = JSON.parse($('#source_return_value').text());
 
     // statuscode == '1' 保存先が一つもない場合、ノート追加を表示、ページ追加を非表示
-    if (json_return_value["key0"] == '1') {
-        $('#edit_page').hide()
-        $('#add_note').show()
-        $('#common_item').hide()
-        return
+    if (json_return_value["RtnCode"] == '1') {
+        $('#edit_page').hide();
+        $('#add_note').show();
+        $('#common_item').hide();
+        return false;
     } else {
-        $('#add_note').hide()
+        $('#add_note').hide();
 
     }
 
-    var select_note_id = json_return_value["key2"].NoteID
-    var select_page_id = json_return_value["key2"].PageID
+    var select_note_id = json_return_value["SlctPst"].NoteID
+    var select_page_id = json_return_value["SlctPst"].PageID
 
     // console.log(select_note_id + ":" + select_page_id);
     // console.log("=================");
@@ -73,14 +73,14 @@ function makePageList() {
 
     var note_tbody = $('<tbody>'); note_table.append(note_tbody);
 
-    $.each(json_return_value["key1"], function (index, val) {
-        var note_id = json_return_value["key1"][index]["NoteDBID"];
-        var note_name = json_return_value["key1"][index]["NoteDBName"];
-        var note_address = json_return_value["key1"][index]["NoteDBAddress"];
-        // var temp_note_updatetime = json_return_value["key1"][index]["NoteDBUpdateTime"];
-        var note_updatetime = moment(json_return_value["key1"][index]["NoteDBUpdateTime"]).format('YYYY/MM/DD HH:mm:ss');
+    $.each(json_return_value["DataSet"], function (index, val) {
+        var note_id = json_return_value["DataSet"][index]["NoteDBID"];
+        var note_name = json_return_value["DataSet"][index]["NoteDBName"];
+        var note_address = json_return_value["DataSet"][index]["NoteDBAddress"];
+        // var temp_note_updatetime = json_return_value["DataSet"][index]["NoteDBUpdateTime"];
+        var note_updatetime = moment(json_return_value["DataSet"][index]["NoteDBUpdateTime"]).format('YYYY/MM/DD HH:mm:ss');
 
-        var page_list = json_return_value["key1"][index]["list"];
+        var page_list = json_return_value["DataSet"][index]["list"];
 
         $('#addPagebutton').attr('name', note_address);
 
@@ -279,6 +279,8 @@ function showDataToRightPane(obj) {
         console.log('IDの重複はありません。');
     }
     //ID重複チェック ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+    console.log(document.querySelectorAll('[id]'));
 
 
 } // =======================================

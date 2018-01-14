@@ -28,27 +28,27 @@ type Note struct {
 func getData( selectPosition SelectPosition ) string {
     // ノート情報の取得
 
+    // 設定DBのオープン
     confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
-    // DBログモードon
-    confdb.LogMode(true)
 
+    confdb.LogMode(true)
     defer confdb.Close()
 
     if err != nil {
         panic("failed to connect database")
     }
 
-    var count = 0
-    confdb.Table("confs").Count(&count)
-    
-    //設定DBの中にレコードがなければ処理をスキップ
+    var count int
+    var conf []Conf
+    confdb.Find(&conf).Count(&count)
 
+    //設定DBの中にレコードがなければ処理をスキップ
     if count == 0 { 
         // handle the error    
         returnmap := map[string]string{
-            "key0": "1",
-            "key1": "",
-            "key2": "",
+            "RtnCode": "1",
+            "DataSet": "",
+            "SlctPst": "",
         }
         jsonreturnmap, err := json.Marshal(returnmap)
         if err != nil {
@@ -57,29 +57,22 @@ func getData( selectPosition SelectPosition ) string {
     
         stringjsonreturnmap := string(jsonreturnmap)
         return stringjsonreturnmap
-
-        // return nil
     }
-    
-    var conf []Conf
-    // confdb.Table("confs").Order("updated_at desc").Find(&conf)
-    confdb.Table("confs").Order("id desc").Find(&conf)
 
-    printEventLog("z" , selectPosition.NoteID)
+    
+    confdb.Find(&conf).Order("id desc")
 
     // 選択中のノートIDがなければ最新のノートIDを返却
     if selectPosition.NoteID == 0 {
-
         if len(conf) != 0 {
             selectPosition.NoteID = conf[0].ID
         }
-
     }
     
     var data2 = ReturnValue{}
     var DataSetList = DataSet{}
-    data2.Key0 = "0"
 
+    data2.RtnCode = "0"
 
     for _ ,value := range conf {
 
@@ -93,24 +86,18 @@ func getData( selectPosition SelectPosition ) string {
             panic("failed to connect database")
         }
         NoteList := []Note{}
-    
-        notedb.Table("notes").Order("updated_at desc").Find(&NoteList)
-        // notedb.Table("notes").Find(&NoteList)
+
+        notedb.Find(&NoteList).Order("updated_at desc")
+
 
         DataSetList.NoteDBID         = value.ID
         DataSetList.NoteDBName       = value.Name
         DataSetList.NoteDBAddress    = value.Address
         DataSetList.NoteDBUpdateTime = value.UpdatedAt 
-        DataSetList.List         = NoteList 
+        DataSetList.List             = NoteList 
 
-        // if len(NoteList) != 0 {
-        // }else{
 
-        // }
-
-        data2.Key1 = append(data2.Key1, DataSetList)
-
-        // printEventLog("z" , )
+        data2.DataSet = append(data2.DataSet, DataSetList)
 
 
         // 選択中のページIDがなければ最新のページIDを返却
@@ -118,18 +105,13 @@ func getData( selectPosition SelectPosition ) string {
 
             if value.ID == selectPosition.NoteID && len(NoteList) != 0 {
     
-                // printEventLog("debug" , len(NoteList))
-                // printEventLog("debug" , NoteList )
-                // printEventLog("debug" , NoteList[len(NoteList) - 1].ID )
-                // printEventLog("debug" , NoteList[0].ID )
-                // selectPosition.PageID = strconv.Atoi(NoteList[0].ID)
                 selectPosition.PageID = NoteList[0].ID
 
             }
         }
     }
 
-    data2.Key2 = selectPosition
+    data2.SlctPst = selectPosition
 
     jsonreturnmap, err := json.Marshal(data2)
 
@@ -138,8 +120,6 @@ func getData( selectPosition SelectPosition ) string {
     }
 
     stringjsonreturnmap := string(jsonreturnmap)
-
-    // printEventLog("debug" , stringjsonreturnmap )
 
     return stringjsonreturnmap
 
@@ -165,12 +145,6 @@ func addNote( rcvMap map[string]string ) error {
     //新規ノートDB作成
     if errFullAddress != nil {
 
-        // file, err := os.OpenFile( notefullAddress , os.O_WRONLY|os.O_CREATE, 0666 )
-        // if err != nil {
-        //     //エラー処理
-        //     log.Fatal(err)
-        // }
-        // defer file.Close()
     
         notedb, err := gorm.Open( useDBMSName , notefullAddress )
         defer notedb.Close()
@@ -190,24 +164,19 @@ func addNote( rcvMap map[string]string ) error {
     
     }
 
-
-
     //------------------------------
     confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
     defer confdb.Close()
     confdb.LogMode(true)
 
     if err != nil {
-        panic("failed to connect database2")
+        panic("failed to connect database")
     }
 
     var conf Conf
 
     conf.Name    = newNoteName
     conf.Address = newNoteAddress
-    log.Println("#############################")
-    log.Println(conf.Name )
-    log.Println("#############################")
 
     // INSERTを実行
     confdb.Create(&conf)
@@ -244,16 +213,13 @@ func addPage(rcvMap map[string]string ) error {
 
 // updateNote →ノート情報を更新
 func updateNote( rcvMap map[string]string  ) error {
-//    
-    // __________________________________
-    // ポスト内容取得
+
     newNoteName :=rcvMap[ "newNoteName"]
     postNoteID  :=rcvMap[ "postNoteID"]
 
     //------------------------------
     confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
     defer confdb.Close()
-
     confdb.LogMode(true)
 
     if err != nil {
@@ -261,7 +227,7 @@ func updateNote( rcvMap map[string]string  ) error {
     }
 
     var conf Conf
-    // noteID := int(noteID)
+
     var noteID int
     noteID, _ = strconv.Atoi(postNoteID)
 
@@ -275,10 +241,7 @@ func updateNote( rcvMap map[string]string  ) error {
 
 // updatePage →ページ情報を更新
 func updatePage( rcvMap map[string]string ) error {
-//     
 
-    // __________________________________
-    // ポスト内容取得
     noteAddress := rcvMap["noteAddress"]
     pageID      := rcvMap["pageID"]     
     pageTitle   := rcvMap["pageTitle"]  
@@ -308,7 +271,6 @@ func updatePage( rcvMap map[string]string ) error {
     notedb.Model(&NoteList).Where("id = ?", pageID).Update(&Note{PageTitle: pageTitle, PageBody: pageBody})
 
 
-    
     if err != nil {
         panic("failed to connect database")
     }
@@ -398,7 +360,6 @@ func updateNoteFromPage(noteAddress string)  {
 
 // makeConfDB は設定データベースの初期化
 func makeConfDB() {
-
 
     file, err := os.OpenFile( dataDirName + directorySeparator + confDBName , os.O_WRONLY|os.O_CREATE, 0666 )
     if err != nil {

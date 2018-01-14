@@ -4,26 +4,25 @@ function exitApp() {
 }
 
 window.onload = function () {
-    isEnableAppMode = false; // for debug
-    waitSecondLiveCheck = 5; // for debug
+    isEnableAppMode = true; // サーバからのハートビート受け取り
+    waitSecondLiveCheck = 5;  // ハートビート切断許容時間：秒
     // 処理
     setInterval(function () { liveCheck() }, 1000);
 
 };
 
 function liveCheck() {
-    // var dt = new Date();
-    // var expireLiveTime = dt.setMinutes(dt.getSeconds() + 10);
 
     // var post_data = {
     //     'expireLiveTime': expireLiveTime
     // };
+
     if (isEnableAppMode) {
 
         $.ajax({
+            url: 'livecheck',
             // type: 'POST',
             // data: post_data,
-            url: 'livecheck'
 
         })
             .then(

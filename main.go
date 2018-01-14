@@ -16,28 +16,24 @@ import (
 )
 // グローバル変数
 var (
-    // チャネル
-    // liveChannel = make(chan string)
-
-    recieveString string
+    recieveString string    // ブラウザからのハートビート受け取り
     directorySeparator  = "/" // linux separator
 )
 
 // 定数
-const isEnableAppMode = false // for debug
-const waitSecondLiveCheck = 8
-const waitSecondInterval = 1 
-const dateTimeFormat = "2006-01-02 15:04:05"
+const isEnableAppMode = true // デバッグ用 ハートビート切断後、アプリをクローズするかのスイッチ
+const waitSecondLiveCheck = 8 // ハートビート切断許容時間：秒
+const waitSecondInterval = 1  // ハートビートチェック間隔
 
+const usePortNumber = "3000" // 使用するポート番号
 
-const useDBMSName = "sqlite3"
-const confDBName  = "conf.db"
-const noteDBName  = "note.db"
+const useDBMSName = "sqlite3" // 使用DBMS
+const confDBName  = "conf.db" // ローカル設定ファイル
+const noteDBName  = "note.db" // ノート保存先
 
-const dataDirName  = "data"
+const dataDirName  = "data" // htmlやjs、DBファイル等格納先
 
-const usePortNumber = "3000"
-
+const dateTimeFormat = "2006-01-02 15:04:05" // 日時フォーマット
 
 
 // DataSet DBファイルの情報とノート情報のセット
@@ -57,11 +53,11 @@ type SelectPosition struct {
 
 }
 
-// ReturnValue 戻り値とDataSetのセット Key0がリターンコード 
+// ReturnValue 戻り値とDataSetのセット RtnCodeがリターンコード 
 type ReturnValue struct {
-    Key0   string           `json:"key0"`
-    Key1   []DataSet        `json:"key1"`
-    Key2   SelectPosition   `json:"key2"`
+    RtnCode   string           `json:"RtnCode"`
+    DataSet   []DataSet        `json:"DataSet"`
+    SlctPst   SelectPosition   `json:"SlctPst"`
 } //--------------------------------------------
 
 
@@ -105,7 +101,6 @@ func main() {
     e.File("/favicon.ico", "data/public/favicon.ico")
 
     // 各ルーティングに対するハンドラを設定
-
     e.GET( "/", HandleLoadPageGet )
     e.GET( "/livecheck", HandleLiveCheckGet )
     e.POST( "/addnote", HandleAddNotePost )
@@ -200,7 +195,6 @@ func HandleAddPagePost(c echo.Context) error {
 
     return c.JSON(http.StatusCreated, returnValue )
 
-    // return nil
 } //--------------------------------------------
 
 
@@ -267,8 +261,6 @@ func HandleDeletePagePost(c echo.Context) error {
 
     return c.JSON(http.StatusCreated, returnValue )
     
-    // printEventLog("end" , "ページ削除 終了")
-    // return nil
 } //--------------------------------------------
 
 //HandleDeleteNotePost は /hello のPost時のHTMLデータ生成処理を行います。
