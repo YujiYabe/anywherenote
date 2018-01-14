@@ -1,6 +1,6 @@
 # anywhereNote
   
-- evernoteみたいなオンラインメモアプリ  
+- evernoteみたいなオンライン同期メモアプリ  
 - golang(echo,gorm)＋sqliteで作成  
 - Electronのように内部でwebサーバをたててローカルのDBファイルにアクセス  
 - 保存先を追加(dropbox等)することで、その保存先にDBファイルを作成
@@ -9,7 +9,7 @@
 
 ## 利用イメージ  
 ![利用イメージ](https://github.com/YujiYabe/anywhereNote/blob/garage/imageuse.jpg "")
-
+※1保存先＝1DB(ノート)
 
 
 
@@ -44,6 +44,7 @@
 ## 今後のタスク
 - テストコード追加
 - ファイルアップロード機能追加
+- React.js化 
 - FireFox対応  
 - Android、iOS対応（願望）
   
