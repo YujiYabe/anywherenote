@@ -9,12 +9,13 @@
 
 ## 利用イメージ  
 **ブラウザ ⇔ ローカルwebサーバー ⇔ ローカルDBファイル ⇔ オンラインストレージサービス**  
+![利用イメージ](https://github.com/YujiYabe/anywhereNote/blob/garage/image.jpg "")
 
 
 
 
 ## Screenshots  
-![Screenshots](https://github.com/YujiYabe/anywhereNote/blob/garage/explain.gif "")
+![Screenshots](https://github.com/YujiYabe/anywhereNote/blob/garage/explain2.gif "")
 
 
 ## ダウンロード
