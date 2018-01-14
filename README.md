@@ -18,12 +18,12 @@
 
 ---
 
-[z][aaa]
+[url_win_64][https://drive.google.com/open?id=1W9S-JLfF8dgkO3fbLGOGDYkReJTm-lBb "Windows 64"]
 
 ## ダウンロード
 |       | Windows | Linux | Macintosh |
 |:------|:--------|:------|:----------|
-| 64bit | [Windows 64](https://drive.google.com/open?id=1W9S-JLfF8dgkO3fbLGOGDYkReJTm-lBb "Windows 64") | [Linux 64](https://drive.google.com/open?id=1gLXapKzuW9U195F_C_DquuKgu1tFDXrc "Linux 64") | 準備中      |
+| 64bit | [Windows 64](url_win_64) | [Linux 64](https://drive.google.com/open?id=1gLXapKzuW9U195F_C_DquuKgu1tFDXrc "Linux 64") | 準備中      |
 | 32bit | [Windows 32](https://drive.google.com/open?id=1UqiawXaHZhSfxU5clmMt7JtBUG2pyzYk "Windows 32") | [Linux 32](https://drive.google.com/open?id=19wQxlKyzaEFViVKLj9ID4J2DfRoMTkdb "Linux 32") | 準備中      |
 
   
