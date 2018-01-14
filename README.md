@@ -8,8 +8,7 @@
   
 
 ## 利用イメージ  
-**ブラウザ ⇔ ローカルwebサーバー ⇔ ローカルDBファイル ⇔ オンラインストレージサービス**  
-![利用イメージ](https://github.com/YujiYabe/anywhereNote/blob/garage/image.jpg "")
+![利用イメージ](https://github.com/YujiYabe/anywhereNote/blob/garage/imageuse.jpg "")
 
 
 
