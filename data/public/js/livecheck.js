@@ -1,11 +1,13 @@
+"use strict";
+
+var isEnableAppMode = true; // サーバからのハートビート受け取り
+var waitSecondLiveCheck = 5;  // ハートビート切断許容時間：秒
 
 function exitApp() {
     window.close();
 }
 
 window.onload = function () {
-    isEnableAppMode = true; // サーバからのハートビート受け取り
-    waitSecondLiveCheck = 5;  // ハートビート切断許容時間：秒
     // 処理
     setInterval(function () { liveCheck() }, 1000);
 

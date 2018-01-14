@@ -89,7 +89,8 @@ function makePageList() {
         var note_tr = $('<div>'); note_table.append(note_tr); note_tr.addClass('row');
 
         var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text("変更"); note_td.addClass("btn btn-info"); note_td.attr('onclick', 'updateNote(this);');
-        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-4'); var note_input = $('<input>'); note_td.append(note_input); note_input.val(note_name); note_input.attr('data-note_id', note_id); note_input.addClass("form-control");
+        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-4');
+        var note_input = $('<input>'); note_td.append(note_input); note_input.val(note_name); note_input.attr('data-note_id', note_id); note_input.addClass("form-control");
         var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-4'); note_td.text(note_address);
         var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text("削除"); note_td.addClass("btn btn-danger"); note_td.attr('onclick', 'deleteNote(this);');
 
@@ -177,7 +178,7 @@ function makePageList() {
                 $('#page_id').text(page_list[item]['ID']);
                 $('#page_title').val(page_list[item]['page_title']);
                 $('#page_body').val(page_list[item]['page_body']);
-                $('#update_time').text(updateDateTime);
+                $('.update_time').text(updateDateTime);
 
                 $('#edit_page').show();
 
@@ -230,7 +231,7 @@ function showDataToRightPane(obj) {
     var note_name = $(obj).parent().parent().parent().attr('data-note_name');
     var note_address = $(obj).parent().parent().parent().attr('data-note_address');
 
-    console.log(note_name);
+    // console.log(note_name);
     $('#update_time').text($(obj).nextAll().eq(0).text());
     $('#page_id').text($(obj).nextAll().eq(1).text());
     $('#page_title').val($(obj).nextAll().eq(2).text());
@@ -262,25 +263,25 @@ function showDataToRightPane(obj) {
     $(obj).addClass("currentItem");
 
 
-    //ID重複チェック ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-    var idArr = [];
-    var duplicateIdArr = [];
-    [].forEach.call(document.querySelectorAll('[id]'), function (elm) {
-        var id = elm.getAttribute('id');
-        if (idArr.indexOf(id) !== -1) {
-            duplicateIdArr.push(id);
-        } else {
-            idArr.push(id);
-        }
-    });
-    if (duplicateIdArr.length > 0) {
-        console.log('IDの重複があります:', duplicateIdArr);
-    } else {
-        console.log('IDの重複はありません。');
-    }
-    //ID重複チェック ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+    // //ID重複チェック ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+    // var idArr = [];
+    // var duplicateIdArr = [];
+    // [].forEach.call(document.querySelectorAll('[id]'), function (elm) {
+    //     var id = elm.getAttribute('id');
+    //     if (idArr.indexOf(id) !== -1) {
+    //         duplicateIdArr.push(id);
+    //     } else {
+    //         idArr.push(id);
+    //     }
+    // });
+    // if (duplicateIdArr.length > 0) {
+    //     console.log('IDの重複があります:', duplicateIdArr);
+    // } else {
+    //     // console.log('IDの重複はありません。');
+    // }
+    // //ID重複チェック ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
-    console.log(document.querySelectorAll('[id]'));
+    // console.log(document.querySelectorAll('[id]'));
 
 
 } // =======================================

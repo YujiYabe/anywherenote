@@ -1,2 +1,6 @@
 *.db
+*.memo
 *.exe
+*.run
+*.app
+

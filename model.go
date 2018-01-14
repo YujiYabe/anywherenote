@@ -87,7 +87,7 @@ func getData( selectPosition SelectPosition ) string {
         }
         NoteList := []Note{}
 
-        notedb.Find(&NoteList).Order("updated_at desc")
+        notedb.Order("updated_at desc").Find(&NoteList)
 
 
         DataSetList.NoteDBID         = value.ID

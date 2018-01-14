@@ -27,18 +27,18 @@
 
 
     <!-- style="display: none;" -->
-    <span id='note_id'>0</span>
-    <span id="note_name" class="right_pane_note_name"></span>
+    <span id='note_id' style="display: none;">0</span>
+    <span id='note_name' class="right_pane_note_name"></span>
     <span id='note_address'>address</span>
 
 
     <br>
     <br>
+    <span id='page_id' style="display: none;">0</span>
+
     <button onclick="updatePage()" class="btn btn-success">更新</button>
     <span>last updated</span>
-
-    <span id='page_id'>0</span>
-    <span id="update_time"></span>
+    <span class="update_time"></span>
 
     <span class='update_successed' style="display: none;">更新しました</span>
 
@@ -53,6 +53,9 @@
     <h5></h5>
 
     <button onclick="updatePage()" class="btn btn-success">更新</button>
+    <span>last updated</span>
+    <span class="update_time"></span>
+
     <span class='update_successed' style="display: none;">更新しました</span>
     <h5></h5>
 
