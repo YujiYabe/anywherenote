@@ -16,6 +16,9 @@
 ## Screenshots  
 ![Screenshots](https://github.com/YujiYabe/anywhereNote/blob/garage/explain2.gif "")
 
+---
+
+[z][aaa]
 
 ## ダウンロード
 |       | Windows | Linux | Macintosh |
@@ -33,9 +36,8 @@
 
 ## evernote(フリー版)にはないメリット
 - DBファイルを無限に追加できる。→容量制限はオンラインストレージサービス先に依存
-- 台数無制限
+- インストール台数無制限
 - 1ソースでWindows・Linux・Mac向けのアプリにコンパイル可能(開発者視点)
-- 将来的にAndroid、iOS向けアプリに対応（願望）
   
 
 
@@ -43,5 +45,5 @@
 - テストコード追加
 - ファイルアップロード機能追加
 - FireFox対応  
-- スマホ対応
+- Android、iOS対応（願望）
   
