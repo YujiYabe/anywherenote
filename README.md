@@ -29,6 +29,23 @@
   
   
 
+I get 10 times more traffic from [Google] [1] than from
+[Yahoo] [2] or [MSN] [3].
+
+  [1]: http://google.com/        "Google"
+  [2]: http://search.yahoo.com/  "Yahoo Search"
+  [3]: http://search.msn.com/    "MSN Search"
+
+
+<p>I get 10 times more traffic from 
+
+<a href="http://google.com/"       title="Google">Google</a> than from
+<a href="http://search.yahoo.com/" title="Yahoo Search">Yahoo</a> or 
+<a href="http://search.msn.com/"   title="MSN Search">MSN</a>.
+
+</p>
+
+
 
 
 
@@ -42,8 +59,8 @@
 
 
 ## 今後のタスク
-- テストコード追加
-- ファイルアップロード機能追加
-- FireFox対応  
-- Android、iOS対応（願望）
+[]テストコード追加
+[]ファイルアップロード機能追加
+[]FireFox対応  
+[]Android、iOS対応（願望）
   
