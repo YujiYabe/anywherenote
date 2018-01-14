@@ -9,8 +9,8 @@
   
   
   
+## Screenshots  
 
-![サンプル](https://drive.google.com/open?id=1iAp8Bm_C5XocrV0NX7I4kkoOLGBX1PHW "")
 
 
 ## 利用イメージ  
