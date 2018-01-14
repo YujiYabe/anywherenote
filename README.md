@@ -15,8 +15,8 @@
 
 
 
-## Screenshots  
-![Screenshots](https://github.com/YujiYabe/anywhereNote/blob/garage/explain2.gif "")
+## Screenshot  
+![Screenshot](https://github.com/YujiYabe/anywhereNote/blob/garage/explain2.gif "")
 
 ---
 
@@ -29,7 +29,7 @@
 ## ダウンロード
 |       | Windows  | Linux    | Macintosh  |
 |:------|:---------|:---------|:-----------|
-| 64bit | [win_64] | [lnx_64] | 準備中|
+| 64bit | [win_64] | [lnx_64] | 準備中      |
 | 32bit | [win_32] | [lnx_32] | 準備中      |
 
  
