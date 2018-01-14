@@ -59,8 +59,8 @@ I get 10 times more traffic from [Google] [1] than from
 
 
 ## 今後のタスク
-[]テストコード追加
-[]ファイルアップロード機能追加
-[]FireFox対応  
-[]Android、iOS対応（願望）
+ [ ] テストコード追加  
+ [ ] ファイルアップロード機能追加  
+ [ ] FireFox対応  
+ [ ] Android、iOS対応（願望)  
   
