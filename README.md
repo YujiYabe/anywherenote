@@ -18,34 +18,19 @@
 
 ---
 
-[url_win_64][https://drive.google.com/open?id=1W9S-JLfF8dgkO3fbLGOGDYkReJTm-lBb]
+[url_win_64]: https://drive.google.com/open?id=1W9S-JLfF8dgkO3fbLGOGDYkReJTm-lBb "Windows 64"
+[url_win_32]: https://drive.google.com/open?id=1UqiawXaHZhSfxU5clmMt7JtBUG2pyzYk "Windows 32"
+[url_lnx_64]: https://drive.google.com/open?id=1gLXapKzuW9U195F_C_DquuKgu1tFDXrc "Linux 64"
+[url_lnx_32]: https://drive.google.com/open?id=19wQxlKyzaEFViVKLj9ID4J2DfRoMTkdb "Linux 32"
+
 
 ## ダウンロード
 |       | Windows | Linux | Macintosh |
 |:------|:--------|:------|:----------|
-| 64bit | [Windows 64](url_win_64 "Windows 64") | [Linux 64](https://drive.google.com/open?id=1gLXapKzuW9U195F_C_DquuKgu1tFDXrc "Linux 64") | 準備中      |
-| 32bit | [Windows 32](https://drive.google.com/open?id=1UqiawXaHZhSfxU5clmMt7JtBUG2pyzYk "Windows 32") | [Linux 32](https://drive.google.com/open?id=19wQxlKyzaEFViVKLj9ID4J2DfRoMTkdb "Linux 32") | 準備中      |
+| 64bit | [url_win_64] | [url_lnx_64] | 準備中      |
+| 32bit | [url_win_32] | [url_lnx_32] | 準備中      |
 
-  
-  
-
-I get 10 times more traffic from [Google] [1] than from
-[Yahoo] [2] or [MSN] [3].
-
-  [1]: http://google.com/        "Google"
-  [2]: http://search.yahoo.com/  "Yahoo Search"
-  [3]: http://search.msn.com/    "MSN Search"
-
-
-<p>I get 10 times more traffic from 
-
-<a href="http://google.com/"       title="Google">Google</a> than from
-<a href="http://search.yahoo.com/" title="Yahoo Search">Yahoo</a> or 
-<a href="http://search.msn.com/"   title="MSN Search">MSN</a>.
-
-</p>
-
-
+ 
 
 
 
@@ -59,8 +44,8 @@ I get 10 times more traffic from [Google] [1] than from
 
 
 ## 今後のタスク
- [ ] テストコード追加  
- [ ] ファイルアップロード機能追加  
- [ ] FireFox対応  
- [ ] Android、iOS対応（願望)  
+- [ ] テストコード追加  
+- [ ] ファイルアップロード機能追加  
+- [ ] FireFox対応  
+- [ ] Android、iOS対応（願望)  
   
