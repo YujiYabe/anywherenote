@@ -8,8 +8,11 @@
   
 
 ## 利用イメージ  
-**ブラウザ⇔ローカルwebサーバー⇔ローカルDBファイル⇔オンラインストレージサービス**  
-  
+**ブラウザ ⇔ ローカルwebサーバー ⇔ ローカルDBファイル ⇔ オンラインストレージサービス**  
+
+
+
+
 ## Screenshots  
 ![Screenshots](https://github.com/YujiYabe/anywhereNote/blob/garage/explain.gif "")
 
