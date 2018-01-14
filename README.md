@@ -3,7 +3,8 @@
 - evernoteみたいなオンラインメモアプリ  
 - golang(echo,gorm)＋sqliteで作成  
 - Electronのように内部でwebサーバをたててローカルのDBファイルにアクセス  
-- 保存先を追加(dropbox等)することで、その保存先にDBファイルを作成
+- 保存先はローカルPC内に無制限に追加可能
+- ローカルのオンラインストレージサービス(dropbox等)に保存することで、そこにDBファイルを作成
 - DBファイル自体のインターネット同期はオンラインストレージサービス(dropbox等)に丸投げ
   
 
@@ -18,17 +19,17 @@
 
 ---
 
-[url_win_64]: https://drive.google.com/open?id=1W9S-JLfF8dgkO3fbLGOGDYkReJTm-lBb "Windows 64"
-[url_win_32]: https://drive.google.com/open?id=1UqiawXaHZhSfxU5clmMt7JtBUG2pyzYk "Windows 32"
-[url_lnx_64]: https://drive.google.com/open?id=1gLXapKzuW9U195F_C_DquuKgu1tFDXrc "Linux 64"
-[url_lnx_32]: https://drive.google.com/open?id=19wQxlKyzaEFViVKLj9ID4J2DfRoMTkdb "Linux 32"
+[win_64]: https://drive.google.com/open?id=1W9S-JLfF8dgkO3fbLGOGDYkReJTm-lBb "Windows 64"
+[win_32]: https://drive.google.com/open?id=1UqiawXaHZhSfxU5clmMt7JtBUG2pyzYk "Windows 32"
+[lnx_64]: https://drive.google.com/open?id=1gLXapKzuW9U195F_C_DquuKgu1tFDXrc "Linux 64"
+[lnx_32]: https://drive.google.com/open?id=19wQxlKyzaEFViVKLj9ID4J2DfRoMTkdb "Linux 32"
 
 
 ## ダウンロード
-|       | Windows | Linux | Macintosh |
-|:------|:--------|:------|:----------|
-| 64bit | [url_win_64] | [url_lnx_64] | 準備中      |
-| 32bit | [url_win_32] | [url_lnx_32] | 準備中      |
+|       | Windows  | Linux    | Macintosh  |
+|:------|:---------|:---------|:-----------|
+| 64bit | [win_64] | [lnx_64] | 準備中|
+| 32bit | [win_32] | [lnx_32] | 準備中      |
 
  
 
