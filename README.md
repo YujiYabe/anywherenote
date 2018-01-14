@@ -10,7 +10,7 @@
   
   
 ## Screenshots  
-![Screenshots](https://github.com/YujiYabe/anywhereNote/blob/garage/explain.gif "")
+![Screenshots](https://github.com/YujiYabe/anywhereNote/blob/garage/explain1.gif "")
 
 
 ## 利用イメージ  
