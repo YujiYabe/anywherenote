@@ -303,7 +303,7 @@ func deleteNote( rcvMap map[string]string ) error {
 } //--------------------------------------------
 
 // deletePage →ページ情報を追加
-func deletePage( rcvMap map[string]string) error {
+func deletePage( rcvMap map[string]string ) error {
 //    rcvMap map[string]string 
 
     // __________________________________

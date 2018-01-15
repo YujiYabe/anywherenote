@@ -76,6 +76,7 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 
 // 初期化
 func init() {
+
     if runtime.GOOS == "windows" {
         directorySeparator = "\\"
     }
@@ -133,21 +134,24 @@ func HandleLoadPageGet(c echo.Context) error {
 
     var selectPosition = SelectPosition{}
 
-    if c.FormValue("select_note_id") == "" {
-        selectPosition.NoteID = 0
-    }else{
-        tempnid, _ := strconv.Atoi(c.FormValue("select_note_id"))
-        nid := uint(tempnid)
-        selectPosition.NoteID = nid
-    }
+    selectPosition.NoteID = 0
+    selectPosition.PageID = 0
     
-    if c.FormValue("select_page_id") == "" {
-        selectPosition.PageID = 0
-    }else{
-        temppid, _ := strconv.Atoi(c.FormValue("select_page_id"))
-        pid := uint(temppid)
-        selectPosition.PageID = pid
-    }
+    // if c.FormValue("select_note_id") == "" {
+    //     selectPosition.NoteID = 0
+    // }else{
+    //     tempnid, _ := strconv.Atoi(c.FormValue("select_note_id"))
+    //     nid := uint(tempnid)
+    //     selectPosition.NoteID = nid
+    // }
+    
+    // if c.FormValue("select_page_id") == "" {
+    //     selectPosition.PageID = 0
+    // }else{
+    //     temppid, _ := strconv.Atoi(c.FormValue("select_page_id"))
+    //     pid := uint(temppid)
+    //     selectPosition.PageID = pid
+    // }
 
 
     returnjson := getData( selectPosition )
