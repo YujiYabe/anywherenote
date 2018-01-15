@@ -169,6 +169,8 @@ func HandleAddNotePost(c echo.Context) error {
     argMap["newNoteName"]    = c.FormValue("new_note_name")
     argMap["newNoteAddress"] = c.FormValue("new_note_address")
 
+    printEventLog("parames" , c.FormValue("new_note_address") )
+
     // ★ todo 対象ディレクトリが存在しない場合エラーを返却
     returnvalue := addNote(argMap)
     printEventLog( "returnFuncStatus" , returnvalue )
