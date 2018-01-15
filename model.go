@@ -24,19 +24,22 @@ type Note struct {
     PageBody    string `json:"page_body"`
 } //--------------------------------------------
 
+func setupDB( dbFullAddress string ) *gorm.DB {
+	db, err := gorm.Open( useDBMSName , dbFullAddress )
+	if err != nil {
+		panic("failed to connect database")
+	}
+	return db
+}
+
 // getData →ノート情報、ページ情報を取得
 func getData( selectPosition SelectPosition ) string {
-    // ノート情報の取得
 
     // 設定DBのオープン
-    confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
-
+    confdb := setupDB( dataDirName + directorySeparator + confDBName )
+	defer confdb.Close()
     confdb.LogMode(true)
-    defer confdb.Close()
 
-    if err != nil {
-        panic("failed to connect database")
-    }
 
     var count int
     var conf []Conf
@@ -76,15 +79,14 @@ func getData( selectPosition SelectPosition ) string {
 
     for _ ,value := range conf {
 
-        NoteDBAddress := value.Address + directorySeparator + noteDBName
+        noteDBAddress := value.Address + directorySeparator + noteDBName
 
-        notedb, err := gorm.Open( useDBMSName , NoteDBAddress )
-        notedb.LogMode(true)
+        // DBのオープン
+        notedb := setupDB( noteDBAddress )
         defer notedb.Close()
-    
-        if err != nil {
-            panic("failed to connect database")
-        }
+        notedb.LogMode(true)
+
+
         NoteList := []Note{}
 
         notedb.Order("updated_at desc").Find(&NoteList)
@@ -145,13 +147,10 @@ func addNote( rcvMap map[string]string ) error {
     //新規ノートDB作成
     if errFullAddress != nil {
 
-    
-        notedb, err := gorm.Open( useDBMSName , notefullAddress )
+        // DBのオープン
+        notedb := setupDB( notefullAddress )
         defer notedb.Close()
-    
-        if err != nil {
-            panic("failed to connect database")
-        }
+
         // Migrate the schema
         notedb.AutoMigrate(&Note{})
 
@@ -165,13 +164,13 @@ func addNote( rcvMap map[string]string ) error {
     }
 
     //------------------------------
-    confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
-    defer confdb.Close()
+
+    // 設定DBのオープン
+    confdb := setupDB( dataDirName + directorySeparator + confDBName )
+	defer confdb.Close()
     confdb.LogMode(true)
 
-    if err != nil {
-        panic("failed to connect database")
-    }
+
 
     var conf Conf
 
@@ -190,11 +189,13 @@ func addPage(rcvMap map[string]string ) error {
     //指定したディレクトリにDBファイルを作成
     noteAddress    := rcvMap["noteAddress"]
 
+    noteDBAddress := noteAddress + directorySeparator +  noteDBName
 
-    notedb, err := gorm.Open( useDBMSName , noteAddress + directorySeparator +  noteDBName )
-    if err != nil {
-        panic("failed to connect database")
-    }
+    // DBのオープン
+    notedb := setupDB( noteDBAddress )
+    defer notedb.Close()
+    notedb.LogMode(true)
+
     notedb.AutoMigrate(&Note{})
 
     var note Note
@@ -217,14 +218,11 @@ func updateNote( rcvMap map[string]string  ) error {
     newNoteName :=rcvMap[ "newNoteName"]
     postNoteID  :=rcvMap[ "postNoteID"]
 
-    //------------------------------
-    confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
-    defer confdb.Close()
+    // 設定DBのオープン
+    confdb := setupDB( dataDirName + directorySeparator + confDBName )
+	defer confdb.Close()
     confdb.LogMode(true)
 
-    if err != nil {
-        panic("failed to connect database2")
-    }
 
     var conf Conf
 
@@ -255,13 +253,16 @@ func updatePage( rcvMap map[string]string ) error {
         pageBody =  " "
     }
     
-    notedb, err := gorm.Open("sqlite3", noteAddress + directorySeparator + noteDBName )
-    if err != nil {
-        panic("failed to connect database")
-    }
 
+    noteDBAddress := noteAddress + directorySeparator + noteDBName
+
+    // DBのオープン
+    notedb := setupDB( noteDBAddress )
     defer notedb.Close()
     notedb.LogMode(true)
+
+
+
 
 
     // __________________________________
@@ -271,9 +272,6 @@ func updatePage( rcvMap map[string]string ) error {
     notedb.Model(&NoteList).Where("id = ?", pageID).Update(&Note{PageTitle: pageTitle, PageBody: pageBody})
 
 
-    if err != nil {
-        panic("failed to connect database")
-    }
 
     updateNoteFromPage(noteAddress)
 
@@ -287,14 +285,12 @@ func deleteNote( rcvMap map[string]string ) error {
     // ポスト内容取得
     postNoteID  := rcvMap["postNoteID"]
 
-    //------------------------------
-    confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
-    defer confdb.Close()
+
+    // 設定DBのオープン
+    confdb := setupDB( dataDirName + directorySeparator + confDBName )
+	defer confdb.Close()
     confdb.LogMode(true)
 
-    if err != nil {
-        panic("failed to connect database")
-    }
 
     var conf Conf
     var noteID int
@@ -314,21 +310,17 @@ func deletePage( rcvMap map[string]string) error {
     noteAddress := rcvMap["noteAddress"]
     pageID      := rcvMap["pageID"]     
 
-    notedb, err := gorm.Open("sqlite3", noteAddress + directorySeparator + noteDBName )
-    if err != nil {
-        panic("failed to connect database")
-    }
-
+    noteDBAddress := noteAddress + directorySeparator + noteDBName
+    // DBのオープン
+    notedb := setupDB( noteDBAddress )
     defer notedb.Close()
     notedb.LogMode(true)
+
 
     // __________________________________
     // DB内容取得
     notedb.Where("id = ?", pageID).Delete(&Note{})
     
-    if err != nil {
-        panic("failed to connect database")
-    }
 
     return nil
 } //--------------------------------------------
@@ -336,13 +328,12 @@ func deletePage( rcvMap map[string]string) error {
 // updateNoteFromPage のコメントアウト
 func updateNoteFromPage(noteAddress string)  {
 
-    confdb, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName )
-    defer confdb.Close()
+
+    // 設定DBのオープン
+    confdb := setupDB( dataDirName + directorySeparator + confDBName )
+	defer confdb.Close()
     confdb.LogMode(true)
 
-    if err != nil {
-        panic("failed to connect database")
-    }
 
     var conf Conf
 
@@ -368,11 +359,13 @@ func makeConfDB() {
     }
     defer file.Close()
 
-    db, err := gorm.Open( useDBMSName , dataDirName + directorySeparator + confDBName  )
-    if err != nil {
-        panic("failed to connect database")
-    }
+    // 設定DBのオープン
+    confdb := setupDB( dataDirName + directorySeparator + confDBName )
+	defer confdb.Close()
+    confdb.LogMode(true)
+
     // Migrate the schema
-    db.AutoMigrate(&Conf{})
+    confdb.AutoMigrate(&Conf{})
+
 
 }
