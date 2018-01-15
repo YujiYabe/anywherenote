@@ -24,8 +24,8 @@ type Note struct {
     PageBody    string `json:"page_body"`
 } //--------------------------------------------
 
-func setupDB( dbFullAddress string ) *gorm.DB {
-	db, err := gorm.Open( useDBMSName , dbFullAddress )
+func setupDB( dbAddress string ) *gorm.DB {
+	db, err := gorm.Open( useDBMSName , dbAddress )
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -36,7 +36,8 @@ func setupDB( dbFullAddress string ) *gorm.DB {
 func getData( selectPosition SelectPosition ) string {
 
     // 設定DBのオープン
-    confdb := setupDB( dataDirName + directorySeparator + confDBName )
+
+    confdb := setupDB( confDBAddress )
 	defer confdb.Close()
     confdb.LogMode(true)
 
@@ -166,7 +167,7 @@ func addNote( rcvMap map[string]string ) error {
     //------------------------------
 
     // 設定DBのオープン
-    confdb := setupDB( dataDirName + directorySeparator + confDBName )
+    confdb := setupDB( confDBAddress )
 	defer confdb.Close()
     confdb.LogMode(true)
 
@@ -219,7 +220,7 @@ func updateNote( rcvMap map[string]string  ) error {
     postNoteID  :=rcvMap[ "postNoteID"]
 
     // 設定DBのオープン
-    confdb := setupDB( dataDirName + directorySeparator + confDBName )
+    confdb := setupDB( confDBAddress )
 	defer confdb.Close()
     confdb.LogMode(true)
 
@@ -287,7 +288,7 @@ func deleteNote( rcvMap map[string]string ) error {
 
 
     // 設定DBのオープン
-    confdb := setupDB( dataDirName + directorySeparator + confDBName )
+    confdb := setupDB( confDBAddress )
 	defer confdb.Close()
     confdb.LogMode(true)
 
@@ -330,7 +331,7 @@ func updateNoteFromPage(noteAddress string)  {
 
 
     // 設定DBのオープン
-    confdb := setupDB( dataDirName + directorySeparator + confDBName )
+    confdb := setupDB( confDBAddress )
 	defer confdb.Close()
     confdb.LogMode(true)
 
@@ -352,7 +353,7 @@ func updateNoteFromPage(noteAddress string)  {
 // makeConfDB は設定データベースの初期化
 func makeConfDB() {
 
-    file, err := os.OpenFile( dataDirName + directorySeparator + confDBName , os.O_WRONLY|os.O_CREATE, 0666 )
+    file, err := os.OpenFile( confDBAddress , os.O_WRONLY|os.O_CREATE, 0666 )
     if err != nil {
         //エラー処理
         log.Fatal(err)
@@ -360,7 +361,7 @@ func makeConfDB() {
     defer file.Close()
 
     // 設定DBのオープン
-    confdb := setupDB( dataDirName + directorySeparator + confDBName )
+    confdb := setupDB( confDBAddress )
 	defer confdb.Close()
     confdb.LogMode(true)
 

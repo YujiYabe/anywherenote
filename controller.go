@@ -16,8 +16,9 @@ import (
 )
 // グローバル変数
 var (
-    recieveString string    // ブラウザからのハートビート受け取り
+    recieveString string      // ブラウザからのハートビート受け取り
     directorySeparator  = "/" // linux separator
+    confDBAddress string      // 設定DBパス
 )
 
 // 定数
@@ -78,7 +79,9 @@ func init() {
     if runtime.GOOS == "windows" {
         directorySeparator = "\\"
     }
-    
+
+    confDBAddress = dataDirName + directorySeparator + confDBName
+
     loadTemplates()
     checkConfig()
 
