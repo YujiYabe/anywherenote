@@ -216,7 +216,7 @@ func addPage(rcvMap map[string]string ) error {
 // updateNote →ノート情報を更新
 func updateNote( rcvMap map[string]string  ) error {
 
-    newNoteName :=rcvMap[ "newNoteName"]
+    noteName    :=rcvMap[ "noteName"]
     postNoteID  :=rcvMap[ "postNoteID"]
 
     // 設定DBのオープン
@@ -232,7 +232,7 @@ func updateNote( rcvMap map[string]string  ) error {
 
     confdb.Where("id = ?", noteID ).First(&conf)
 
-    conf.Name = newNoteName
+    conf.Name = noteName
     confdb.Save(&conf)
 
     return nil

@@ -210,11 +210,12 @@ func HandleAddPagePost(c echo.Context) error {
 //HandleUpdateNotePost は /hello のPost時のHTMLデータ生成処理を行います。
 func HandleUpdateNotePost(c echo.Context) error {
     printEventLog("start" , "ノート更新 開始")
+    // printEventLog("debug" , c.FormValue("note_name"))
 
     argMap := make(map[string]string)
-    argMap["newNoteName"] = c.FormValue("new_note_name")
-    argMap["postNoteID"]  = c.FormValue("note_id")
-    updateNote(argMap)
+    argMap["noteName"]   = c.FormValue("note_name")
+    argMap["postNoteID"] = c.FormValue("note_id")
+    updateNote( argMap )
 
     printEventLog("end" , "ノート更新 終了")
     return nil
