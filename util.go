@@ -6,11 +6,23 @@ import (
 
 )
 
+
+func osCheckFile( targetFile string ) error {
+
+    _, err := os.Stat( targetFile )
+
+    return err
+
+} //--------------------------------------------
+
+
+
 func checkConfig() {
     //=============================================
     // 初期設定
     // 設定DB読み込み
-    _, err := os.Stat( dataDirName + directorySeparator + confDBName )
+    err := osCheckFile( confDBAddress )
+
     if err != nil {
         makeConfDB()
     }
@@ -54,7 +66,6 @@ func endProcess() {
     os.Exit(0)
 } //--------------------------------------------
 
-
 //--------------------------------------------
 func calcTime() {
 
@@ -80,6 +91,18 @@ func calcTime() {
             }
         }
     }
-    } //--------------------------------------------
+} //--------------------------------------------
 
+
+//--------------------------------------------
+func osCreateFile( targetFileName string ) {
+    file, err := os.OpenFile( targetFileName , os.O_WRONLY|os.O_CREATE , 0666 )
+
+    if err != nil {
+        //エラー処理
+        log.Fatal(err)
+    }
+    defer file.Close()
+
+} //--------------------------------------------
 

@@ -5,7 +5,7 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/mattn/go-sqlite3"
     "os"
-    "log"
+    // "log"
     "strconv"
 
 )
@@ -23,6 +23,11 @@ type Note struct {
     PageTitle   string `json:"page_title"`
     PageBody    string `json:"page_body"`
 } //--------------------------------------------
+
+
+
+
+
 
 func setupDB( dbAddress string ) *gorm.DB {
 	db, err := gorm.Open( useDBMSName , dbAddress )
@@ -149,11 +154,7 @@ func addNote( rcvMap map[string]string ) error {
     if errFullAddress != nil {
 
         // DBのオープン
-        notedb := setupDB( notefullAddress )
-        defer notedb.Close()
-
-        // Migrate the schema
-        notedb.AutoMigrate(&Note{})
+        dbApplyType( notefullAddress , &Note{} )
 
 
         // 新規DBの場合、最初のページ作成
@@ -348,25 +349,38 @@ func updateNoteFromPage(noteAddress string)  {
 } //--------------------------------------------
 
 
-// ===============================================
 
+//--------------------------------------------
 // makeConfDB は設定データベースの初期化
 func makeConfDB() {
 
-    file, err := os.OpenFile( confDBAddress , os.O_WRONLY|os.O_CREATE, 0666 )
-    if err != nil {
-        //エラー処理
-        log.Fatal(err)
-    }
-    defer file.Close()
+    osCreateFile( confDBAddress )
 
-    // 設定DBのオープン
-    confdb := setupDB( confDBAddress )
-	defer confdb.Close()
-    confdb.LogMode(true)
+    dbApplyType( confDBAddress , &Conf{} )
+
+
+    // // 設定DBのオープン
+    // confdb := setupDB( confDBAddress )
+	// defer confdb.Close()
+    // confdb.LogMode(true)
+
+    // // Migrate the schema
+    // confdb.AutoMigrate(&Conf{})
+
+
+} //--------------------------------------------
+
+
+
+//--------------------------------------------
+func dbApplyType( targetDBAddress string, targetStruct interface{} ) {
+    db := setupDB( targetDBAddress )
+	defer db.Close()
+    db.LogMode(true)
 
     // Migrate the schema
-    confdb.AutoMigrate(&Conf{})
+    // db.AutoMigrate(&Conf{})
+    db.AutoMigrate( targetStruct )
 
-
-}
+    
+} //--------------------------------------------

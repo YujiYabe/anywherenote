@@ -80,7 +80,7 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
     return templates[name].ExecuteTemplate(w, "layout.html", data)
 } //--------------------------------------------
 
-// 初期化
+// 初期処理
 func init() {
 
     // ディレクトリセパレータ

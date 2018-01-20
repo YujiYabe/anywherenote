@@ -3,5 +3,5 @@
     "WaitSecondLiveCheck": 8,
     "WaitSecondInterval": 1,
     "UsePortNumber": "4000",
-    "dummyforcomma": ""
+    "dummyForComma": ""
 }
