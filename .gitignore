@@ -3,4 +3,5 @@
 *.exe
 *.run
 *.app
-
+*.xlsx
+*.xls

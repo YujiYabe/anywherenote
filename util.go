@@ -3,6 +3,7 @@ import (
     "os"
     "log"
     "time"
+    "strconv"
 
 )
 
@@ -24,7 +25,8 @@ func checkConfig() {
     err := osCheckFile( confDBAddress )
 
     if err != nil {
-        makeConfDB()
+        // 設定データベースの初期化
+        dbApplyType( confDBAddress , &Conf{} )
     }
 
 } //--------------------------------------------
@@ -68,10 +70,6 @@ func endProcess() {
 
 //--------------------------------------------
 func calcTime() {
-
-
-
-
     //ブラウザが起動して、pingを発行するまでn秒まつ
     time.Sleep( userConfig.WaitSecondLiveCheck * time.Second )
 
@@ -93,16 +91,23 @@ func calcTime() {
     }
 } //--------------------------------------------
 
+// --------------------------------------------
+func convertStringToUint( s string ) uint {
+    i, _ := strconv.Atoi( s )
+    ui := uint( i )
+    return ui
+} //--------------------------------------------
+
 
 //--------------------------------------------
-func osCreateFile( targetFileName string ) {
-    file, err := os.OpenFile( targetFileName , os.O_WRONLY|os.O_CREATE , 0666 )
+// func osCreateFile( targetFileName string ) {
+//     file, err := os.OpenFile( targetFileName , os.O_WRONLY|os.O_CREATE , 0666 )
 
-    if err != nil {
-        //エラー処理
-        log.Fatal(err)
-    }
-    defer file.Close()
+//     if err != nil {
+//         //エラー処理
+//         log.Fatal(err)
+//     }
+//     defer file.Close()
 
-} //--------------------------------------------
+// } //--------------------------------------------
 

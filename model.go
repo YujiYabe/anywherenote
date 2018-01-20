@@ -4,9 +4,10 @@ import (
     "encoding/json"
     "github.com/jinzhu/gorm"
     _ "github.com/mattn/go-sqlite3"
-    "os"
-    // "log"
     "strconv"
+
+    // "os"
+    // "log"
 
 )
 // Conf 初期読み込み用設定
@@ -97,13 +98,11 @@ func getData( selectPosition SelectPosition ) string {
 
         notedb.Order("updated_at desc").Find(&NoteList)
 
-
         DataSetList.NoteDBID         = value.ID
         DataSetList.NoteDBName       = value.Name
         DataSetList.NoteDBAddress    = value.Address
         DataSetList.NoteDBUpdateTime = value.UpdatedAt 
         DataSetList.List             = NoteList 
-
 
         data2.DataSet = append(data2.DataSet, DataSetList)
 
@@ -134,62 +133,14 @@ func getData( selectPosition SelectPosition ) string {
 
 } //--------------------------------------------
 
-// addNote →ノート情報を追加
-func addNote( rcvMap map[string]string ) error {
-
-    //指定したディレクトリにDBファイルを作成
-    newNoteName    := rcvMap["newNoteName"]
-    newNoteAddress := rcvMap["newNoteAddress"]
-    
-    //フォルダが存在確認
-    _, errAddress := os.Stat(newNoteAddress)
-    if errAddress != nil {
-        return errAddress
-    }
-
-    notefullAddress := newNoteAddress + directorySeparator + noteDBName
-    _, errFullAddress := os.Stat(notefullAddress)
-
-    //新規ノートDB作成
-    if errFullAddress != nil {
-
-        // DBのオープン
-        dbApplyType( notefullAddress , &Note{} )
 
 
-        // 新規DBの場合、最初のページ作成
-        // argMap := make(map[string]string)
-        // argMap["noteAddress"] = newNoteAddress
-    
-        // addPage( argMap )
-    
-    }
-
-    //------------------------------
-
-    // 設定DBのオープン
-    confdb := setupDB( confDBAddress )
-	defer confdb.Close()
-    confdb.LogMode(true)
-
-
-
-    var conf Conf
-
-    conf.Name    = newNoteName
-    conf.Address = newNoteAddress
-
-    // INSERTを実行
-    confdb.Create(&conf)
-
-    return nil
-} //--------------------------------------------
 
 // addPage →ページ情報を追加
-func addPage(rcvMap map[string]string ) error {
+func addPage(rcvArg map[string]string ) error {
 
     //指定したディレクトリにDBファイルを作成
-    noteAddress    := rcvMap["noteAddress"]
+    noteAddress    := rcvArg["noteAddress"]
 
     noteDBAddress := noteAddress + directorySeparator +  noteDBName
 
@@ -215,23 +166,18 @@ func addPage(rcvMap map[string]string ) error {
 } //--------------------------------------------
 
 // updateNote →ノート情報を更新
-func updateNote( rcvMap map[string]string  ) error {
+func updateNote( rcvArg map[string]string  ) error {
 
-    noteName    :=rcvMap[ "noteName"]
-    postNoteID  :=rcvMap[ "postNoteID"]
+    noteName    :=rcvArg[ "noteName" ]
+    noteID, _   :=strconv.Atoi( rcvArg[ "postNoteID" ] )   
 
     // 設定DBのオープン
     confdb := setupDB( confDBAddress )
 	defer confdb.Close()
     confdb.LogMode(true)
 
-
     var conf Conf
-
-    var noteID int
-    noteID, _ = strconv.Atoi(postNoteID)
-
-    confdb.Where("id = ?", noteID ).First(&conf)
+    confdb.Where("id = ?", noteID ).First( &conf )
 
     conf.Name = noteName
     confdb.Save(&conf)
@@ -240,12 +186,12 @@ func updateNote( rcvMap map[string]string  ) error {
 } //--------------------------------------------
 
 // updatePage →ページ情報を更新
-func updatePage( rcvMap map[string]string ) error {
+func updatePage( rcvArg map[string]string ) error {
 
-    noteAddress := rcvMap["noteAddress"]
-    pageID      := rcvMap["pageID"]     
-    pageTitle   := rcvMap["pageTitle"]  
-    pageBody    := rcvMap["pageBody"]   
+    noteAddress := rcvArg["noteAddress"]
+    pageID      := rcvArg["pageID"]     
+    pageTitle   := rcvArg["pageTitle"]  
+    pageBody    := rcvArg["pageBody"]   
 
     if pageTitle == "" {
         pageTitle =  " "
@@ -255,62 +201,48 @@ func updatePage( rcvMap map[string]string ) error {
         pageBody =  " "
     }
     
-
     noteDBAddress := noteAddress + directorySeparator + noteDBName
 
     // DBのオープン
     notedb := setupDB( noteDBAddress )
     defer notedb.Close()
     notedb.LogMode(true)
-
-
-
-
 
     // __________________________________
     // DB内容取得
     NoteList := []Note{}
 
-    notedb.Model(&NoteList).Where("id = ?", pageID).Update(&Note{PageTitle: pageTitle, PageBody: pageBody})
-
-
-
-    updateNoteFromPage(noteAddress)
+    notedb.Model( &NoteList ).Where( "id = ?", pageID ).Update( &Note{ PageTitle: pageTitle, PageBody: pageBody })
 
     return nil
 } //--------------------------------------------
 
 // deleteNote →ノート情報を追加
-func deleteNote( rcvMap map[string]string ) error {
+func deleteNote( rcvArg map[string]string ) error {
 
     // __________________________________
     // ポスト内容取得
-    postNoteID  := rcvMap["postNoteID"]
-
+    noteID, _   := strconv.Atoi( rcvArg["postNoteID"] ) 
 
     // 設定DBのオープン
     confdb := setupDB( confDBAddress )
 	defer confdb.Close()
     confdb.LogMode(true)
 
-
     var conf Conf
-    var noteID int
-    noteID, _ = strconv.Atoi(postNoteID)
 
-    confdb.Where("id = ?", noteID ).Delete(&conf)
+    confdb.Where( "id = ?" , noteID ).Delete( &conf )
 
     return nil
 } //--------------------------------------------
 
 // deletePage →ページ情報を追加
-func deletePage( rcvMap map[string]string ) error {
-//    rcvMap map[string]string 
+func deletePage( rcvArg map[string]string ) error {
 
     // __________________________________
     // ポスト内容取得
-    noteAddress := rcvMap["noteAddress"]
-    pageID      := rcvMap["pageID"]     
+    noteAddress := rcvArg["noteAddress"]
+    pageID      := rcvArg["pageID"]     
 
     noteDBAddress := noteAddress + directorySeparator + noteDBName
     // DBのオープン
@@ -318,24 +250,20 @@ func deletePage( rcvMap map[string]string ) error {
     defer notedb.Close()
     notedb.LogMode(true)
 
-
     // __________________________________
     // DB内容取得
     notedb.Where("id = ?", pageID).Delete(&Note{})
-    
 
     return nil
 } //--------------------------------------------
 
 // updateNoteFromPage のコメントアウト
-func updateNoteFromPage(noteAddress string)  {
-
+func updateNoteFromPage( noteAddress string )  {
 
     // 設定DBのオープン
     confdb := setupDB( confDBAddress )
 	defer confdb.Close()
     confdb.LogMode(true)
-
 
     var conf Conf
 
@@ -344,32 +272,7 @@ func updateNoteFromPage(noteAddress string)  {
     conf.Address = noteAddress
     confdb.Save(&conf)
 
-
-
 } //--------------------------------------------
-
-
-
-//--------------------------------------------
-// makeConfDB は設定データベースの初期化
-func makeConfDB() {
-
-    osCreateFile( confDBAddress )
-
-    dbApplyType( confDBAddress , &Conf{} )
-
-
-    // // 設定DBのオープン
-    // confdb := setupDB( confDBAddress )
-	// defer confdb.Close()
-    // confdb.LogMode(true)
-
-    // // Migrate the schema
-    // confdb.AutoMigrate(&Conf{})
-
-
-} //--------------------------------------------
-
 
 
 //--------------------------------------------
@@ -379,8 +282,6 @@ func dbApplyType( targetDBAddress string, targetStruct interface{} ) {
     db.LogMode(true)
 
     // Migrate the schema
-    // db.AutoMigrate(&Conf{})
     db.AutoMigrate( targetStruct )
-
     
 } //--------------------------------------------

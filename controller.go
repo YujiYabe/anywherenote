@@ -8,7 +8,7 @@ import (
     "time"
     "github.com/labstack/echo"
     "github.com/labstack/echo/middleware"
-    "strconv"
+    // "strconv"
     "encoding/json"
     "io/ioutil"
     "github.com/skratchdot/open-golang/open"
@@ -61,10 +61,10 @@ type ReturnValue struct {
 
 // UserConfig
 type UserConfig struct {
-    IsEnableAppMode     bool                `json:"IsEnableAppMode"`
-    WaitSecondLiveCheck time.Duration        `json:"WaitSecondLiveCheck"`
-    WaitSecondInterval  time.Duration        `json:"WaitSecondInterval"`
-    UsePortNumber       string              `json:"UsePortNumber"`
+    IsEnableAppMode     bool           `json:"IsEnableAppMode"`
+    WaitSecondLiveCheck time.Duration  `json:"WaitSecondLiveCheck"`
+    WaitSecondInterval  time.Duration  `json:"WaitSecondInterval"`
+    UsePortNumber       string         `json:"UsePortNumber"`
 }
 
 
@@ -120,16 +120,14 @@ func main() {
     e.File("/favicon.ico", "data/public/favicon.ico")
 
     // 各ルーティングに対するハンドラを設定
-    e.GET( "/", HandleLoadPageGet )
-    e.GET( "/livecheck", HandleLiveCheckGet )
-    e.POST( "/addnote", HandleAddNotePost )
-    e.POST( "/addpage", HandleAddPagePost )
- 
-    e.POST( "/updatenote", HandleUpdateNotePost )
-    e.POST( "/updatepage", HandleUpdatePagePost )
- 
-    e.POST( "/deletenote", HandleDeleteNotePost )
-    e.POST( "/deletepage", HandleDeletePagePost )
+    e.GET( "/",            LoadPageGet )
+    e.GET( "/livecheck",   LiveCheckGet )
+    e.POST( "/addnote",    AddNotePost )
+    e.POST( "/addpage",    AddPagePost )
+    e.POST( "/updatenote", UpdateNotePost )
+    e.POST( "/updatepage", UpdatePagePost )
+    e.POST( "/deletenote", DeleteNotePost )
+    e.POST( "/deletepage", DeletePagePost )
 
 
 
@@ -143,16 +141,14 @@ func main() {
 } //--------------------------------------------
 
 
-// HandleLoadPageGet のコメントアウト
-func HandleLoadPageGet(c echo.Context) error {
+// LoadPageGet のコメントアウト
+func LoadPageGet(c echo.Context) error {
     printEventLog("start" , "データ取得 開始")
 
     var selectPosition = SelectPosition{}
 
     selectPosition.NoteID = 0
     selectPosition.PageID = 0
-    
-
 
     returnjson := getData( selectPosition )
 
@@ -161,43 +157,69 @@ func HandleLoadPageGet(c echo.Context) error {
 
 } //--------------------------------------------
 
-//HandleAddNotePost は /hello のPost時のHTMLデータ生成処理を行います。
-func HandleAddNotePost(c echo.Context) error {
-    printEventLog("start" , "ノート追加 開始")
+//AddNotePost のコメントアウト
+// フォルダの存在確認
+// DBファイルの存在確認
+// ┣ファイルが存在しなければ新たに作成
+// 設定DBにノートDBの情報を追加
+func AddNotePost(c echo.Context) error {
+    printEventLog( "start" , "ノート追加 開始" )
+    
+    // フォルダ存在確認
+    err := osCheckFile( c.FormValue("new_note_address") )
+    if err != nil {
+        return err
+    }
 
-    argMap := make(map[string]string)
-    argMap["newNoteName"]    = c.FormValue("new_note_name")
-    argMap["newNoteAddress"] = c.FormValue("new_note_address")
+    // DBファイルの存在確認
+    notefullAddress := c.FormValue("new_note_address") + directorySeparator + noteDBName
 
-    printEventLog("parames" , c.FormValue("new_note_address") )
+    err = osCheckFile( notefullAddress ) 
 
-    // ★ todo 対象ディレクトリが存在しない場合エラーを返却
-    returnvalue := addNote(argMap)
-    printEventLog( "returnFuncStatus" , returnvalue )
+    // ファイルが存在しなければ新たに作成
+    if err != nil {
+        dbApplyType( notefullAddress , &Note{} )
+    }
 
+    // 設定DBに追加
+    confdb := setupDB( confDBAddress )
+	defer confdb.Close()
+    confdb.LogMode(true)
 
-    // タスク パスが存在するかの確認
-    printEventLog( "end" , "ノート追加 終了")
+    var conf Conf
+
+    conf.Name    = c.FormValue("new_note_name")
+    conf.Address = notefullAddress
+
+    // INSERTを実行
+    confdb.Create(&conf)
+
+    printEventLog( "end" , "ノート追加 終了" )
     return nil
+
 } //--------------------------------------------
 
-//HandleAddPagePost は /hello のPost時のHTMLデータ生成処理を行います。
-func HandleAddPagePost(c echo.Context) error {
+
+
+// AddPagePost のコメントアウト
+// 対象のノートにページを追加
+// 返却jsonに対象のノートIDを追加
+// 最新のデータセットを取得
+// jsonを返却
+func AddPagePost(c echo.Context) error {
     printEventLog("start" , "ページ追加 開始")
 
     //対象のノートにページを追加
-    argMap := make(map[string]string)
-    argMap["noteAddress"] = c.FormValue("note_address")
+    sndArg := make(map[string]string)
+    sndArg["noteAddress"] = c.FormValue("note_address")
 
-    addPage(argMap)
+    addPage(sndArg)
 
-    tempnid, _ := strconv.Atoi(c.FormValue("note_id"))
-    nid := uint(tempnid)
-
+    // 返却jsonに対象のノートIDを追加
     var selectPosition = SelectPosition{}
-    selectPosition.NoteID = nid
+    selectPosition.NoteID = convertStringToUint( c.FormValue("note_id") )
 
-
+    // 最新のデータセットを取得
     returnValue := getData( selectPosition )
 
     printEventLog("end" , "ページ追加 終了")
@@ -207,63 +229,79 @@ func HandleAddPagePost(c echo.Context) error {
 } //--------------------------------------------
 
 
-//HandleUpdateNotePost は /hello のPost時のHTMLデータ生成処理を行います。
-func HandleUpdateNotePost(c echo.Context) error {
+// UpdateNotePost のコメントアウト
+// ノート情報の更新（設定DB内の対象ノート名の変更）
+func UpdateNotePost(c echo.Context) error {
     printEventLog("start" , "ノート更新 開始")
-    // printEventLog("debug" , c.FormValue("note_name"))
 
-    argMap := make(map[string]string)
-    argMap["noteName"]   = c.FormValue("note_name")
-    argMap["postNoteID"] = c.FormValue("note_id")
-    updateNote( argMap )
+    sndArg := make(map[string]string)
+    sndArg["postNoteID"] = c.FormValue("note_id")
+    sndArg["noteName"]   = c.FormValue("note_name")
+    updateNote( sndArg )
 
     printEventLog("end" , "ノート更新 終了")
     return nil
 } //--------------------------------------------
 
-//HandleUpdatePagePost は /hello のPost時のHTMLデータ生成処理を行います。
-func HandleUpdatePagePost(c echo.Context) error {
+// UpdatePagePost  のコメントアウト
+// ページの更新
+// 設定DBにある更新したノートの更新日時を変更
+// 返却jsonに対象のノートIDを追加
+func UpdatePagePost(c echo.Context) error {
     printEventLog("start" , "ページ更新 開始")
 
-    argMap := make(map[string]string)
-    argMap["noteAddress"] = c.FormValue("note_address")
-    argMap["pageID"]      = c.FormValue("page_id")
-    argMap["pageTitle"]   = c.FormValue("page_title")
-    argMap["pageBody"]    = c.FormValue("page_body")
+    // ページの更新
+    sndArg := make(map[string]string)
+    sndArg["noteAddress"] = c.FormValue("note_address")
+    sndArg["pageID"]      = c.FormValue("page_id")
+    sndArg["pageTitle"]   = c.FormValue("page_title")
+    sndArg["pageBody"]    = c.FormValue("page_body")
 
-    updatePage(argMap)
+    updatePage( sndArg )
 
+    // 設定DBにある更新したノートの更新日時を変更
+    updateNoteFromPage( c.FormValue("note_address") )
 
-    tempnid, _ := strconv.Atoi(c.FormValue("note_id"))
-    nid := uint(tempnid)
-
+    // 返却jsonに対象のノートIDを追加
     var selectPosition = SelectPosition{}
-    selectPosition.NoteID = nid
+    selectPosition.NoteID = convertStringToUint( c.FormValue("note_id") )
 
     returnValue := getData( selectPosition )
 
-    printEventLog("end" , "ページ更新 終了")
+    printEventLog( "end" , "ページ更新 終了" )
 
-    return c.JSON(http.StatusCreated, returnValue )
+    return c.JSON( http.StatusCreated , returnValue )
 
-    // return nil
 } //--------------------------------------------
 
-// HandleDeletePagePost のコメントアウト
-func HandleDeletePagePost(c echo.Context) error {
+// DeleteNotePost  のコメントアウト
+// ノート情報の削除
+func DeleteNotePost(c echo.Context) error {
+    printEventLog("start" , "ノート削除 開始")
+
+    sndArg := make(map[string]string)
+    sndArg["postNoteID"] = c.FormValue("note_id")
+    deleteNote( sndArg )
+
+    printEventLog("end" , "ノート削除 終了")
+    return nil
+} //--------------------------------------------
+
+// DeletePagePost のコメントアウト
+// ページ情報の削除
+func DeletePagePost(c echo.Context) error {
     printEventLog("start" , "ページ削除 開始")
 
-    argMap := make(map[string]string)
-    argMap["noteAddress"] = c.FormValue("note_address")
-    argMap["pageID"]      = c.FormValue("page_id")
+    sndArg := make(map[string]string)
+    sndArg["noteAddress"] = c.FormValue("note_address")
+    sndArg["pageID"]      = c.FormValue("page_id")
 
-    deletePage(argMap)
+    deletePage( sndArg )
 
-    tempnid, _ := strconv.Atoi(c.FormValue("note_id"))
-    nid := uint(tempnid)
 
+    // 返却jsonに対象のノートIDを追加
     var selectPosition = SelectPosition{}
-    selectPosition.NoteID = nid
+    selectPosition.NoteID = convertStringToUint( c.FormValue("note_id") )
 
     returnValue := getData( selectPosition )
 
@@ -273,22 +311,11 @@ func HandleDeletePagePost(c echo.Context) error {
     
 } //--------------------------------------------
 
-//HandleDeleteNotePost は /hello のPost時のHTMLデータ生成処理を行います。
-func HandleDeleteNotePost(c echo.Context) error {
-    printEventLog("start" , "ノート削除 開始")
-
-    argMap := make(map[string]string)
-    argMap["postNoteID"] = c.FormValue("note_id")
-    deleteNote(argMap)
-
-    printEventLog("end" , "ノート削除 終了")
-    return nil
-} //--------------------------------------------
 
 
 
-// HandleLiveCheckGet のコメントアウト
-func HandleLiveCheckGet(c echo.Context) error {
+// LiveCheckGet のコメントアウト
+func LiveCheckGet(c echo.Context) error {
     // //現在時刻取得
     t := time.Now()
 
