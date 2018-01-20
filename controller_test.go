@@ -21,7 +21,7 @@ func TestLiveCheck(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	// Assertions
-	if assert.NoError(t, HandleLiveCheckGet(c)) {
+	if assert.NoError(t, LiveCheckGet(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		// assert.Equal(t, userJSON, rec.Body.String())
 	}
@@ -45,7 +45,7 @@ func TestAddNote(t *testing.T) {
 	f.Set("new_note_name", userForm["new_note_name"])
 	f.Set("new_note_address", userForm["new_note_address"])
 
-	req := httptest.NewRequest(echo.POST, "/HandleAddNotePost", strings.NewReader(f.Encode()))
+	req := httptest.NewRequest(echo.POST, "/AddNotePost", strings.NewReader(f.Encode()))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
 
 
@@ -53,7 +53,7 @@ func TestAddNote(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	// Assertions
-	if assert.NoError(t, HandleAddNotePost(c)) {
+	if assert.NoError(t, AddNotePost(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		// assert.Equal(t, userJSON, rec.Body.String())
 	}
@@ -76,7 +76,7 @@ func TestAddPage(t *testing.T) {
 	f.Set("note_id", userForm["note_id"])
 	f.Set("note_address", userForm["note_address"])
 
-	req := httptest.NewRequest(echo.POST, "/HandleAddPagePost", strings.NewReader(f.Encode()))
+	req := httptest.NewRequest(echo.POST, "/AddPagePost", strings.NewReader(f.Encode()))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
 
 
@@ -84,7 +84,7 @@ func TestAddPage(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	// Assertions
-	if assert.NoError(t, HandleAddPagePost(c)) {
+	if assert.NoError(t, AddPagePost(c)) {
 		assert.Equal(t,  http.StatusCreated, rec.Code)
 		// assert.Equal(t, userJSON, rec.Body.String())
 	}
@@ -109,7 +109,7 @@ func TestUpdateNote(t *testing.T) {
 	f.Set("note_name", userForm["note_name"])
 	f.Set("note_id", userForm["note_id"])
 
-	req := httptest.NewRequest(echo.POST, "/HandleUpdateNotePost", strings.NewReader(f.Encode()))
+	req := httptest.NewRequest(echo.POST, "/UpdateNotePost", strings.NewReader(f.Encode()))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
 
 
@@ -117,7 +117,7 @@ func TestUpdateNote(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	// Assertions
-	if assert.NoError(t, HandleUpdateNotePost(c)) {
+	if assert.NoError(t, UpdateNotePost(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		// assert.Equal(t, userJSON, rec.Body.String())
 	}
@@ -140,12 +140,12 @@ func TestUpdatePage(t *testing.T) {
     userForm["page_body"]       = "testBozzzdy"
 
 	f := make(url.Values)
-	f.Set("note_address", userForm["note_address"])
-	f.Set("page_id"		, userForm["page_id"])
-	f.Set("page_title"	, userForm["page_title"])
-	f.Set("page_body"	, userForm["page_body"])
+	f.Set("note_address" , userForm["note_address"])
+	f.Set("page_id"		 , userForm["page_id"])
+	f.Set("page_title"	 , userForm["page_title"])
+	f.Set("page_body"	 , userForm["page_body"])
 
-	req := httptest.NewRequest(echo.POST, "/HandleUpdatePagePost", strings.NewReader(f.Encode()))
+	req := httptest.NewRequest(echo.POST, "/UpdatePagePost", strings.NewReader(f.Encode()))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
 
 
@@ -153,7 +153,7 @@ func TestUpdatePage(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	// Assertions
-	if assert.NoError(t, HandleUpdatePagePost(c)) {
+	if assert.NoError(t, UpdatePagePost(c)) {
 		assert.Equal(t, http.StatusCreated , rec.Code)
 		// assert.Equal(t, userJSON, rec.Body.String())
 	}

@@ -65,7 +65,7 @@ function updateNote(Obj) {
 
     var target_url = 'updatenote';
     var post_data = {
-        'new_note_name': $(Obj).next().children('input').val(),
+        'note_name': $(Obj).next().children('input').val(),
         'note_id': $(Obj).next().children('input').attr('data-note_id'),
     };
 

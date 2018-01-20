@@ -70,7 +70,7 @@ func getData( selectPosition SelectPosition ) string {
     }
 
     
-    confdb.Find(&conf).Order("id desc")
+    confdb.Find( &conf ).Order( "id desc" )
 
     // 選択中のノートIDがなければ最新のノートIDを返却
     if selectPosition.NoteID == 0 {
@@ -96,7 +96,7 @@ func getData( selectPosition SelectPosition ) string {
 
         NoteList := []Note{}
 
-        notedb.Order("updated_at desc").Find(&NoteList)
+        notedb.Order("updated_at desc").Find( &NoteList )
 
         DataSetList.NoteDBID         = value.ID
         DataSetList.NoteDBName       = value.Name
@@ -180,6 +180,7 @@ func updateNote( rcvArg map[string]string  ) error {
     confdb.Where("id = ?", noteID ).First( &conf )
 
     conf.Name = noteName
+    
     confdb.Save(&conf)
 
     return nil

@@ -59,7 +59,7 @@ type ReturnValue struct {
 
 
 
-// UserConfig
+// UserConfig  
 type UserConfig struct {
     IsEnableAppMode     bool           `json:"IsEnableAppMode"`
     WaitSecondLiveCheck time.Duration  `json:"WaitSecondLiveCheck"`
@@ -112,7 +112,11 @@ func main() {
     e.Renderer = t
 
     // ミドルウェアを設定
-    e.Use(middleware.Logger())
+    // e.Use(middleware.Logger())
+    e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+        Format: "method=${method}, uri=${uri}, status=${status}\n",
+      }))
+
     e.Use(middleware.Recover())
 
     // 静的ファイルのパスを設定
@@ -120,14 +124,14 @@ func main() {
     e.File("/favicon.ico", "data/public/favicon.ico")
 
     // 各ルーティングに対するハンドラを設定
-    e.GET( "/",            LoadPageGet )
-    e.GET( "/livecheck",   LiveCheckGet )
-    e.POST( "/addnote",    AddNotePost )
-    e.POST( "/addpage",    AddPagePost )
-    e.POST( "/updatenote", UpdateNotePost )
-    e.POST( "/updatepage", UpdatePagePost )
-    e.POST( "/deletenote", DeleteNotePost )
-    e.POST( "/deletepage", DeletePagePost )
+    e.GET(  "/"           , LoadPageGet    )
+    e.GET(  "/livecheck"  , LiveCheckGet   )
+    e.POST( "/addnote"    , AddNotePost    )
+    e.POST( "/addpage"    , AddPagePost    )
+    e.POST( "/updatenote" , UpdateNotePost )
+    e.POST( "/updatepage" , UpdatePagePost )
+    e.POST( "/deletenote" , DeleteNotePost )
+    e.POST( "/deletepage" , DeletePagePost )
 
 
 
@@ -174,22 +178,22 @@ func AddNotePost(c echo.Context) error {
     // DBファイルの存在確認
     notefullAddress := c.FormValue("new_note_address") + directorySeparator + noteDBName
 
-    err = osCheckFile( notefullAddress ) 
+    err2 := osCheckFile( notefullAddress ) 
 
     // ファイルが存在しなければ新たに作成
-    if err != nil {
+    if err2 != nil {
         dbApplyType( notefullAddress , &Note{} )
     }
 
     // 設定DBに追加
     confdb := setupDB( confDBAddress )
 	defer confdb.Close()
-    confdb.LogMode(true)
+    confdb.LogMode( true )
 
     var conf Conf
 
     conf.Name    = c.FormValue("new_note_name")
-    conf.Address = notefullAddress
+    conf.Address = c.FormValue("new_note_address")
 
     // INSERTを実行
     confdb.Create(&conf)
