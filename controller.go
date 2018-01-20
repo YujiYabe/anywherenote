@@ -9,25 +9,21 @@ import (
     "github.com/labstack/echo"
     "github.com/labstack/echo/middleware"
     "strconv"
-
-
+    "encoding/json"
+    "io/ioutil"
     "github.com/skratchdot/open-golang/open"
-
 )
 // グローバル変数
 var (
     recieveString string      // ブラウザからのハートビート受け取り
     directorySeparator  = "/" // linux separator
     confDBAddress string      // 設定DBパス
+    userConfig = new(UserConfig)
+
+    
 )
 
 // 定数
-const isEnableAppMode = true // デバッグ用 ハートビート切断後、アプリをクローズするかのスイッチ
-const waitSecondLiveCheck = 8 // ハートビート切断許容時間：秒
-const waitSecondInterval = 1  // ハートビートチェック間隔
-
-const usePortNumber = "3000" // 使用するポート番号
-
 const useDBMSName = "sqlite3" // 使用DBMS
 const confDBName  = "conf.db" // ローカル設定ファイル
 const noteDBName  = "note.db" // ノート保存先
@@ -63,6 +59,16 @@ type ReturnValue struct {
 
 
 
+// UserConfig
+type UserConfig struct {
+    IsEnableAppMode     bool                `json:"IsEnableAppMode"`
+    WaitSecondLiveCheck time.Duration        `json:"WaitSecondLiveCheck"`
+    WaitSecondInterval  time.Duration        `json:"WaitSecondInterval"`
+    UsePortNumber       string              `json:"UsePortNumber"`
+}
+
+
+
 // レイアウト適用済のテンプレートを保存するmap
 var templates map[string]*template.Template
 
@@ -77,9 +83,18 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 // 初期化
 func init() {
 
+    // ディレクトリセパレータ
     if runtime.GOOS == "windows" {
         directorySeparator = "\\"
     }
+
+    // 設定ファイルの読み込み
+    file, err := ioutil.ReadFile("config.json")
+    if err != nil {
+        panic(err)
+    }
+
+    json.Unmarshal(file, &userConfig)
 
     confDBAddress = dataDirName + directorySeparator + confDBName
 
@@ -116,15 +131,15 @@ func main() {
     e.POST( "/deletenote", HandleDeleteNotePost )
     e.POST( "/deletepage", HandleDeletePagePost )
 
- 
 
-    open.Run("http://localhost:" + usePortNumber )
+
+    open.Run("http://localhost:" + userConfig.UsePortNumber  )
 
     go calcTime()
 
 
     // サーバーを開始
-    e.Logger.Fatal(e.Start( ":" + usePortNumber ))
+    e.Logger.Fatal(e.Start( ":" + userConfig.UsePortNumber  ))
 } //--------------------------------------------
 
 
@@ -137,21 +152,6 @@ func HandleLoadPageGet(c echo.Context) error {
     selectPosition.NoteID = 0
     selectPosition.PageID = 0
     
-    // if c.FormValue("select_note_id") == "" {
-    //     selectPosition.NoteID = 0
-    // }else{
-    //     tempnid, _ := strconv.Atoi(c.FormValue("select_note_id"))
-    //     nid := uint(tempnid)
-    //     selectPosition.NoteID = nid
-    // }
-    
-    // if c.FormValue("select_page_id") == "" {
-    //     selectPosition.PageID = 0
-    // }else{
-    //     temppid, _ := strconv.Atoi(c.FormValue("select_page_id"))
-    //     pid := uint(temppid)
-    //     selectPosition.PageID = pid
-    // }
 
 
     returnjson := getData( selectPosition )
@@ -293,7 +293,7 @@ func HandleLiveCheckGet(c echo.Context) error {
     t := time.Now()
 
     //現在からn秒後の時刻を取得
-    afterTime := t.Add(time.Duration( waitSecondLiveCheck ) * time.Second).Format(dateTimeFormat)
+    afterTime := t.Add(time.Duration(  userConfig.WaitSecondLiveCheck ) * time.Second).Format(dateTimeFormat)
 
     recieveString = afterTime
 

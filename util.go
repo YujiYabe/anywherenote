@@ -58,20 +58,23 @@ func endProcess() {
 //--------------------------------------------
 func calcTime() {
 
+
+
+
     //ブラウザが起動して、pingを発行するまでn秒まつ
-    time.Sleep( waitSecondLiveCheck * time.Second)
+    time.Sleep( userConfig.WaitSecondLiveCheck * time.Second )
 
     for {
-        time.Sleep( waitSecondInterval * time.Second)
+        time.Sleep( userConfig.WaitSecondInterval * time.Second )
 
         t := time.Now()
-        beforeTime := t.Add(time.Duration(1) * time.Second).Format(dateTimeFormat)
+        beforeTime := t.Add( time.Duration(1) * time.Second).Format(dateTimeFormat)
         now, _ := time.Parse(dateTimeFormat ,beforeTime)
 
         old, _ := time.Parse(dateTimeFormat , recieveString)
 
         if !old.After(now) {    // old <= now --- ! old > now
-            if isEnableAppMode {
+            if userConfig.IsEnableAppMode {
                 log.Println("アプリ終了")
                 endProcess()
             }
