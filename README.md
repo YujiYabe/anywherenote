@@ -20,18 +20,30 @@
 
 ---
 
-[win_64]: https://drive.google.com/open?id=1W9S-JLfF8dgkO3fbLGOGDYkReJTm-lBb "Windows 64"
-[win_32]: https://drive.google.com/open?id=1UqiawXaHZhSfxU5clmMt7JtBUG2pyzYk "Windows 32"
-[lnx_64]: https://drive.google.com/open?id=1gLXapKzuW9U195F_C_DquuKgu1tFDXrc "Linux 64"
-[lnx_32]: https://drive.google.com/open?id=19wQxlKyzaEFViVKLj9ID4J2DfRoMTkdb "Linux 32"
+[win64_v0.1]: https://drive.google.com/open?id=1W9S-JLfF8dgkO3fbLGOGDYkReJTm-lBb "Windows64_v0.1"
+[win32_v0.1]: https://drive.google.com/open?id=1UqiawXaHZhSfxU5clmMt7JtBUG2pyzYk "Windows32_v0.1"
+[lnx64_v0.1]: https://drive.google.com/open?id=1gLXapKzuW9U195F_C_DquuKgu1tFDXrc "Linux64_v0.1"
+[lnx32_v0.1]: https://drive.google.com/open?id=19wQxlKyzaEFViVKLj9ID4J2DfRoMTkdb "Linux32_v0.1"
+
+[win64_v0.2]: https://drive.google.com/open?id=1W9S-JLfF8dgkO3fbLGOGDYkReJTm-lBb "Windows64_v0.2"
+[win32_v0.2]: https://drive.google.com/open?id=1UqiawXaHZhSfxU5clmMt7JtBUG2pyzYk "Windows32_v0.2"
+[lnx64_v0.2]: https://drive.google.com/open?id=1gLXapKzuW9U195F_C_DquuKgu1tFDXrc "Linux64_v0.2"
+[lnx32_v0.2]: https://drive.google.com/open?id=19wQxlKyzaEFViVKLj9ID4J2DfRoMTkdb "Linux32_v0.2"
 
 
 ## ダウンロード
-|       | Windows  | Linux    | Macintosh  |
-|:------|:---------|:---------|:-----------|
-| 64bit | [win_64] | [lnx_64] | 準備中      |
-| 32bit | [win_32] | [lnx_32] | 準備中      |
-
+#### v0.2   
+|       | Windows      | Linux        | Macintosh  |
+|:------|:-------------|:-------------|:-----------|
+| 64bit | [win64_v0.2] | [lnx64_v0.2] | 準備中      |
+| 32bit | [win32_v0.2] | [lnx32_v0.2] | 準備中      |
+  
+##### v0.1   
+|       | Windows      | Linux        | Macintosh  |
+|:------|:-------------|:-------------|:-----------|
+| 64bit | [win64_v0.1] | [lnx64_v0.1] | 準備中      |
+| 32bit | [win32_v0.1] | [lnx32_v0.1] | 準備中      |
+  
  
 
 
