@@ -2,6 +2,8 @@ package main
 
 import (
     "testing"
+    "runtime"
+    "io/ioutil"
 
 	"net/http"
 	"net/http/httptest"
@@ -11,7 +13,8 @@ import (
 	"github.com/stretchr/testify/assert" 
 	"net/url"
 	"log"
-	// "time"
+	"time"
+    "encoding/json"
 
 )
 
@@ -25,34 +28,71 @@ var (
 		"page_body":"first_page_body",
 	 }
 
-	 xNoteForm1 = map[string]string{ "note_id":"1", "note_address":"C:\\nothingpath", "note_name":"create_note" }
+	xNoteForm1 = map[string]string{ "note_id":"1", "note_address":"C:\\nothingpath", "note_name":"create_note" }
+
+	// oExpectedString = "\"{\\\"RtnCode\\\":\\\"0\\\",\\\"DataSet\\\":[{\\\"NoteDBID\\\":1,\\\"NoteDBName\\\":\\\"create_note\\\",\\\"NoteDBAddress\\\":\\\"C:\\\\\\\\gotest\\\",\\\"NoteDBUpdateTime\\\":\\\"2018-01-22T08:13:03.2009784+09:00\\\",\\\"list\\\":[{\\\"ID\\\":1,\\\"CreatedAt\\\":\\\"2018-01-22T08:13:03.1869419+09:00\\\",\\\"UpdatedAt\\\":\\\"2018-01-22T08:13:03.1869419+09:00\\\",\\\"DeletedAt\\\":null,\\\"page_title\\\":\\\"\\\",\\\"page_body\\\":\\\"\\\"}]}],\\\"SlctPst\\\":{\\\"NoteID\\\":1,\\\"PageID\\\":1}}\""
 
 )
 
 
 func init() {
 
-	testFilePath := oNoteForm1["note_address"] + "\\note.db"
+    // ディレクトリセパレータ
+    if runtime.GOOS == "windows" {
+        directorySeparator = "\\"
+    }
+
+    // 設定ファイルの読み込み
+    file, err := ioutil.ReadFile( dataDirName + directorySeparator + "config.json" )
+    if err != nil {
+        panic(err)
+    }
+
+    json.Unmarshal(file, &userConfig)
+
+
+
+	//テスト実行前にファイルを削除
+    testDBAddress := oNoteForm1["note_address"] + "\\note.db"
 
 	// if err1 == nil{
-	if err1 := osCheckFile( testFilePath ); err1 == nil {
-		if err2 := os.Remove( testFilePath ); err2 != nil {
+	if err1 := osCheckFile( testDBAddress ); err1 == nil {
+		if err2 := os.Remove( testDBAddress ); err2 != nil {
 			log.Println( err2 )
 		}
 	}
 
-	confFilePath := "data\\conf.db"
+    confDBAddress := dataDirName + directorySeparator + confDBName
+
 	// if err1 == nil{
-	if err1 := osCheckFile( confFilePath ); err1 == nil {
-		if err2 := os.Remove( confFilePath ); err2 != nil {
+	if err1 := osCheckFile( confDBAddress ); err1 == nil {
+		if err2 := os.Remove( confDBAddress ); err2 != nil {
 			log.Println( err2 )
 		}
 	}
-	// time.Sleep( 10 * time.Second )
+	time.Sleep( 5 * time.Second )
 
+
+
+    loadTemplates()
+    checkConfig()
+	
 } //--------------------------------------------
 
 
+func TestLoadPage(t *testing.T) {
+	// Setup
+	e := echo.New()
+	req := httptest.NewRequest(echo.GET, "/", nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	// Assertions
+	if assert.NoError(t, LiveCheckGet(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		// assert.Equal(t, userJSON, rec.Body.String())
+	}
+}
 
 func TestLiveCheck(t *testing.T) {
 	// Setup
@@ -66,10 +106,6 @@ func TestLiveCheck(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		// assert.Equal(t, userJSON, rec.Body.String())
 	}
-	// if assert.NoError(t, h.getUser(c)) {
-	// 	assert.Equal(t, http.StatusOK, rec.Code)
-	// 	assert.Equal(t, userJSON, rec.Body.String())
-	// }
 }
 
 
@@ -94,9 +130,8 @@ func TestAddNote(t *testing.T) {
 	// Assertions
 	if assert.NoError(t, AddNotePost(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		// assert.Equal(t, userJSON, rec.Body.String())
+		// assert.Equal(t, oNoteForm1, rec.Body.String())
 	}
-
 }
 
 func TestAddPage(t *testing.T) {
@@ -119,8 +154,8 @@ func TestAddPage(t *testing.T) {
 
 	// Assertions
 	if assert.NoError(t, AddPagePost(c)) {
-		assert.Equal(t,  http.StatusCreated, rec.Code)
-		// assert.Equal(t, userJSON, rec.Body.String())
+		assert.Equal(t, http.StatusCreated, rec.Code)
+		// assert.Equal(t, oExpectedString, rec.Body.String())
 	}
 }
 
