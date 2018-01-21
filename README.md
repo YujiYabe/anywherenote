@@ -25,8 +25,8 @@
 [lnx64_v0.1]: https://drive.google.com/open?id=1gLXapKzuW9U195F_C_DquuKgu1tFDXrc "Linux64_v0.1"
 [lnx32_v0.1]: https://drive.google.com/open?id=19wQxlKyzaEFViVKLj9ID4J2DfRoMTkdb "Linux32_v0.1"
 
-[win64_v0.2]: https://drive.google.com/open?id=1BwaUIa96xCcXK6RyY9iJLmfCtFccK9YT "Windows64_v0.2"
-[win32_v0.2]: https://drive.google.com/open?id=1NDUKR9bGKIGk3ax36WyqFoISKfBlg9lX "Windows32_v0.2"
+[win64_v0.2]: https://drive.google.com/open?id=141cNdQlNrW4H0lFWu_ib_4w8Vc4zVNm7 "Windows64_v0.2"
+[win32_v0.2]: https://drive.google.com/open?id=11ogdDpNSyp7omn3r4GCp3y03UhUR5PPS "Windows32_v0.2"
 [lnx64_v0.2]: https://drive.google.com/open?id=1HtcChZZ4CFFaoBB1VLgzYBXP1r5NUgKY "Linux64_v0.2"
 [lnx32_v0.2]: https://drive.google.com/open?id=1F7EiJSrp2igFuBLMVmEKmRYnxmh8Cp0g "Linux32_v0.2"
 
