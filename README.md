@@ -25,10 +25,10 @@
 [lnx64_v0.1]: https://drive.google.com/open?id=1gLXapKzuW9U195F_C_DquuKgu1tFDXrc "Linux64_v0.1"
 [lnx32_v0.1]: https://drive.google.com/open?id=19wQxlKyzaEFViVKLj9ID4J2DfRoMTkdb "Linux32_v0.1"
 
-[win64_v0.2]: https://drive.google.com/open?id=1W9S-JLfF8dgkO3fbLGOGDYkReJTm-lBb "Windows64_v0.2"
-[win32_v0.2]: https://drive.google.com/open?id=1UqiawXaHZhSfxU5clmMt7JtBUG2pyzYk "Windows32_v0.2"
-[lnx64_v0.2]: https://drive.google.com/open?id=1gLXapKzuW9U195F_C_DquuKgu1tFDXrc "Linux64_v0.2"
-[lnx32_v0.2]: https://drive.google.com/open?id=19wQxlKyzaEFViVKLj9ID4J2DfRoMTkdb "Linux32_v0.2"
+[win64_v0.2]: https://drive.google.com/open?id=1BwaUIa96xCcXK6RyY9iJLmfCtFccK9YT "Windows64_v0.2"
+[win32_v0.2]: https://drive.google.com/open?id=1NDUKR9bGKIGk3ax36WyqFoISKfBlg9lX "Windows32_v0.2"
+[lnx64_v0.2]: https://drive.google.com/open?id=1HtcChZZ4CFFaoBB1VLgzYBXP1r5NUgKY "Linux64_v0.2"
+[lnx32_v0.2]: https://drive.google.com/open?id=1F7EiJSrp2igFuBLMVmEKmRYnxmh8Cp0g "Linux32_v0.2"
 
 
 ## ダウンロード
