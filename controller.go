@@ -19,8 +19,6 @@ var (
     directorySeparator  = "/" // linux separator
     confDBAddress string      // 設定DBパス
     userConfig = new(UserConfig)
-
-    
 )
 
 // 定数
@@ -59,7 +57,7 @@ type ReturnValue struct {
 
 
 
-// UserConfig  
+// UserConfig 
 type UserConfig struct {
     IsEnableAppMode     bool           `json:"IsEnableAppMode"`
     WaitSecondLiveCheck time.Duration  `json:"WaitSecondLiveCheck"`
@@ -120,8 +118,9 @@ func main() {
     e.Use(middleware.Recover())
 
     // 静的ファイルのパスを設定
-    e.Static("/public", "data/public")
-    e.File("/favicon.ico", "data/public/favicon.ico")
+    e.Static("/public" , "data/public" )
+    // e.Static("/test"   , "C:\\Users\\yuji\\Dropbox\\test" )
+    e.File("/favicon.ico", "data/public/favicon.ico" )
 
     // 各ルーティングに対するハンドラを設定
     e.GET(  "/"           , LoadPageGet    )
@@ -170,13 +169,13 @@ func AddNotePost(c echo.Context) error {
     printEventLog( "start" , "ノート追加 開始" )
     
     // フォルダ存在確認
-    err := osCheckFile( c.FormValue("new_note_address") )
+    err := osCheckFile( c.FormValue("note_address") )
     if err != nil {
         return err
     }
 
     // DBファイルの存在確認
-    notefullAddress := c.FormValue("new_note_address") + directorySeparator + noteDBName
+    notefullAddress := c.FormValue("note_address") + directorySeparator + noteDBName
 
     err2 := osCheckFile( notefullAddress ) 
 
@@ -192,8 +191,8 @@ func AddNotePost(c echo.Context) error {
 
     var conf Conf
 
-    conf.Name    = c.FormValue("new_note_name")
-    conf.Address = c.FormValue("new_note_address")
+    conf.Name    = c.FormValue("note_name")
+    conf.Address = c.FormValue("note_address")
 
     // INSERTを実行
     confdb.Create(&conf)

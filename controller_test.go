@@ -31,19 +31,30 @@ func TestLiveCheck(t *testing.T) {
 	// }
 }
 
+var (
+	oNoteForm1 = map[string]string{ "note_id":"1", "note_address":"C:\\gotest", "note_name":"create_note" }
+	oNoteForm2 = map[string]string{ "note_id":"1", "note_address":"C:\\gotest", "note_name":"change_note_name" }
+	oPageForm1 = map[string]string{ 
+		"note_address":"C:\\gotest", 
+		"page_id":"1", 
+		"page_title":"first_page_title", 
+		"page_body":"first_page_body",
+	 }
+
+	 xNoteForm1 = map[string]string{ "note_id":"1", "note_address":"C:\\nothingpath", "note_name":"create_note" }
+
+)
+
+
 
 func TestAddNote(t *testing.T) {
 
 	// Setup
 	e := echo.New()
 
-	userForm := make(map[string]string)
-	userForm["new_note_name"]    = "forTest"
-    userForm["new_note_address"] = "C:\\gotest"
-
 	f := make(url.Values)
-	f.Set("new_note_name", userForm["new_note_name"])
-	f.Set("new_note_address", userForm["new_note_address"])
+	f.Set("note_name", oNoteForm1["note_name"])
+	f.Set("note_address", oNoteForm1["note_address"])
 
 	req := httptest.NewRequest(echo.POST, "/AddNotePost", strings.NewReader(f.Encode()))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
@@ -57,10 +68,7 @@ func TestAddNote(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		// assert.Equal(t, userJSON, rec.Body.String())
 	}
-	// if assert.NoError(t, h.getUser(c)) {
-	// 	assert.Equal(t, http.StatusOK, rec.Code)
-	// 	assert.Equal(t, userJSON, rec.Body.String())
-	// }
+
 }
 
 func TestAddPage(t *testing.T) {
@@ -68,13 +76,11 @@ func TestAddPage(t *testing.T) {
 	// Setup
 	e := echo.New()
 
-	userForm := make(map[string]string)
-	userForm["note_id"]    = "6"
-    userForm["note_address"] = "C:\\gotest"
 
 	f := make(url.Values)
-	f.Set("note_id", userForm["note_id"])
-	f.Set("note_address", userForm["note_address"])
+
+	f.Set("note_id", oNoteForm1["note_id"])
+	f.Set("note_address", oNoteForm1["note_address"])
 
 	req := httptest.NewRequest(echo.POST, "/AddPagePost", strings.NewReader(f.Encode()))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
@@ -88,10 +94,6 @@ func TestAddPage(t *testing.T) {
 		assert.Equal(t,  http.StatusCreated, rec.Code)
 		// assert.Equal(t, userJSON, rec.Body.String())
 	}
-	// if assert.NoError(t, h.getUser(c)) {
-	// 	assert.Equal(t, http.StatusOK, rec.Code)
-	// 	assert.Equal(t, userJSON, rec.Body.String())
-	// }
 }
 
 
@@ -101,13 +103,11 @@ func TestUpdateNote(t *testing.T) {
 	// Setup
 	e := echo.New()
 
-	userForm := make(map[string]string)
-	userForm["note_name"]    = "forxxTest"
-    userForm["note_id"]      = "6"
-
 	f := make(url.Values)
-	f.Set("note_name", userForm["note_name"])
-	f.Set("note_id", userForm["note_id"])
+
+	f.Set("note_id", oNoteForm2["note_id"])
+	f.Set("note_name", oNoteForm2["note_name"])
+
 
 	req := httptest.NewRequest(echo.POST, "/UpdateNotePost", strings.NewReader(f.Encode()))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
@@ -121,10 +121,6 @@ func TestUpdateNote(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		// assert.Equal(t, userJSON, rec.Body.String())
 	}
-	// if assert.NoError(t, h.getUser(c)) {
-	// 	assert.Equal(t, http.StatusOK, rec.Code)
-	// 	assert.Equal(t, userJSON, rec.Body.String())
-	// }
 }
 
 
@@ -133,17 +129,12 @@ func TestUpdatePage(t *testing.T) {
 	// Setup
 	e := echo.New()
 
-	userForm := make(map[string]string)
-	userForm["note_address"]    = "C:\\gotest"
-    userForm["page_id"]         = "1"
-	userForm["page_title"]      = "testTitzzzle"
-    userForm["page_body"]       = "testBozzzdy"
-
 	f := make(url.Values)
-	f.Set("note_address" , userForm["note_address"])
-	f.Set("page_id"		 , userForm["page_id"])
-	f.Set("page_title"	 , userForm["page_title"])
-	f.Set("page_body"	 , userForm["page_body"])
+	f.Set("note_address" , oPageForm1["note_address"]	)
+	f.Set("page_id"		 , oPageForm1["page_id"]		)
+	f.Set("page_title"	 , oPageForm1["page_title"]		)
+	f.Set("page_body"	 , oPageForm1["page_body"]		)
+
 
 	req := httptest.NewRequest(echo.POST, "/UpdatePagePost", strings.NewReader(f.Encode()))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
@@ -157,8 +148,54 @@ func TestUpdatePage(t *testing.T) {
 		assert.Equal(t, http.StatusCreated , rec.Code)
 		// assert.Equal(t, userJSON, rec.Body.String())
 	}
-	// if assert.NoError(t, h.getUser(c)) {
-	// 	assert.Equal(t, http.StatusOK, rec.Code)
-	// 	assert.Equal(t, userJSON, rec.Body.String())
-	// }
+}
+
+func TestDeletePage(t *testing.T) {
+
+	// Setup
+	e := echo.New()
+
+	f := make(url.Values)
+
+	f.Set("note_address", oPageForm1["note_address"])
+	f.Set("page_id", oPageForm1["page_id"])
+
+
+	req := httptest.NewRequest(echo.POST, "/DeletePagePost", strings.NewReader(f.Encode()))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+
+
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	// Assertions
+	if assert.NoError(t, DeletePagePost(c)) {
+		assert.Equal(t, http.StatusCreated, rec.Code)
+		// assert.Equal(t, userJSON, rec.Body.String())
+	}
+}
+
+
+func TestDeleteNote(t *testing.T) {
+
+	// Setup
+	e := echo.New()
+
+	f := make(url.Values)
+
+	f.Set("note_id", oNoteForm1["note_id"])
+
+
+	req := httptest.NewRequest(echo.POST, "/DeleteNotePost", strings.NewReader(f.Encode()))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+
+
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	// Assertions
+	if assert.NoError(t, DeleteNotePost(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		// assert.Equal(t, userJSON, rec.Body.String())
+	}
 }
