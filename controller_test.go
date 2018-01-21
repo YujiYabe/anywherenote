@@ -6,11 +6,52 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
-
+	"os"
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/assert" 
 	"net/url"
+	"log"
+	// "time"
+
 )
+
+var (
+	oNoteForm1 = map[string]string{ "note_id":"1", "note_address":"C:\\gotest", "note_name":"create_note" }
+	oNoteForm2 = map[string]string{ "note_id":"1", "note_address":"C:\\gotest", "note_name":"change_note_name" }
+	oPageForm1 = map[string]string{ 
+		"note_address":"C:\\gotest", 
+		"page_id":"1", 
+		"page_title":"first_page_title", 
+		"page_body":"first_page_body",
+	 }
+
+	 xNoteForm1 = map[string]string{ "note_id":"1", "note_address":"C:\\nothingpath", "note_name":"create_note" }
+
+)
+
+
+func init() {
+
+	testFilePath := oNoteForm1["note_address"] + "\\note.db"
+
+	// if err1 == nil{
+	if err1 := osCheckFile( testFilePath ); err1 == nil {
+		if err2 := os.Remove( testFilePath ); err2 != nil {
+			log.Println( err2 )
+		}
+	}
+
+	confFilePath := "data\\conf.db"
+	// if err1 == nil{
+	if err1 := osCheckFile( confFilePath ); err1 == nil {
+		if err2 := os.Remove( confFilePath ); err2 != nil {
+			log.Println( err2 )
+		}
+	}
+	// time.Sleep( 10 * time.Second )
+
+} //--------------------------------------------
+
 
 
 func TestLiveCheck(t *testing.T) {
@@ -31,19 +72,6 @@ func TestLiveCheck(t *testing.T) {
 	// }
 }
 
-var (
-	oNoteForm1 = map[string]string{ "note_id":"1", "note_address":"C:\\gotest", "note_name":"create_note" }
-	oNoteForm2 = map[string]string{ "note_id":"1", "note_address":"C:\\gotest", "note_name":"change_note_name" }
-	oPageForm1 = map[string]string{ 
-		"note_address":"C:\\gotest", 
-		"page_id":"1", 
-		"page_title":"first_page_title", 
-		"page_body":"first_page_body",
-	 }
-
-	 xNoteForm1 = map[string]string{ "note_id":"1", "note_address":"C:\\nothingpath", "note_name":"create_note" }
-
-)
 
 
 

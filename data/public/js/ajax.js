@@ -6,7 +6,7 @@ function addNote(Obj) {
     var target_url = 'addnote';
     var post_data = {
         'note_name': $('#new_note_name').val(),
-        'note_address': $('#new_note_address').val(),
+        'note_address': $('#new_note_address').val().trim(),
     };
 
     $.ajax({
@@ -160,8 +160,6 @@ function deleteNote(Obj) {
 } // =======================================
 
 function deletePage() {
-
-
     var target_url = 'deletepage';
     var post_data = {
         'note_id': $('#note_id').text(),

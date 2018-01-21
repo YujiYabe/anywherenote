@@ -12,6 +12,8 @@ import (
     "encoding/json"
     "io/ioutil"
     "github.com/skratchdot/open-golang/open"
+    "os"
+    "fmt"
 )
 // グローバル変数
 var (
@@ -119,7 +121,6 @@ func main() {
 
     // 静的ファイルのパスを設定
     e.Static("/public" , "data/public" )
-    // e.Static("/test"   , "C:\\Users\\yuji\\Dropbox\\test" )
     e.File("/favicon.ico", "data/public/favicon.ico" )
 
     // 各ルーティングに対するハンドラを設定
@@ -131,6 +132,7 @@ func main() {
     e.POST( "/updatepage" , UpdatePagePost )
     e.POST( "/deletenote" , DeleteNotePost )
     e.POST( "/deletepage" , DeletePagePost )
+    e.POST( "/upload"     , UploadPost     )
 
 
 
@@ -143,6 +145,41 @@ func main() {
     e.Logger.Fatal(e.Start( ":" + userConfig.UsePortNumber  ))
 } //--------------------------------------------
 
+func UploadPost(c echo.Context) error {
+	// Read form fields
+	// name := c.FormValue("name")
+	// email := c.FormValue("email")
+
+	//-----------
+	// Read file
+	//-----------
+
+	// Source
+	file, err := c.FormFile("file")
+	if err != nil {
+		return err
+	}
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	// Destination
+	dst, err := os.Create(file.Filename)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+
+	// Copy
+	if _, err = io.Copy(dst, src); err != nil {
+		return err
+	}
+	return c.HTML(http.StatusOK, fmt.Sprintf("<p>File %s uploaded successfully with fields </p>", file.Filename))
+    // return nil
+
+}
 
 // LoadPageGet のコメントアウト
 func LoadPageGet(c echo.Context) error {
@@ -323,7 +360,7 @@ func LiveCheckGet(c echo.Context) error {
     t := time.Now()
 
     //現在からn秒後の時刻を取得
-    afterTime := t.Add(time.Duration(  userConfig.WaitSecondLiveCheck ) * time.Second).Format(dateTimeFormat)
+    afterTime := t.Add(time.Duration(  userConfig.WaitSecondLiveCheck ) * time.Second).Format( dateTimeFormat )
 
     recieveString = afterTime
 
