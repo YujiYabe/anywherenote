@@ -25,7 +25,7 @@ var (
 
 // 定数
 const useDBMSName = "sqlite3" // 使用DBMS
-const confDBName  = "conf.db" // ローカル設定ファイル
+const confDBName  = "config.db" // ローカル設定ファイル
 const noteDBName  = "note.db" // ノート保存先
 
 const dataDirName  = "data" // htmlやjs、DBファイル等格納先
@@ -89,7 +89,7 @@ func init() {
     }
 
     // 設定ファイルの読み込み
-    file, err := ioutil.ReadFile("config.json")
+    file, err := ioutil.ReadFile( dataDirName + directorySeparator + "config.json" )
     if err != nil {
         panic(err)
     }
