@@ -134,6 +134,35 @@ func getData(selectPosition SelectPosition) string {
 
 } //--------------------------------------------
 
+func addFileToPage(rcvArg map[string]string) error {
+
+	noteAddress := rcvArg["noteAddress"]
+	pageID := rcvArg["pageID"]
+	addFile := rcvArg["addFile"]
+	// printEventLog("debug",noteAddress)
+	// printEventLog("debug",pageID)
+
+	noteDBAddress := noteAddress + directorySeparator + noteDBName
+
+	// DBのオープン
+	notedb := setupDB(noteDBAddress)
+	defer notedb.Close()
+	notedb.LogMode(true)
+	// __________________________________
+	// DB内容取得
+	note := Note{}
+	notedb.Where("id = ?", pageID).Find(&note)
+
+	printEventLog("debug2",note.PageBody)
+	printEventLog("debug2",addFile)
+	note.PageBody = note.PageBody + addFile
+
+	notedb.Save(&note)
+
+	return nil
+
+} //--------------------------------------------
+
 // addPage →ページ情報を追加
 func addPage(rcvArg map[string]string) error {
 

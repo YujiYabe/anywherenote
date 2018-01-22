@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"encoding/json"
-	"fmt"
+	// "fmt"
 	"io/ioutil"
 	"os"
 
@@ -148,11 +148,13 @@ func main() {
 	e.Logger.Fatal(e.Start(":" + userConfig.UsePortNumber))
 } //--------------------------------------------
 
+// UploadFilePost のコメントアウト
 func UploadFilePost(c echo.Context) error {
 	// Read form fields
 	// name := c.FormValue("name")
 	// email := c.FormValue("email")
 	noteAddress := c.FormValue("note_address")
+	pageID := c.FormValue("page_id")
 
 	//-----------
 	// Read file
@@ -180,8 +182,19 @@ func UploadFilePost(c echo.Context) error {
 	if _, err = io.Copy(dst, src); err != nil {
 		return err
 	}
-	return c.HTML(http.StatusOK, fmt.Sprintf("<p>File %s uploaded successfully with fields </p>", file.Filename))
-	// return nil
+	// return c.HTML(http.StatusOK, fmt.Sprintf("<p>File %s uploaded successfully with fields </p>", file.Filename))
+
+	//対象のページ内容を呼び出し、対象のファイルを追記した内容で再書き込み
+
+	addFile := "<img src='//note_id///"+ file.Filename + "'>"
+	sndArg := make(map[string]string)
+	sndArg["noteAddress"] = noteAddress
+	sndArg["pageID"] = pageID
+	sndArg["addFile"] = addFile
+
+	addFileToPage(sndArg)
+
+	return nil
 
 }
 

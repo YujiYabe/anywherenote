@@ -8,6 +8,8 @@ function onDragOver(event) {
     event.preventDefault();
 }
 
+//https://qiita.com/volpe28v/items/725e2b8c6a94ade505db
+
 // Drop領域にドロップした際のファイルのプロパティ情報読み取り処理
 function onDrop(event) {
     // ブラウザ上でファイルを展開する挙動を抑止
@@ -16,8 +18,10 @@ function onDrop(event) {
     // ドロップされたファイルのfilesプロパティを参照
     var files = event.dataTransfer.files;
     for (var i = 0; i < files.length; i++) {
+        // ★最初の一件目で現在のページ内容を更新
         // 一件ずつアップロード
         imageFileUpload(files[i]);
+
     }
 }
 
@@ -26,6 +30,7 @@ function imageFileUpload(f) {
     var formData = new FormData();
     formData.append('file', f);
     formData.append('note_address', $('#note_address').text());
+    formData.append('page_id', $('#page_id').text());
     $.ajax({
         type: 'POST',
         contentType: false,
@@ -35,6 +40,7 @@ function imageFileUpload(f) {
         dataType: 'json',
         success: function (data) {
             // メッセージ出したり、DOM構築したり。
+            // ★最後のアップロードの場合、データを再ロードし、画面を更新
         }
     });
 }
