@@ -25,11 +25,12 @@ function onDrop(event) {
 function imageFileUpload(f) {
     var formData = new FormData();
     formData.append('file', f);
+    formData.append('note_address', $('#note_address').text());
     $.ajax({
         type: 'POST',
         contentType: false,
         processData: false,
-        url: '/upload',
+        url: '/uploadfile',
         data: formData,
         dataType: 'json',
         success: function (data) {

@@ -162,7 +162,10 @@ function makePageList() {
             var td = $('<td>'); tr.append(td); td.hide(); td.text(updateDateTime);
             var td = $('<td>'); tr.append(td); td.hide(); td.text(page_list[item]['ID']);
             var td = $('<td>'); tr.append(td); td.hide(); td.text(page_list[item]['page_title']);
-            var td = $('<td>'); tr.append(td); td.hide(); td.text(page_list[item]['page_body']);
+
+            var temp_page_body = page_list[item]['page_body'].replace(new RegExp('\/\/note_id\/\/', "g"), note_id);
+
+            var td = $('<td>'); tr.append(td); td.hide(); td.text(temp_page_body);
 
 
             // 選択済のページを表示
@@ -177,7 +180,10 @@ function makePageList() {
 
                 $('#page_id').text(page_list[item]['ID']);
                 $('#page_title').val(page_list[item]['page_title']);
-                $('#page_body').val(page_list[item]['page_body']);
+
+                var temp_page_body = page_list[item]['page_body'].replace(new RegExp('\/\/note_id\/\/', "g"), note_id);
+
+                $('#page_body').val(temp_page_body);
                 $('.update_time').text(updateDateTime);
 
                 $('#edit_page').show();
