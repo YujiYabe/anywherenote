@@ -9,61 +9,58 @@
 
     <!-- BootstrapのCSS読み込み -->
     <link rel="stylesheet" href="/public/css/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="/public/css/split-pane.css">
-    <link rel="stylesheet" href="/public/css/pretty-split-pane.css">
 
     <!-- jQuery読み込み -->
     <script src="/public/js/jquery.min.js"></script>
+    <script src="/public/js/jquery-ui.min.js"></script>
     <!-- BootstrapのJS読み込み -->
     <script src="/public/js/bootstrap/bootstrap.min.js"></script>
     <script src="/public/js/moment.min.js?v=20170907"></script>
 
-    <script src="/public/js/split-pane.js"></script>
     <script src="/public/js/jquery.quicksearch.js"></script>
-    <script src="/public/js/tinymce/tinymce.min.js"></script>
 
     <script src="/public/js/additional.js?ver=1232"></script>
     <script src="/public/js/ajax.js?ver=12302"></script>
     <script src="/public/js/livecheck.js?ver=12302"></script>
     <script src="/public/js/upload.js?ver=12302"></script>
+    <script src="/public/js/edit.js?ver=12302"></script>
     <link rel="stylesheet" href="/public/css/additional.css">
 
+    <link rel="stylesheet/less" href="/public/css/style_yoko.less" type="text/css">
+    <script src="/public/js/less.min.js?ver=12302"></script>
 
 </head>
 
 <body>
 
 
-    <div class="pretty-split-pane-frame">
-        <!-- ================================================================================================ -->
-        <div class="split-pane fixed-left" style="min-width: 5px;">
-            <div class="split-pane-component" id="left-component" style="width: 322px;">
-                <div class="pretty-split-pane-component-inner">
 
-                    {{template "left_pane" .}}
 
-                </div>
+
+    <div class="flexbox_container">
+        <div class="flexbox_left_pane ">
+
+            <!-- <div class="left_pane"> -->
+            {{template "left_pane" .}}
+            <!-- </div> -->
+        </div>
+
+        <div class="flexbox_cent_line " id="flexbox_cent_line"></div>
+
+        <div class="flexbox_rght_pane ">
+
+
+            <div>
+
+                {{template "right_pane" .}}
+
             </div>
-            <div class="split-pane-divider" id="my-divider" style="left: 322px;">
-                <div class="split-pane-divider-inner"></div>
-            </div>
-
-
-
-            <!-- ================================================================================================ -->
-            <div class="split-pane-component" id="right-component" style="left: 322px;">
-                <div class="pretty-split-pane-component-inner">
-                    <!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
-                    {{template "right_pane" .}}
-
-                </div>
-            </div>
-            <div class="split-pane-resize-shim" style="display: none;"></div>
-            <!-- ================================================================================================ -->
-
 
         </div>
+
     </div>
+
+
 
     <!-- style="display: none;" -->
     <span id='source_return_value' style="display: none;">{{template "content" .}}</span>

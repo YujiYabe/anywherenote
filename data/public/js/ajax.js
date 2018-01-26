@@ -92,8 +92,8 @@ function updateNote(Obj) {
 
 function updatePage() {
 
-    var ed = tinyMCE.get('page_body');
-    var data = ed.getContent();
+    // var ed = tinyMCE.get('page_body');
+    // var data = ed.getContent();
 
     var target_url = 'updatepage';
     var post_data = {
@@ -102,7 +102,8 @@ function updatePage() {
 
         'page_id': $('#page_id').text(),
         'page_title': $('#page_title').val(),
-        'page_body': data,
+        // 'page_body': data,
+        'page_body': $('#page_body').html(),
     };
 
     $.ajax({

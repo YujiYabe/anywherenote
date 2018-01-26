@@ -19,8 +19,17 @@ function onDrop(event) {
     var files = event.dataTransfer.files;
     for (var i = 0; i < files.length; i++) {
         // ★最初の一件目で現在のページ内容を更新
+        if (i == 0) {
+            updatePage()
+        }
         // 一件ずつアップロード
         imageFileUpload(files[i]);
+
+        // 最後のアップロードでページを更新
+        if (i == files.length - 1) {
+            updatePage()
+        }
+
 
     }
 }
@@ -40,7 +49,6 @@ function imageFileUpload(f) {
         dataType: 'json',
         success: function (data) {
             // メッセージ出したり、DOM構築したり。
-            // ★最後のアップロードの場合、データを再ロードし、画面を更新
         }
     });
 }

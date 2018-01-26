@@ -46,3 +46,30 @@ body{
 	font-size: 40px;
 
 }
+
+.fixed {
+	position: fixed;
+}
+
+.fixed {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10000;
+}
+
+
+.left_pane {
+    /* width: 300px; */
+    /* position: fixed; */
+    top: 0;
+	position: fixed !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 30%;
+	height: 100%;
+	/* background-color : #aaff66 ; */
+	overflow: auto;
+
+}

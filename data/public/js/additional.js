@@ -1,43 +1,52 @@
 "use strict";
 
-
 $(function () {
 
+    $("#line_separate").hover(
+        function (e) {
+            $(this).css({ background: "blue" });
+            $("#line_separate").css("width", "15px")
+        },
+        function (e) {
+            $("#line_separate").css("width", "3px")
+        }
+    );
 
+    $("#line_separate").draggable({
+        axis: "x",
+        start: function (event, ui) {
+            $(this).css({ background: "blue" });
+        },
+        drag: function (event, ui) {
+            // console.log(event , ui);
+            // console.log(' top: ' + ui.position.top + ' left: ' + ui.position.left);
+            $(this).css({ background: "blue" });
+            $(".left_pane").css("width", ui.position.left)
+            // $( "BODY" ).css("padding-left", ui.position.left + 5)
+            $(".right_pane").css("padding-left", ui.position.left + 5)
+        },
+
+        stop: function (event, ui) {
+            $(this).css({ background: "gray" });
+        }
+    });
+});
+
+
+$(function () {
     makePageList();
 
     $('input#search').quicksearch('table tbody tr');
-
-    tinymce.init({
-        selector: "#page_body",
-        plugins: "autoresize",
-        language: "ja",
-        autoresize_bottom_margin: 1,
-        font_formats: 'NotoSansMono;monospace;AkrutiKndPadmini=Akpdmi-n',
-        toolbar: [ // ツールバー(2段)
-            // 戻る 進む | フォーマット | 太字 斜体 | 左寄せ 中央寄せ 右寄せ 均等割付 | 箇条書き 段落番号 インデントを減らす インデント
-            "undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-            // 文字サイズ 文字色 画像 リンク
-            "fontsizeselect forecolor image link"
-        ],
-        statusbar: false, // ステータスバーを隠す
-        body_class: 'my_class'
-
-    })
-
-
-
 
 });
 
 function switchRightPane(pane_name) {
 
-    $('.right_pane').hide();
+    $('.right_pane_content').hide();
     $('#' + pane_name).show();
 }
 
 function makePageList() {
-    tinymce.remove('#page_body');
 
     $('#parent_note_table').empty();
     $('#table_parent').empty();
@@ -183,29 +192,11 @@ function makePageList() {
 
                 var temp_page_body = page_list[item]['page_body'].replace(new RegExp('\/\/note_id\/\/', "g"), note_id);
 
-                $('#page_body').val(temp_page_body);
+                $('#page_body').html(temp_page_body);
                 $('.update_time').text(updateDateTime);
 
                 $('#edit_page').show();
 
-                tinymce.init({
-                    selector: "#page_body",
-                    plugins: "autoresize",
-                    language: "ja",
-                    autoresize_bottom_margin: 1,
-                    // font_formats: 'Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;AkrutiKndPadmini=Akpdmi-n'
-                    font_formats: 'NotoSansMono;monospace;AkrutiKndPadmini=Akpdmi-n',
-                    // font_formats: 'Consolas, Courier, Monaco, monospace'
-                    toolbar: [ // ツールバー(2段)
-                        // 戻る 進む | フォーマット | 太字 斜体 | 左寄せ 中央寄せ 右寄せ 均等割付 | 箇条書き 段落番号 インデントを減らす インデント
-                        "undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-                        // 文字サイズ 文字色 画像 リンク
-                        "fontsizeselect forecolor image link"
-                    ],
-                    statusbar: false, // ステータスバーを隠す
-                    body_class: 'my_class'
-
-                })
 
 
             }
@@ -230,7 +221,6 @@ function showDataToRightPane(obj) {
     $(".currentItem").removeClass("currentItem");
 
     switchRightPane('edit_page');
-    tinymce.remove('#page_body');
 
 
     var note_id = $(obj).parent().parent().parent().attr('data-note_id');
@@ -241,30 +231,12 @@ function showDataToRightPane(obj) {
     $('#update_time').text($(obj).nextAll().eq(0).text());
     $('#page_id').text($(obj).nextAll().eq(1).text());
     $('#page_title').val($(obj).nextAll().eq(2).text());
-    $('#page_body').val($(obj).nextAll().eq(3).text());
+    $('#page_body').html($(obj).nextAll().eq(3).text());
 
     $('#note_address').text(note_address);
     $('#note_name').text(note_name);
     $('#note_id').text(note_id);
 
-    tinymce.init({
-        selector: "#page_body",
-        plugins: "autoresize",
-        language: "ja",
-        autoresize_bottom_margin: 1,
-        // font_formats: 'Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;AkrutiKndPadmini=Akpdmi-n'
-        font_formats: 'NotoSansMono;monospace;AkrutiKndPadmini=Akpdmi-n',
-        // font_formats: 'Consolas, Courier, Monaco, monospace'
-        toolbar: [ // ツールバー(2段)
-            // 戻る 進む | フォーマット | 太字 斜体 | 左寄せ 中央寄せ 右寄せ 均等割付 | 箇条書き 段落番号 インデントを減らす インデント
-            "undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-            // 文字サイズ 文字色 画像 リンク
-            "fontsizeselect forecolor image link"
-        ],
-        statusbar: false, // ステータスバーを隠す
-        body_class: 'my_class'
-
-    })
 
     $(obj).addClass("currentItem");
 
