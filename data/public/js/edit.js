@@ -48,7 +48,7 @@ function load_drop_zone() {
     Dropzone.options.fileUpload = {
         // maxFilesize: json_setting.file_size_limite, // MB単位 設定の値をページ読み込み時に反映
         // acceptedFiles: json_setting.list_valid_extension,
-
+        parallelUploads: 1,
         success: function (event, res, xhr) {
 
             $('#source_return_value').html(res);

@@ -40,6 +40,49 @@ $(function () {
 
 });
 
+function file_download(Obj) {
+
+    if (!confirm($(Obj).text() + 'をダウンロードしますか？')) {
+        /* キャンセルの時の処理 */
+        return false;
+    }
+
+
+    var file_url = $(Obj).attr('href') + '/' + $(Obj).text();
+
+    //function downloadFile(url, filename) {
+    "use strict";
+
+    // XMLHttpRequestオブジェクトを作成する
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", file_url, true);
+    xhr.responseType = "blob"; // Blobオブジェクトとしてダウンロードする
+    xhr.onload = function (oEvent) {
+        // ダウンロード完了後の処理を定義する
+        var blob = xhr.response;
+        if (window.navigator.msSaveBlob) {
+            // IEとEdge
+            window.navigator.msSaveBlob(blob, $(Obj).text());
+        }
+        else {
+            // それ以外のブラウザ
+            // Blobオブジェクトを指すURLオブジェクトを作る
+            var objectURL = window.URL.createObjectURL(blob);
+            // リンク（<a>要素）を生成し、JavaScriptからクリックする
+            var link = document.createElement("a");
+            document.body.appendChild(link);
+            link.href = objectURL;
+            link.download = $(Obj).text();
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+    // XMLHttpRequestオブジェクトの通信を開始する
+    xhr.send();
+
+}
+
+
 function switch_rght_body() {
 
     if ($('#upload_zone').css('display') == 'none') {
@@ -68,12 +111,13 @@ function makePageList() {
 
     // statuscode == '1' 保存先が一つもない場合、ノート追加を表示、ページ追加を非表示
     if (json_return_value["RtnCode"] == '1') {
-        $('#edit_page').hide();
-        $('#add_note').show();
+        // if (true) {
+        $('#flexbox_page_pane').hide();
+        $('#flexbox_note_pane').show();
         $('#left_pane_head').hide();
         return false;
     } else {
-        $('#add_note').hide();
+        $('#flexbox_note_pane').hide();
 
     }
 
@@ -118,6 +162,7 @@ function makePageList() {
 
         var element = $('#table_parent');
 
+        var hr = $('<hr>'); element.append(hr);
 
         //---------------
 
@@ -210,15 +255,14 @@ function makePageList() {
                 $('#page_body').html(temp_page_body);
                 $('.update_time').text(updateDateTime);
 
-                $('#edit_page').show();
+                $('#flexbox_page_pane').show();
 
 
 
             }
 
         }
-        var hr = $('<hr>'); element.append(hr);
-        var hr = $('<hr>'); element.append(hr);
+        // var hr = $('<hr>'); element.append(hr);
 
     });
 
@@ -237,7 +281,7 @@ function switchShowHideDataList(obj) {
 function showDataToRightPane(obj) {
     $(".currentItem").removeClass("currentItem");
 
-    switchRightPane('edit_page');
+    switchRightPane('flexbox_page_pane');
 
 
     var note_id = $(obj).parent().parent().parent().attr('data-note_id');

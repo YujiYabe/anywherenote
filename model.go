@@ -153,8 +153,8 @@ func addFileToPage(rcvArg map[string]string) error {
 	note := Note{}
 	notedb.Where("id = ?", pageID).Find(&note)
 
-	printEventLog("debug2",note.PageBody)
-	printEventLog("debug2",addFile)
+	// printEventLog("debug2",note.PageBody)
+	// printEventLog("debug2",addFile)
 	note.PageBody = note.PageBody + addFile
 
 	notedb.Save(&note)

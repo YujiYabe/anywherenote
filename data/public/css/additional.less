@@ -119,63 +119,99 @@ body{
 
 			background-color :whitesmoke ;
 			width: @rght_pane_witdh;
-			padding-bottom: 10px;
+			// padding-bottom: 10px;
 			margin: 1px;
 
 
-
-			#flexbox_rght_head {
+			#flexbox_page_pane {
 				display: flex;
 				flex-direction: column;
-				background-color : lightgray ;
-				margin: 1px;
-				height: 30% ;
-				width: 99%;
+				overflow:auto;
+				height: 99% ;
 
-				#flexbox_rght_head_1 {
-					background-color : lightblue ;
+				#flexbox_page_head {
+					// display: flex;
+					// flex-direction: column;
+					background-color : lightgray ;
 					margin: 1px;
-					.right_pane_note_name{
-						font-size: 40px;
+					height: 30% ;
+					width: 99%;
+
+					#flexbox_page_head_1 {
+						background-color : lightblue ;
+						margin: 1px;
+						.right_pane_note_name{
+							font-size: 40px;
+						}
 					}
-				}
-				#flexbox_rght_head_2 {
-					background-color : lightcyan ;
-					margin: 1px;
-				}
-				#flexbox_rght_head_3 {
-					margin: 1px;
-					#flexbox_rght_head_3_tool {
-						background-color : lightpink ;
+					#flexbox_page_head_2 {
+						background-color : lightcyan ;
 						margin: 1px;
 					}
-				}
-
-			}
-
-
-			#flexbox_rght_body {
-				background-color : whitesmoke ;
-				margin: 1px;
-				height: 70% ;
-				width: 99%;
-				overflow:auto;
-
-				.textarea {
-					height: 100% ;
-				}
-
-				#upload_zone {
-					background-color : lightskyblue ;
-					height: 100% ;
-					.dropzone{
-						height: 99% ;
-						
+					#flexbox_page_head_3 {
+						margin: 1px;
+						#flexbox_page_head_3_tool {
+							background-color : lightpink ;
+							margin: 1px;
+						}
 					}
-				}
-				
-			}
 
+				}
+
+
+				#flexbox_page_body {
+					background-color : whitesmoke ;
+					margin: 1px;
+					height: 70% ;
+					width: 99%;
+					overflow:auto;
+					// .textarea {
+					// 	// height: 100% ;
+					// }
+
+					#upload_zone {
+						background-color : lightskyblue ;
+						height: 100% ;
+						overflow:auto;
+						.droparea{
+							height: 100% ;
+						}
+					}
+					.image_style {
+						border: 1px lightgray solid; 
+						width: 90%;
+					}
+						
+				}
+			}
+			#flexbox_note_pane {
+				display: flex;
+				flex-direction: column;
+				overflow:auto;
+				height: 99% ;
+
+				#flexbox_note_head {
+					// display: flex;
+					// flex-direction: column;
+					background-color : lightgray ;
+					margin: 1px;
+					height: 35% ;
+					width: 99%;
+					// display: flex;
+				}
+				#flexbox_note_body {
+					background-color : whitesmoke ;
+					margin: 1px;
+					height: 64% ;
+					width: 99%;
+					overflow:auto;
+					// .textarea {
+					// 	// height: 100% ;
+					// }
+				}
+
+
+			}
 
 		}
 	}

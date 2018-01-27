@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"runtime"
 	"strconv"
+	"strings"
 	"time"
 
 	"encoding/json"
@@ -191,7 +192,19 @@ func UploadFilePost(c echo.Context) error {
 
 	//対象のページ内容を呼び出し、対象のファイルを追記した内容で再書き込み
 
-	addFile := "<br><br><img width='90%' src='//note_id///" + file.Filename + "'><br><br>"
+	pos := strings.LastIndex(file.Filename, ".")
+	addFile := "<br><br>"
+	imgExtList := []string{".bmp", ".gif", ".png", ".jpg", ".jpeg"}
+
+	if contains(imgExtList, file.Filename[pos:]) {
+		addFile = addFile + "<img class='image_style' src='.//note_id///" + file.Filename + "'>"
+	} else {
+		addFile = addFile + "<a href='//note_id//' onclick='file_download(this);'>" + file.Filename + "</a>"
+		// addFile = addFile + "<a  href='//note_id///" + file.Filename + "' onclick='fileDownload(this);'>" + file.Filename + "</a>"
+		// addFile = addFile + "<a  href='.///note_id///" + file.Filename + "' download='" + file.Filename + "'>" + file.Filename + "</a>"
+	}
+	addFile = addFile + "<br><br>"
+
 	sndArg := make(map[string]string)
 	sndArg["noteAddress"] = noteAddress
 	sndArg["pageID"] = pageID
