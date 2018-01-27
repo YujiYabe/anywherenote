@@ -151,10 +151,15 @@ func main() {
 // UploadFilePost のコメントアウト
 func UploadFilePost(c echo.Context) error {
 	// Read form fields
-	// name := c.FormValue("name")
-	// email := c.FormValue("email")
+
 	noteAddress := c.FormValue("note_address")
 	pageID := c.FormValue("page_id")
+	// noteID := c.FormValue("note_id")
+	// noteAddress := "C:\\Users\\yuji\\Dropbox\\test"
+	// pageID := "1"
+
+	// printEventLog("debug", noteAddress)
+	// printEventLog("debug", pageID)
 
 	//-----------
 	// Read file
@@ -186,7 +191,7 @@ func UploadFilePost(c echo.Context) error {
 
 	//対象のページ内容を呼び出し、対象のファイルを追記した内容で再書き込み
 
-	addFile := "<img src='//note_id///"+ file.Filename + "'>"
+	addFile := "<br><br><img width='90%' src='//note_id///" + file.Filename + "'><br><br>"
 	sndArg := make(map[string]string)
 	sndArg["noteAddress"] = noteAddress
 	sndArg["pageID"] = pageID
@@ -194,7 +199,16 @@ func UploadFilePost(c echo.Context) error {
 
 	addFileToPage(sndArg)
 
-	return nil
+	var selectPosition = SelectPosition{}
+
+	selectPosition.NoteID = convertStringToUint(c.FormValue("note_id"))
+	selectPosition.PageID = convertStringToUint(c.FormValue("page_id"))
+
+	returnValue := getData(selectPosition)
+
+	printEventLog("end", "ページ更新 終了")
+
+	return c.JSON(http.StatusCreated, returnValue)
 
 }
 

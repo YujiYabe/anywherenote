@@ -9,6 +9,7 @@
 
     <!-- BootstrapのCSS読み込み -->
     <link rel="stylesheet" href="/public/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/dropzone/min/dropzone.min.css?a=r1712s05d1zdz61s91">
 
     <!-- jQuery読み込み -->
     <script src="/public/js/jquery.min.js"></script>
@@ -18,15 +19,15 @@
     <script src="/public/js/moment.min.js?v=20170907"></script>
 
     <script src="/public/js/jquery.quicksearch.js"></script>
+    <script src="/public/js/dropzone.js"></script>
 
     <script src="/public/js/additional.js?ver=1232"></script>
     <script src="/public/js/ajax.js?ver=12302"></script>
     <script src="/public/js/livecheck.js?ver=12302"></script>
     <script src="/public/js/upload.js?ver=12302"></script>
     <script src="/public/js/edit.js?ver=12302"></script>
-    <link rel="stylesheet" href="/public/css/additional.css">
 
-    <link rel="stylesheet/less" href="/public/css/style_yoko.less" type="text/css">
+    <link rel="stylesheet/less" href="/public/css/additional.less" type="text/css">
     <script src="/public/js/less.min.js?ver=12302"></script>
 
 </head>
@@ -34,27 +35,19 @@
 <body>
 
 
-
-
-
-    <div class="flexbox_container">
-        <div class="flexbox_left_pane ">
+    <div id="flexbox_container">
+        <div id="flexbox_left_pane">
 
             <!-- <div class="left_pane"> -->
             {{template "left_pane" .}}
             <!-- </div> -->
         </div>
 
-        <div class="flexbox_cent_line " id="flexbox_cent_line"></div>
+        <div id="flexbox_cent_line" class="flexbox_cent_line "></div>
 
-        <div class="flexbox_rght_pane ">
+        <div id="flexbox_rght_pane">
 
-
-            <div>
-
-                {{template "right_pane" .}}
-
-            </div>
+            {{template "right_pane" .}}
 
         </div>
 

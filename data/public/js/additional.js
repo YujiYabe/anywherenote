@@ -40,6 +40,19 @@ $(function () {
 
 });
 
+function switch_rght_body() {
+
+    if ($('#upload_zone').css('display') == 'none') {
+        $('#page_body').css('display', 'none')
+        $('#upload_zone').css('display', '')
+    } else {
+        $('#page_body').css('display', '')
+        $('#upload_zone').css('display', 'none')
+    }
+
+}
+
+
 function switchRightPane(pane_name) {
 
     $('.right_pane_content').hide();
@@ -57,7 +70,7 @@ function makePageList() {
     if (json_return_value["RtnCode"] == '1') {
         $('#edit_page').hide();
         $('#add_note').show();
-        $('#common_item').hide();
+        $('#left_pane_head').hide();
         return false;
     } else {
         $('#add_note').hide();
@@ -105,8 +118,6 @@ function makePageList() {
 
         var element = $('#table_parent');
 
-        var hr = $('<hr>'); element.append(hr);
-        var hr = $('<hr>'); element.append(hr);
 
         //---------------
 
@@ -187,6 +198,10 @@ function makePageList() {
                 $('#note_name').text(note_name);
                 $('#note_address').text(note_address);
 
+                $('#post_note_address').val(note_address);
+                $('#post_note_id').val(note_id);
+                $('#post_page_id').val(page_list[item]['ID']);
+
                 $('#page_id').text(page_list[item]['ID']);
                 $('#page_title').val(page_list[item]['page_title']);
 
@@ -202,6 +217,8 @@ function makePageList() {
             }
 
         }
+        var hr = $('<hr>'); element.append(hr);
+        var hr = $('<hr>'); element.append(hr);
 
     });
 
@@ -237,6 +254,9 @@ function showDataToRightPane(obj) {
     $('#note_name').text(note_name);
     $('#note_id').text(note_id);
 
+    $('#post_note_address').val(note_address);
+    $('#post_note_id').val(note_id);
+    $('#post_page_id').val($(obj).nextAll().eq(1).text());
 
     $(obj).addClass("currentItem");
 
