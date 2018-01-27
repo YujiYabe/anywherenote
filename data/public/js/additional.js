@@ -50,7 +50,6 @@ function file_download(Obj) {
 
     var file_url = $(Obj).attr('href') + '/' + $(Obj).text();
 
-    //function downloadFile(url, filename) {
     "use strict";
 
     // XMLHttpRequestオブジェクトを作成する
@@ -218,7 +217,7 @@ function makePageList() {
             var temp_date = Date.parse(page_list[item]['UpdatedAt']);
             var updateDateTime = moment(temp_date).format('YYYY/MM/DD HH:mm:ss');
 
-            var tr = $('<tr>'); tbody.append(tr); tr.attr('data-note_id', note_id); tr.attr('data-page_id', page_list[item]['ID']);
+            var tr = $('<tr>'); tbody.append(tr); tr.attr('data-note_id', note_id); tr.addClass('page_item'); tr.attr('data-page_id', page_list[item]['ID']);
 
             var td = $('<td>'); tr.append(td); td.attr('onclick', 'showDataToRightPane(this)');
             var div = $('<div>'); td.append(div); div.text(updateDateTime);

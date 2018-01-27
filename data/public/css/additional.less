@@ -1,4 +1,4 @@
-@left_pane_witdh : 14%;
+@left_pane_witdh : 15%;
 @left_pane_witdh_min : 1%;
 @cent_line_witdh :  0.5%;
 // @cent_line_witdh_hover :  @cent_line_witdh * 2 ;
@@ -32,7 +32,7 @@ body{
 			display: flex;
 			flex-direction:column;
 			margin: 1px;
-			background: gray;
+			background: whitesmoke;
 			height: 99vh;
 			width: @left_pane_witdh;
 
@@ -50,18 +50,18 @@ body{
 			#flexbox_left_head {
 				display: flex ;
 				flex-direction:column ;
-				background-color : lightgray ;
+				background-color : whitesmoke ;
 				margin: 1px;
 				height: 19% ;
 				width: 99%;
 				
 				#flexbox_left_button_switch_note {
-					background-color : lightgray ;
+					background-color : whitesmoke ;
 					margin: 10px 3px;
 				}
 
 				#flexbox_left_button_input_search {
-					background-color : lightgray ;
+					background-color : whitesmoke ;
 					margin: 5px 3px;
 				}
 
@@ -72,7 +72,7 @@ body{
 				display: flex;
 				overflow: auto;
 
-				background-color : darkgray ;
+				background-color : whitesmoke ;
 				margin: 1px;
 				height: 80% ;
 				width: 99%;
@@ -88,8 +88,20 @@ body{
 				}
 				
 				.currentItem {
-					background-color: paleturquoise;
+					background-color: lightblue;
 				}
+
+				.page_item {
+					background-color: gray;
+					cursor: pointer;
+				}
+
+				.page_item:hover {
+					background-color: lightgray;
+					cursor: pointer;
+				}
+
+				
 			}					
 
 		}
@@ -97,19 +109,19 @@ body{
 
 		.flexbox_cent_line {
 			width: @cent_line_witdh;
-			background: blue;
+			background: dimgray;
 			left: auto !important; // no jqui
 		}
 
 		.flexbox_cent_line:hover {
 			cursor: pointer;
-			background: red;
+			background: hotpink;
 			// width: @cent_line_witdh_hover;
 			// margin: 1px;
 		}
 
 		.dragging {
-			background: red;
+			background: hotpink;
 		}
 		
 		#flexbox_rght_pane {
@@ -132,26 +144,26 @@ body{
 				#flexbox_page_head {
 					// display: flex;
 					// flex-direction: column;
-					background-color : lightgray ;
+					background-color : whitesmoke ;
 					margin: 1px;
 					height: 30% ;
 					width: 99%;
 
 					#flexbox_page_head_1 {
-						background-color : lightblue ;
+						background-color : whitesmoke ;
 						margin: 1px;
 						.right_pane_note_name{
 							font-size: 40px;
 						}
 					}
 					#flexbox_page_head_2 {
-						background-color : lightcyan ;
+						background-color : whitesmoke ;
 						margin: 1px;
 					}
 					#flexbox_page_head_3 {
 						margin: 1px;
 						#flexbox_page_head_3_tool {
-							background-color : lightpink ;
+							background-color : whitesmoke ;
 							margin: 1px;
 						}
 					}
@@ -179,7 +191,7 @@ body{
 					}
 					.image_style {
 						border: 1px lightgray solid; 
-						width: 90%;
+						width: 95%;
 					}
 						
 				}

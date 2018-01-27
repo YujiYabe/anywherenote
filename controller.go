@@ -197,7 +197,7 @@ func UploadFilePost(c echo.Context) error {
 	imgExtList := []string{".bmp", ".gif", ".png", ".jpg", ".jpeg"}
 
 	if contains(imgExtList, file.Filename[pos:]) {
-		addFile = addFile + "<img class='image_style' src='.//note_id///" + file.Filename + "'>"
+		addFile = addFile + "<img class='image_style' src='//note_id///" + file.Filename + "'>"
 	} else {
 		addFile = addFile + "<a href='//note_id//' onclick='file_download(this);'>" + file.Filename + "</a>"
 		// addFile = addFile + "<a  href='//note_id///" + file.Filename + "' onclick='fileDownload(this);'>" + file.Filename + "</a>"
