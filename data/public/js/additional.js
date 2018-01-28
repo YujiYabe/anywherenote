@@ -38,39 +38,6 @@ $(function () {
 $(function () {
     makePageList();
 
-    $('input#search').quicksearch('table tbody tr');
-
-
-    $(".fileDownload").click(function () {
-        // $(this).slideUp();
-
-        console.log();
-        var fileurl = $(this).attr('href');
-        if (!confirm($(this).text() + 'をダウンロードしますか？')) {
-            /* キャンセルの時の処理 */
-            return false;
-        }
-        var childWindow = window.open('about:blank');
-        $.ajax({
-            type: 'GET',
-            url: fileurl,
-        }).done(function (jqXHR) {
-            childWindow.location.href = fileurl;
-
-            var id = setInterval(function () {
-                if (true) {
-                    childWindow.close();
-                    clearInterval(id);
-                }
-            }, 10);
-
-        }).fail(function (jqXHR) {
-            childWindow.close();
-        });
-
-
-
-    });
 
 });
 
@@ -261,6 +228,7 @@ function makePageList() {
 
                 $('#flexbox_page_pane').show();
 
+                parent_div.addClass("currentItem");
 
 
             }
@@ -269,6 +237,36 @@ function makePageList() {
         // var hr = $('<hr>'); element.append(hr);
 
     });
+
+
+    $('input#search').quicksearch('table tbody tr');
+    // $(".fileDownload").click(function () {
+    $('.fileDownload').on('click', function () {
+
+        var fileurl = $(this).attr('href');
+        if (!confirm($(this).text() + 'をダウンロードしますか？')) {
+            /* キャンセルの時の処理 */
+            return false;
+        }
+        var childWindow = window.open('about:blank');
+        $.ajax({
+            type: 'GET',
+            url: fileurl,
+        }).done(function (jqXHR) {
+            childWindow.location.href = fileurl;
+
+            var id = setInterval(function () {
+                if (true) {
+                    childWindow.close();
+                    clearInterval(id);
+                }
+            }, 10);
+
+        }).fail(function (jqXHR) {
+            childWindow.close();
+        });
+    });
+
 
 } // =======================================
 

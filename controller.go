@@ -126,7 +126,7 @@ func main() {
 	for _, value := range rValue {
 		v := uint64(value.ID)
 		noteID := strconv.FormatUint(v, 10)
-		e.Static("/"+noteID, value.Address+"\\file")
+		e.Static("/"+noteID, value.Address + directorySeparator + "file")
 
 	}
 
