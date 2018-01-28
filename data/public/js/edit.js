@@ -5,6 +5,10 @@ $(function () {
         function (e) {
             // $(this).css({ background: "blue" });
             // $("#separate_line").css("width", "15px")
+
+            // $('.flexbox_cent_line').css("width", "10px");
+
+
         },
         function (e) {
             // $("#separate_line").css("width","3px")
@@ -18,7 +22,6 @@ $(function () {
         containment: $(".flexbox_container"),
         start: function (e, ui) {
             $(this).addClass('dragging');
-            console.log("  zz");
         },
 
         drag: function (e, ui) {

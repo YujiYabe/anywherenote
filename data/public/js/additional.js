@@ -30,6 +30,8 @@ $(function () {
             $(this).css({ background: "gray" });
         }
     });
+
+
 });
 
 
@@ -38,55 +40,51 @@ $(function () {
 
     $('input#search').quicksearch('table tbody tr');
 
+
+    $(".fileDownload").click(function () {
+        // $(this).slideUp();
+
+        console.log();
+        var fileurl = $(this).attr('href');
+        if (!confirm($(this).text() + 'をダウンロードしますか？')) {
+            /* キャンセルの時の処理 */
+            return false;
+        }
+        var childWindow = window.open('about:blank');
+        $.ajax({
+            type: 'GET',
+            url: fileurl,
+        }).done(function (jqXHR) {
+            childWindow.location.href = fileurl;
+
+            var id = setInterval(function () {
+                if (true) {
+                    childWindow.close();
+                    clearInterval(id);
+                }
+            }, 10);
+
+        }).fail(function (jqXHR) {
+            childWindow.close();
+        });
+
+
+
+    });
+
 });
 
-function file_download(Obj) {
-
-    if (!confirm($(Obj).text() + 'をダウンロードしますか？')) {
-        /* キャンセルの時の処理 */
-        return false;
-    }
-
-
-    var file_url = $(Obj).attr('href') + '/' + $(Obj).text();
-
-    "use strict";
-
-    // XMLHttpRequestオブジェクトを作成する
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", file_url, true);
-    xhr.responseType = "blob"; // Blobオブジェクトとしてダウンロードする
-    xhr.onload = function (oEvent) {
-        // ダウンロード完了後の処理を定義する
-        var blob = xhr.response;
-        if (window.navigator.msSaveBlob) {
-            // IEとEdge
-            window.navigator.msSaveBlob(blob, $(Obj).text());
-        }
-        else {
-            // それ以外のブラウザ
-            // Blobオブジェクトを指すURLオブジェクトを作る
-            var objectURL = window.URL.createObjectURL(blob);
-            // リンク（<a>要素）を生成し、JavaScriptからクリックする
-            var link = document.createElement("a");
-            document.body.appendChild(link);
-            link.href = objectURL;
-            link.download = $(Obj).text();
-            link.click();
-            document.body.removeChild(link);
-        }
-    };
-    // XMLHttpRequestオブジェクトの通信を開始する
-    xhr.send();
-
-}
+// function fileDownload(Obj) {
+// }
 
 
 function switch_rght_body() {
 
     if ($('#upload_zone').css('display') == 'none') {
+        updatePage();
         $('#page_body').css('display', 'none')
         $('#upload_zone').css('display', '')
+
     } else {
         $('#page_body').css('display', '')
         $('#upload_zone').css('display', 'none')
@@ -198,7 +196,7 @@ function makePageList() {
         table.attr('data-note_id', note_id);
         table.attr('data-note_name', note_name);
         table.attr('data-note_address', note_address);
-        table.addClass('table table-bordered table-hover');
+        // table.addClass('table table-bordered table-hover');
 
         var thead = $('<thead>'); table.append(thead);
 
@@ -219,9 +217,16 @@ function makePageList() {
 
             var tr = $('<tr>'); tbody.append(tr); tr.attr('data-note_id', note_id); tr.addClass('page_item'); tr.attr('data-page_id', page_list[item]['ID']);
 
-            var td = $('<td>'); tr.append(td); td.attr('onclick', 'showDataToRightPane(this)');
-            var div = $('<div>'); td.append(div); div.text(updateDateTime);
-            var div = $('<div>'); td.append(div); div.text(page_list[item]['page_title']);
+
+            // var td = $('<td>'); tr.append(td); td.attr('onclick', 'showDataToRightPane(this)');
+
+            var td = $('<td>'); tr.append(td);
+            var parent_div = $('<div>'); td.append(parent_div); parent_div.addClass('btn btn-info'); parent_div.attr('onclick', 'showDataToRightPane(this)');
+
+            var div = $('<div>'); parent_div.append(div); div.text(updateDateTime);
+            var div = $('<div>'); parent_div.append(div); div.text(page_list[item]['page_title']);
+
+
 
             var td = $('<td>'); tr.append(td); td.hide(); td.text(updateDateTime);
             var td = $('<td>'); tr.append(td); td.hide(); td.text(page_list[item]['ID']);
@@ -283,15 +288,15 @@ function showDataToRightPane(obj) {
     switchRightPane('flexbox_page_pane');
 
 
-    var note_id = $(obj).parent().parent().parent().attr('data-note_id');
-    var note_name = $(obj).parent().parent().parent().attr('data-note_name');
-    var note_address = $(obj).parent().parent().parent().attr('data-note_address');
+    var note_id = $(obj).parent().parent().parent().parent().attr('data-note_id');
+    var note_name = $(obj).parent().parent().parent().parent().attr('data-note_name');
+    var note_address = $(obj).parent().parent().parent().parent().attr('data-note_address');
 
     // console.log(note_name);
-    $('#update_time').text($(obj).nextAll().eq(0).text());
-    $('#page_id').text($(obj).nextAll().eq(1).text());
-    $('#page_title').val($(obj).nextAll().eq(2).text());
-    $('#page_body').html($(obj).nextAll().eq(3).text());
+    $('#update_time').text($(obj).parent().nextAll().eq(0).text());
+    $('#page_id').text($(obj).parent().nextAll().eq(1).text());
+    $('#page_title').val($(obj).parent().nextAll().eq(2).text());
+    $('#page_body').html($(obj).parent().nextAll().eq(3).text());
 
     $('#note_address').text(note_address);
     $('#note_name').text(note_name);

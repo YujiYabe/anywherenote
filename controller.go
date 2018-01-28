@@ -192,18 +192,27 @@ func UploadFilePost(c echo.Context) error {
 
 	//対象のページ内容を呼び出し、対象のファイルを追記した内容で再書き込み
 
+	addFile := "<br>"
+
+	imgExtList := []string{".bmp", ".gif", ".png", ".jpg", ".jpeg", ".BMP", ".GIF", ".PNG", ".JPG", ".JPEG"}
 	pos := strings.LastIndex(file.Filename, ".")
-	addFile := "<br><br>"
-	imgExtList := []string{".bmp", ".gif", ".png", ".jpg", ".jpeg"}
 
 	if contains(imgExtList, file.Filename[pos:]) {
 		addFile = addFile + "<img class='image_style' src='//note_id///" + file.Filename + "'>"
 	} else {
-		addFile = addFile + "<a href='//note_id//' onclick='file_download(this);'>" + file.Filename + "</a>"
+		// <div class="sam13"><a href="">テスト</a></div>
+
+		// addFile = addFile + "<div class='file_style btn btn-warning'>" + file.Filename + "</div>"
+
+		// addFile = addFile + "<a href='//note_id//' class='file_style'>" + file.Filename + "</a>"
+		// addFile = addFile + "<a href='//note_id//' onclick='file_download(this);'>" + file.Filename + "</a>"
 		// addFile = addFile + "<a  href='//note_id///" + file.Filename + "' onclick='fileDownload(this);'>" + file.Filename + "</a>"
 		// addFile = addFile + "<a  href='.///note_id///" + file.Filename + "' download='" + file.Filename + "'>" + file.Filename + "</a>"
+
+		addFile = addFile + "<a  href='//note_id///" + file.Filename + "' class='fileDownload'><div contenteditable='false' class='btn btn-warning'>" + file.Filename + "</div></a>"
+
 	}
-	addFile = addFile + "<br><br>"
+	addFile = addFile + "<br><br><br>"
 
 	sndArg := make(map[string]string)
 	sndArg["noteAddress"] = noteAddress
