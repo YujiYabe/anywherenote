@@ -30,22 +30,21 @@
 [lnx64_v0.2]: https://drive.google.com/open?id=1HtcChZZ4CFFaoBB1VLgzYBXP1r5NUgKY "Linux64_v0.2"
 [lnx32_v0.2]: https://drive.google.com/open?id=1F7EiJSrp2igFuBLMVmEKmRYnxmh8Cp0g "Linux32_v0.2"
 
+[win64_v0.3]: https://drive.google.com/open?id=1tzOQHrnWySrIdpddK_fn4CqPwLj_4H42 "Windows64_v0.3"
+[win32_v0.3]: https://drive.google.com/open?id=1_kgJwcRH6INMmoEcE132o7KIZI31dXvF "Windows32_v0.3"
+[lnx64_v0.3]: https://drive.google.com/open?id=1CUXeo3Bqpv4dZ2bPPdICKCsTA7uATE9U "Linux64_v0.3"
+[lnx32_v0.3]: https://drive.google.com/open?id=1wQQMQPkS-JnH3JRVvB4aV5jyhVMeZO8Z "Linux32_v0.3"
+
 
 ## ダウンロード
-#### v0.2   
-|       | Windows      | Linux        | Macintosh  |
-|:------|:-------------|:-------------|:-----------|
-| 64bit | [win64_v0.2] | [lnx64_v0.2] | 準備中      |
-| 32bit | [win32_v0.2] | [lnx32_v0.2] | 準備中      |
-  
-##### v0.1   
-|       | Windows      | Linux        | Macintosh  |
-|:------|:-------------|:-------------|:-----------|
-| 64bit | [win64_v0.1] | [lnx64_v0.1] | 準備中      |
-| 32bit | [win32_v0.1] | [lnx32_v0.1] | 準備中      |
-  
- 
 
+|      | Windows 64bit | Windows 32bit | Linux 64bit  | Linux 32bit  | Macintosh  |
+|:-----|:--------------|:--------------|:-------------|:-------------|:-----------|
+| v0.1 | [win64_v0.1]  | [win32_v0.1]  | [lnx64_v0.1] | [lnx32_v0.1] | 準備中     |
+| v0.2 | [win64_v0.2]  | [win32_v0.2]  | [lnx64_v0.2] | [lnx32_v0.2] | 準備中     |
+| v0.3 | [win64_v0.3]  | [win32_v0.3]  | [lnx64_v0.3] | [lnx32_v0.3] | 準備中     |
+   
+  
 
 
   
