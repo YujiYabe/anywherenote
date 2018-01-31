@@ -1,72 +1,23 @@
 "use strict";
 
-$(function () {
-
-    $("#line_separate").hover(
-        function (e) {
-            $(this).css({ background: "blue" });
-            $("#line_separate").css("width", "15px")
-        },
-        function (e) {
-            $("#line_separate").css("width", "3px")
-        }
-    );
-
-    $("#line_separate").draggable({
-        axis: "x",
-        start: function (event, ui) {
-            $(this).css({ background: "blue" });
-        },
-        drag: function (event, ui) {
-            // console.log(event , ui);
-            // console.log(' top: ' + ui.position.top + ' left: ' + ui.position.left);
-            $(this).css({ background: "blue" });
-            $(".left_pane").css("width", ui.position.left)
-            // $( "BODY" ).css("padding-left", ui.position.left + 5)
-            $(".right_pane").css("padding-left", ui.position.left + 5)
-        },
-
-        stop: function (event, ui) {
-            $(this).css({ background: "gray" });
-        }
-    });
-
-
-});
 
 
 $(function () {
     makePageList();
-
-
+    getUserConfig();
 });
 
-// function fileDownload(Obj) {
-// }
 
-
-function switch_rght_body() {
-
-    if ($('#upload_zone').css('display') == 'none') {
-        updatePage();
-        $('#page_body').css('display', 'none')
-        $('#upload_zone').css('display', '')
-
-    } else {
-        $('#page_body').css('display', '')
-        $('#upload_zone').css('display', 'none')
-    }
-
+function getUserConfig() {
 }
 
-
-function switchRightPane(pane_name) {
-
-    $('.right_pane_content').hide();
-    $('#' + pane_name).show();
-}
 
 function makePageList() {
+    // ユーザ設定取得
+    $.getJSON("public/userconfig.json", function (data) {
+        console.log(data);
+        $('#source_user_config').text(data);
+    });
 
     $('#parent_note_table').empty();
     $('#table_parent').empty();
@@ -78,7 +29,8 @@ function makePageList() {
         // if (true) {
         $('#flexbox_page_pane').hide();
         $('#flexbox_note_pane').show();
-        $('#left_pane_head').hide();
+        $('#flexbox_left_pane').hide();
+        // $('#left_pane_head').hide();
         return false;
     } else {
         $('#flexbox_note_pane').hide();
@@ -185,7 +137,6 @@ function makePageList() {
             var tr = $('<tr>'); tbody.append(tr); tr.attr('data-note_id', note_id); tr.addClass('page_item'); tr.attr('data-page_id', page_list[item]['ID']);
 
 
-            // var td = $('<td>'); tr.append(td); td.attr('onclick', 'showDataToRightPane(this)');
 
             var td = $('<td>'); tr.append(td);
             var parent_div = $('<div>'); td.append(parent_div); parent_div.addClass('btn btn-info'); parent_div.attr('onclick', 'showDataToRightPane(this)');
@@ -201,7 +152,7 @@ function makePageList() {
 
             var temp_page_body = page_list[item]['page_body'].replace(new RegExp('\/\/note_id\/\/', "g"), note_id);
 
-            var td = $('<td>'); tr.append(td); td.hide(); td.text(temp_page_body);
+            var td = $('<td>'); tr.append(td); td.hide(); td.html(temp_page_body);
 
 
             // 選択済のページを表示
@@ -230,11 +181,9 @@ function makePageList() {
 
                 parent_div.addClass("currentItem");
 
-
             }
 
         }
-        // var hr = $('<hr>'); element.append(hr);
 
     });
 
@@ -266,45 +215,85 @@ function makePageList() {
             childWindow.close();
         });
     });
-
-
 } // =======================================
+
+
+
+
+
 
 // ノートをクリックした際にページの表示・非表示
 function switchShowHideDataList(obj) {
     var target_table = $(obj).attr('data-target_table');
     $('#' + target_table).toggle();
 
-
 } // =======================================
 
 
-// ページを右ペインに表示
+// ----------------------------------------------------
+// 右ペインの内容変更 テキストエリア⇔アップロードエリア
+function switch_rght_body() {
+
+    if ($('#upload_zone').css('display') == 'none') {
+        // テキストエリア⇒アップロードエリアの場合、現在のテキストを保存してからアップロード処理
+        updatePage();
+        $('#page_body').css('display', 'none')
+        $('#upload_zone').css('display', '')
+
+    } else {
+        $('#page_body').css('display', '')
+        $('#upload_zone').css('display', 'none')
+    }
+
+} // ----------------------------------------------------
+
+
+// ----------------------------------------------------
+// 右ペインの変更 ノート編集⇔ページ編集
+function switchRightPane(pane_name) {
+    $('.right_pane_content').hide();
+    $('#' + pane_name).show();
+} // ----------------------------------------------------
+
+
+// ----------------------------------------------------
+// クリックしたページを右ペインに表示
 function showDataToRightPane(obj) {
     $(".currentItem").removeClass("currentItem");
 
     switchRightPane('flexbox_page_pane');
 
+    var update_time = $(obj).parent().nextAll().eq(0).text();
 
+    //            div    →td     →tr     →tbody  →table
     var note_id = $(obj).parent().parent().parent().parent().attr('data-note_id');
     var note_name = $(obj).parent().parent().parent().parent().attr('data-note_name');
     var note_address = $(obj).parent().parent().parent().parent().attr('data-note_address');
 
-    // console.log(note_name);
-    $('#update_time').text($(obj).parent().nextAll().eq(0).text());
-    $('#page_id').text($(obj).parent().nextAll().eq(1).text());
-    $('#page_title').val($(obj).parent().nextAll().eq(2).text());
-    $('#page_body').html($(obj).parent().nextAll().eq(3).text());
+    var page_id = $(obj).parent().nextAll().eq(1).text();
+    var page_title = $(obj).parent().nextAll().eq(2).text();
+    var page_body = $(obj).parent().nextAll().eq(3).text();
 
-    $('#note_address').text(note_address);
-    $('#note_name').text(note_name);
+
+    $('#update_time').text(update_time);
+
     $('#note_id').text(note_id);
+    $('#note_name').text(note_name);
+    $('#note_address').text(note_address);
+
+    $('#page_id').text(page_id);
+    $('#page_title').val(page_title);
+    $('#page_body').html(page_body);
+
 
     $('#post_note_address').val(note_address);
     $('#post_note_id').val(note_id);
-    $('#post_page_id').val($(obj).nextAll().eq(1).text());
+    $('#post_page_id').val(page_id);
 
     $(obj).addClass("currentItem");
+
+
+
 
 
     // //ID重複チェック ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
@@ -321,7 +310,7 @@ function showDataToRightPane(obj) {
     // if (duplicateIdArr.length > 0) {
     //     console.log('IDの重複があります:', duplicateIdArr);
     // } else {
-    //     // console.log('IDの重複はありません。');
+    //     console.log('IDの重複はありません。');
     // }
     // //ID重複チェック ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 

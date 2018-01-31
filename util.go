@@ -8,11 +8,8 @@ import (
 )
 
 func osCheckFile(targetFile string) error {
-
 	_, err := os.Stat(targetFile)
-
 	return err
-
 } //--------------------------------------------
 
 func contains(s []string, e string) bool {
@@ -34,7 +31,6 @@ func checkConfig() {
 		// 設定データベースの初期化
 		dbApplyType(confDBAddress, &Conf{})
 	}
-
 } //--------------------------------------------
 
 func printEventLog(flagName string, message interface{}) {
@@ -87,10 +83,10 @@ func calcTime() {
 		old, _ := time.Parse(dateTimeFormat, recieveString)
 
 		if !old.After(now) { // old <= now --- ! old > now
-			if userConfig.IsEnableAppMode {
+			// if userConfig.IsEnableAppMode {
 				log.Println("アプリ終了")
 				endProcess()
-			}
+			// }
 		}
 	}
 } //--------------------------------------------
@@ -102,14 +98,3 @@ func convertStringToUint(s string) uint {
 	return ui
 } //--------------------------------------------
 
-//--------------------------------------------
-// func osCreateFile( targetFileName string ) {
-//     file, err := os.OpenFile( targetFileName , os.O_WRONLY|os.O_CREATE , 0666 )
-
-//     if err != nil {
-//         //エラー処理
-//         log.Fatal(err)
-//     }
-//     defer file.Close()
-
-// } //--------------------------------------------

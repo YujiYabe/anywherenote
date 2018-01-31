@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"strconv"
+	"time"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
@@ -23,6 +24,39 @@ type Note struct {
 	PageTitle string `json:"page_title"`
 	PageBody  string `json:"page_body"`
 } //--------------------------------------------
+
+// DataSet DBファイルの情報とノート情報のセット
+type DataSet struct {
+	NoteDBID         uint   `json:"NoteDBID"`
+	NoteDBName       string `json:"NoteDBName"`
+	NoteDBAddress    string `json:"NoteDBAddress"`
+	NoteDBUpdateTime time.Time
+	List             []Note `json:"list"`
+}
+
+// SelectPosition 選択中情報
+type SelectPosition struct {
+	NoteID uint `json:"NoteID"`
+	PageID uint `json:"PageID"`
+}
+
+// ReturnValue 戻り値とDataSetのセット RtnCodeがリターンコード
+type ReturnValue struct {
+	RtnCode string         `json:"RtnCode"`
+	DataSet []DataSet      `json:"DataSet"`
+	SlctPst SelectPosition `json:"SlctPst"`
+} //--------------------------------------------
+
+// UserConfig
+type UserConfig struct {
+	IsEnableAppMode     bool          `json:"IsEnableAppMode"`
+	WaitSecondLiveCheck time.Duration `json:"WaitSecondLiveCheck"`
+	WaitSecondInterval  time.Duration `json:"WaitSecondInterval"`
+	UsePortNumber       string        `json:"UsePortNumber"`
+}
+
+
+
 
 func getAllNoteAddress() []Conf {
 	confdb := setupDB(confDBAddress)

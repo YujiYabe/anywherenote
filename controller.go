@@ -29,43 +29,17 @@ var (
 )
 
 // 定数
-const useDBMSName = "sqlite3"  // 使用DBMS
-const confDBName = "config.db" // ローカル設定ファイル
-const noteDBName = "note.db"   // ノート保存先
+const useDBMSName  = "sqlite3"   // 使用DBMS
+const dataDirName  = "data"      // htmlやjs、DBファイル等格納先ディレクトリ
+const confDBName   = "config.db" // ローカル設定DBファイル名
+const userConfFile = "userconfig.json" // ローカル設定DBファイル名
 
-const dataDirName = "data" // htmlやjs、DBファイル等格納先
+const fileDirName  = "file"      // ページ内にアップロードするディレクトリ名
+const noteDBName   = "note.db"   // ノート保存先DBファイル名
+
 
 const dateTimeFormat = "2006-01-02 15:04:05" // 日時フォーマット
 
-// DataSet DBファイルの情報とノート情報のセット
-type DataSet struct {
-	NoteDBID         uint   `json:"NoteDBID"`
-	NoteDBName       string `json:"NoteDBName"`
-	NoteDBAddress    string `json:"NoteDBAddress"`
-	NoteDBUpdateTime time.Time
-	List             []Note `json:"list"`
-}
-
-// SelectPosition 選択中情報
-type SelectPosition struct {
-	NoteID uint `json:"NoteID"`
-	PageID uint `json:"PageID"`
-}
-
-// ReturnValue 戻り値とDataSetのセット RtnCodeがリターンコード
-type ReturnValue struct {
-	RtnCode string         `json:"RtnCode"`
-	DataSet []DataSet      `json:"DataSet"`
-	SlctPst SelectPosition `json:"SlctPst"`
-} //--------------------------------------------
-
-// UserConfig
-type UserConfig struct {
-	IsEnableAppMode     bool          `json:"IsEnableAppMode"`
-	WaitSecondLiveCheck time.Duration `json:"WaitSecondLiveCheck"`
-	WaitSecondInterval  time.Duration `json:"WaitSecondInterval"`
-	UsePortNumber       string        `json:"UsePortNumber"`
-}
 
 // レイアウト適用済のテンプレートを保存するmap
 var templates map[string]*template.Template
@@ -86,13 +60,13 @@ func init() {
 		directorySeparator = "\\"
 	}
 
-	// 設定ファイルの読み込み
-	file, err := ioutil.ReadFile(dataDirName + directorySeparator + "config.json")
+	// ユーザ設定ファイルの読み込み
+	userConfigFile, err := ioutil.ReadFile(dataDirName + directorySeparator + "public" + directorySeparator + userConfFile )
 	if err != nil {
 		panic(err)
 	}
+	json.Unmarshal(userConfigFile, &userConfig)
 
-	json.Unmarshal(file, &userConfig)
 
 	confDBAddress = dataDirName + directorySeparator + confDBName
 
@@ -121,13 +95,12 @@ func main() {
 	e.Static("/public", "data/public")
 	e.File("/favicon.ico", "data/public/favicon.ico")
 
-	// AllNoteAddress := getAllNoteAddress()
+	// ノートアドレスとノートIDを紐づけて静的ファイルパスを設定
 	rValue := getAllNoteAddress()
 	for _, value := range rValue {
 		v := uint64(value.ID)
 		noteID := strconv.FormatUint(v, 10)
-		e.Static("/"+noteID, value.Address + directorySeparator + "file")
-
+		e.Static("/"+noteID, value.Address + directorySeparator + fileDirName)
 	}
 
 	// 各ルーティングに対するハンドラを設定
@@ -141,9 +114,13 @@ func main() {
 	e.POST("/deletepage", DeletePagePost)
 	e.POST("/uploadfile", UploadFilePost)
 
-	open.Run("http://localhost:" + userConfig.UsePortNumber)
-
-	go calcTime()
+	// アプリモードが有効であればローカルのブラウザを開く
+	// ブラウザからのハートビートを受け取る
+	// 無効であればサーバモードとして起動
+	if userConfig.IsEnableAppMode {
+		open.Run("http://localhost:" + userConfig.UsePortNumber)
+		go calcTime()
+	}
 
 	// サーバーを開始
 	e.Logger.Fatal(e.Start(":" + userConfig.UsePortNumber))
@@ -155,19 +132,13 @@ func UploadFilePost(c echo.Context) error {
 
 	noteAddress := c.FormValue("note_address")
 	pageID := c.FormValue("page_id")
-	// noteID := c.FormValue("note_id")
-	// noteAddress := "C:\\Users\\yuji\\Dropbox\\test"
-	// pageID := "1"
-
-	// printEventLog("debug", noteAddress)
-	// printEventLog("debug", pageID)
 
 	//-----------
 	// Read file
 	//-----------
 
 	// Source
-	file, err := c.FormFile("file")
+	file, err := c.FormFile(fileDirName)
 	if err != nil {
 		return err
 	}
@@ -178,7 +149,7 @@ func UploadFilePost(c echo.Context) error {
 	defer src.Close()
 
 	// Destination // ノート配下のfileディレクトリに作成yyyymmdd-hhmmss形式
-	dst, err := os.Create(noteAddress + directorySeparator + "file" + directorySeparator + file.Filename)
+	dst, err := os.Create(noteAddress + directorySeparator + fileDirName + directorySeparator + file.Filename)
 	if err != nil {
 		return err
 	}
@@ -258,14 +229,16 @@ func LoadPageGet(c echo.Context) error {
 func AddNotePost(c echo.Context) error {
 	printEventLog("start", "ノート追加 開始")
 
+	noteAddress := c.FormValue("note_address")
+
 	// ディレクトリ 存在確認
-	err := osCheckFile(c.FormValue("note_address"))
+	err := osCheckFile(noteAddress)
 	if err != nil {
 		return err
 	}
 
 	// DBファイルの存在確認
-	notefullAddress := c.FormValue("note_address") + directorySeparator + noteDBName
+	notefullAddress := noteAddress + directorySeparator + noteDBName
 
 	err2 := osCheckFile(notefullAddress)
 
@@ -274,8 +247,7 @@ func AddNotePost(c echo.Context) error {
 		dbApplyType(notefullAddress, &Note{})
 	}
 
-	filefullAddress := c.FormValue("note_address") + directorySeparator + "file"
-
+	filefullAddress := noteAddress + directorySeparator + fileDirName
 	// ファイル用ディレクトリが存在するかを確認
 	err3 := osCheckFile(filefullAddress)
 	if err3 != nil {
@@ -297,6 +269,11 @@ func AddNotePost(c echo.Context) error {
 
 	// INSERTを実行
 	confdb.Create(&conf)
+
+	// ★追加したアドレスのスタティックパスを追加
+	// v := uint64(value.ID)
+	// noteID := strconv.FormatUint(v, 10)
+	// e.Static("/"+noteID, value.Address + directorySeparator + fileDirName)
 
 	printEventLog("end", "ノート追加 終了")
 	return nil
@@ -429,7 +406,7 @@ func LiveCheckGet(c echo.Context) error {
 
 // 各HTMLテンプレートに共通レイアウトを適用した結果を保存します（初期化時に実行）。
 func loadTemplates() {
-	var baseTemplate = "data/templates/layout.html"
+	var baseTemplate = "data/template/layout.html"
 	templates = make(map[string]*template.Template)
-	templates["loadpage"] = template.Must(template.ParseFiles(baseTemplate, "data/templates/loadpage.html"))
+	templates["loadpage"] = template.Must(template.ParseFiles(baseTemplate, "data/template/loadpage.html"))
 } //--------------------------------------------
