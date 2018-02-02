@@ -63,11 +63,26 @@ function addPage(Obj) {
 
 function updateNote(Obj) {
 
+    var note_id = $(Obj).nextAll().eq(2).children('input').attr('data-note_id');
+    var note_star = $(Obj).nextAll().eq(0).text();
+    var note_name = $(Obj).nextAll().eq(2).children('input').val()
+
+
+
+    console.log(note_name);
+    console.log(note_id);
+    console.log(note_star);
+
+
+
     var target_url = 'updatenote';
     var post_data = {
-        'note_name': $(Obj).next().children('input').val(),
-        'note_id': $(Obj).next().children('input').attr('data-note_id'),
+        'note_id': note_id,
+        'note_star': note_star,
+        'note_name': note_name,
     };
+
+
 
     $.ajax({
         type: 'POST',
@@ -77,7 +92,7 @@ function updateNote(Obj) {
         .then(
         // 1つめは通信成功時のコールバック
         function (data) {
-            location.reload();
+            // location.reload();
 
         },
         // 2つめは通信失敗時のコールバック

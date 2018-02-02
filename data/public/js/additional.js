@@ -4,18 +4,42 @@
 
 $(function () {
     makePageList();
-    getUserConfig();
+    // getUserConfig();
+
+    $(".ratingstar").hover(
+        function () {
+            // $(this).append($("<span> ***</span>"));
+            // console.log("a");
+
+            $(this).siblings().text('☆');
+            $(this).prevAll().text('★');
+            $(this).text('★');
+        },
+        function () {
+            var selected_int = $(this).parent().prevAll().eq(0).text();
+            var parent = $(this).parent();
+
+            for (var starint = 1; starint <= 3; starint++) {
+
+                var targetspan = parent.find('[data-number=' + starint + ']');
+                if (starint <= selected_int) {
+                    targetspan.text('★');
+                } else {
+                    targetspan.text('☆');
+                }
+            }
+        }
+    );
+
+
 });
 
-
-function getUserConfig() {
-}
 
 
 function makePageList() {
     // ユーザ設定取得
     $.getJSON("public/userconfig.json", function (data) {
-        console.log(data);
+        // console.log(data);
         $('#source_user_config').text(data);
     });
 
@@ -48,7 +72,8 @@ function makePageList() {
     var note_table = $('<div>'); parent_note_table.append(note_table); note_table.addClass('container'); //table.attr('id', note_address); table.attr('data-address', note_address); 
     var note_tr = $('<div>'); note_table.append(note_tr); note_tr.addClass('row');
     var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text("追加");
-    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-4'); note_td.text("ノート名");
+    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text("優先度");
+    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-3'); note_td.text("ノート名");
     var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-4'); note_td.text("ノート格納パス");
     var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text("削除");
 
@@ -57,6 +82,7 @@ function makePageList() {
 
     $.each(json_return_value["DataSet"], function (index, val) {
         var note_id = json_return_value["DataSet"][index]["NoteDBID"];
+        var note_star = json_return_value["DataSet"][index]["NoteDBStar"];
         var note_name = json_return_value["DataSet"][index]["NoteDBName"];
         var note_address = json_return_value["DataSet"][index]["NoteDBAddress"];
         // var temp_note_updatetime = json_return_value["DataSet"][index]["NoteDBUpdateTime"];
@@ -71,7 +97,21 @@ function makePageList() {
         var note_tr = $('<div>'); note_table.append(note_tr); note_tr.addClass('row');
 
         var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text("変更"); note_td.addClass("btn btn-info"); note_td.attr('onclick', 'updateNote(this);');
-        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-4');
+
+        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text(note_star);
+        var parent_span = $('<span>'); note_tr.append(parent_span);
+
+        for (var starint = 1; starint <= 3; starint++) {
+
+            var span = $('<span>'); parent_span.append(span); span.attr('data-number', starint); span.addClass('ratingstar'); span.attr('onclick', 'changeRateStar(this)'); // span.attr('hover', 'intentChangeRateStar(this)');
+            if (starint <= note_star) {
+                span.text('★');
+            } else {
+                span.text('☆');
+            }
+        }
+
+        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-3');
         var note_input = $('<input>'); note_td.append(note_input); note_input.val(note_name); note_input.attr('data-note_id', note_id); note_input.addClass("form-control");
         var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-4'); note_td.text(note_address);
         var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text("削除"); note_td.addClass("btn btn-danger"); note_td.attr('onclick', 'deleteNote(this);');
@@ -218,7 +258,22 @@ function makePageList() {
 } // =======================================
 
 
+// スターをクリックした際のレートの変更
+function intentChangeRateStar(obj) {
 
+    console.log($(obj).attr('data-number'));
+    // $(obj).parent().prevAll().eq(0).text($(obj).attr('data-number'));
+
+
+} // =======================================
+
+
+// スターをクリックした際のレートの変更
+function changeRateStar(obj) {
+
+    $(obj).parent().prevAll().eq(0).text($(obj).attr('data-number'));
+
+} // =======================================
 
 
 
@@ -265,7 +320,7 @@ function showDataToRightPane(obj) {
 
     var update_time = $(obj).parent().nextAll().eq(0).text();
 
-    //            div    →td     →tr     →tbody  →table
+    //            div    td       tr       tbody    table
     var note_id = $(obj).parent().parent().parent().parent().attr('data-note_id');
     var note_name = $(obj).parent().parent().parent().parent().attr('data-note_name');
     var note_address = $(obj).parent().parent().parent().parent().attr('data-note_address');

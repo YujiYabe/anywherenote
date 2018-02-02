@@ -29,17 +29,15 @@ var (
 )
 
 // 定数
-const useDBMSName  = "sqlite3"   // 使用DBMS
-const dataDirName  = "data"      // htmlやjs、DBファイル等格納先ディレクトリ
-const confDBName   = "config.db" // ローカル設定DBファイル名
+const useDBMSName = "sqlite3"          // 使用DBMS
+const dataDirName = "data"             // htmlやjs、DBファイル等格納先ディレクトリ
+const confDBName = "config.db"         // ローカル設定DBファイル名
 const userConfFile = "userconfig.json" // ローカル設定DBファイル名
 
-const fileDirName  = "file"      // ページ内にアップロードするディレクトリ名
-const noteDBName   = "note.db"   // ノート保存先DBファイル名
-
+const fileDirName = "file"   // ページ内にアップロードするディレクトリ名
+const noteDBName = "note.db" // ノート保存先DBファイル名
 
 const dateTimeFormat = "2006-01-02 15:04:05" // 日時フォーマット
-
 
 // レイアウト適用済のテンプレートを保存するmap
 var templates map[string]*template.Template
@@ -61,12 +59,11 @@ func init() {
 	}
 
 	// ユーザ設定ファイルの読み込み
-	userConfigFile, err := ioutil.ReadFile(dataDirName + directorySeparator + "public" + directorySeparator + userConfFile )
+	userConfigFile, err := ioutil.ReadFile(dataDirName + directorySeparator + "public" + directorySeparator + userConfFile)
 	if err != nil {
 		panic(err)
 	}
 	json.Unmarshal(userConfigFile, &userConfig)
-
 
 	confDBAddress = dataDirName + directorySeparator + confDBName
 
@@ -100,7 +97,7 @@ func main() {
 	for _, value := range rValue {
 		v := uint64(value.ID)
 		noteID := strconv.FormatUint(v, 10)
-		e.Static("/"+noteID, value.Address + directorySeparator + fileDirName)
+		e.Static("/"+noteID, value.NoteAddress+directorySeparator+fileDirName)
 	}
 
 	// 各ルーティングに対するハンドラを設定
@@ -264,8 +261,9 @@ func AddNotePost(c echo.Context) error {
 
 	var conf Conf
 
-	conf.Name = c.FormValue("note_name")
-	conf.Address = c.FormValue("note_address")
+	conf.NoteName = c.FormValue("note_name")
+	conf.NoteAddress = c.FormValue("note_address")
+	conf.NoteStar = 1
 
 	// INSERTを実行
 	confdb.Create(&conf)
@@ -273,7 +271,7 @@ func AddNotePost(c echo.Context) error {
 	// ★追加したアドレスのスタティックパスを追加
 	// v := uint64(value.ID)
 	// noteID := strconv.FormatUint(v, 10)
-	// e.Static("/"+noteID, value.Address + directorySeparator + fileDirName)
+	// e.Static("/"+noteID, value.NoteAddress + directorySeparator + fileDirName)
 
 	printEventLog("end", "ノート追加 終了")
 	return nil
@@ -315,6 +313,7 @@ func UpdateNotePost(c echo.Context) error {
 	sndArg := make(map[string]string)
 	sndArg["postNoteID"] = c.FormValue("note_id")
 	sndArg["noteName"] = c.FormValue("note_name")
+	sndArg["noteStar"] = c.FormValue("note_star")
 	updateNote(sndArg)
 
 	printEventLog("end", "ノート更新 終了")

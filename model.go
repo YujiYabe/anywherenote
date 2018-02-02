@@ -14,8 +14,9 @@ import (
 // Conf 初期読み込み用設定
 type Conf struct {
 	gorm.Model
-	Name    string `json:"conf_name"`
-	Address string `json:"conf_address"`
+	NoteStar    int    `json:"note_star"`
+	NoteName    string `json:"note_name"`
+	NoteAddress string `json:"note_address"`
 } //--------------------------------------------
 
 // Note ページの内容
@@ -23,11 +24,13 @@ type Note struct {
 	gorm.Model
 	PageTitle string `json:"page_title"`
 	PageBody  string `json:"page_body"`
+	PageStar  int    `json:"page_star"`
 } //--------------------------------------------
 
 // DataSet DBファイルの情報とノート情報のセット
 type DataSet struct {
 	NoteDBID         uint   `json:"NoteDBID"`
+	NoteDBStar       int    `json:"NoteDBStar"`
 	NoteDBName       string `json:"NoteDBName"`
 	NoteDBAddress    string `json:"NoteDBAddress"`
 	NoteDBUpdateTime time.Time
@@ -54,9 +57,6 @@ type UserConfig struct {
 	WaitSecondInterval  time.Duration `json:"WaitSecondInterval"`
 	UsePortNumber       string        `json:"UsePortNumber"`
 }
-
-
-
 
 func getAllNoteAddress() []Conf {
 	confdb := setupDB(confDBAddress)
@@ -124,7 +124,7 @@ func getData(selectPosition SelectPosition) string {
 
 	for _, value := range conf {
 
-		noteDBAddress := value.Address + directorySeparator + noteDBName
+		noteDBAddress := value.NoteAddress + directorySeparator + noteDBName
 
 		// DBのオープン
 		notedb := setupDB(noteDBAddress)
@@ -136,8 +136,9 @@ func getData(selectPosition SelectPosition) string {
 		notedb.Order("updated_at desc").Find(&NoteList)
 
 		DataSetList.NoteDBID = value.ID
-		DataSetList.NoteDBName = value.Name
-		DataSetList.NoteDBAddress = value.Address
+		DataSetList.NoteDBStar = value.NoteStar
+		DataSetList.NoteDBName = value.NoteName
+		DataSetList.NoteDBAddress = value.NoteAddress
 		DataSetList.NoteDBUpdateTime = value.UpdatedAt
 		DataSetList.List = NoteList
 
@@ -229,6 +230,7 @@ func addPage(rcvArg map[string]string) error {
 func updateNote(rcvArg map[string]string) error {
 
 	noteName := rcvArg["noteName"]
+	noteStar , _:= strconv.Atoi(rcvArg["noteStar"])
 	noteID, _ := strconv.Atoi(rcvArg["postNoteID"])
 
 	// 設定DBのオープン
@@ -239,7 +241,8 @@ func updateNote(rcvArg map[string]string) error {
 	var conf Conf
 	confdb.Where("id = ?", noteID).First(&conf)
 
-	conf.Name = noteName
+	conf.NoteName = noteName
+	conf.NoteStar = noteStar
 
 	confdb.Save(&conf)
 
@@ -330,7 +333,7 @@ func updateNoteFromPage(noteAddress string) {
 
 	confdb.Where("address = ?", noteAddress).First(&conf)
 
-	conf.Address = noteAddress
+	conf.NoteAddress = noteAddress
 	confdb.Save(&conf)
 
 } //--------------------------------------------
