@@ -108,8 +108,9 @@ func getData(selectPosition SelectPosition) string {
 		return stringjsonreturnmap
 	}
 
-	confdb.Find(&conf).Order("id desc")
-
+	confdb.Order("note_star desc").Find(&conf)
+	// confdb.Find(&conf).Order("note_star desc, id desc")
+	// "age desc, name"
 	// 選択中のノートIDがなければ最新のノートIDを返却
 	if selectPosition.NoteID == 0 {
 		if len(conf) != 0 {
@@ -230,7 +231,7 @@ func addPage(rcvArg map[string]string) error {
 func updateNote(rcvArg map[string]string) error {
 
 	noteName := rcvArg["noteName"]
-	noteStar , _:= strconv.Atoi(rcvArg["noteStar"])
+	noteStar, _ := strconv.Atoi(rcvArg["noteStar"])
 	noteID, _ := strconv.Atoi(rcvArg["postNoteID"])
 
 	// 設定DBのオープン

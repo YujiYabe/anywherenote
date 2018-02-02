@@ -63,16 +63,9 @@ function addPage(Obj) {
 
 function updateNote(Obj) {
 
-    var note_id = $(Obj).nextAll().eq(2).children('input').attr('data-note_id');
-    var note_star = $(Obj).nextAll().eq(0).text();
-    var note_name = $(Obj).nextAll().eq(2).children('input').val()
-
-
-
-    console.log(note_name);
-    console.log(note_id);
-    console.log(note_star);
-
+    var note_star = $(Obj).nextAll().eq(0).children('span').text();
+    var note_id = $(Obj).nextAll().eq(1).children('input').attr('data-note_id');
+    var note_name = $(Obj).nextAll().eq(1).children('input').val()
 
 
     var target_url = 'updatenote';
@@ -93,6 +86,13 @@ function updateNote(Obj) {
         // 1つめは通信成功時のコールバック
         function (data) {
             // location.reload();
+            $(Obj).nextAll().eq(1).children('span').show();
+            $(Obj).nextAll().eq(1).children('input').hide();
+            $(Obj).nextAll().eq(1).children('span').fadeOut(3000,
+                function () { $(Obj).nextAll().eq(1).children('input').show() }
+
+            );
+
 
         },
         // 2つめは通信失敗時のコールバック
@@ -133,8 +133,8 @@ function updatePage() {
             $('#source_return_value').text(data);
             makePageList();
 
-            $('.update_successed').show();
-            $('.update_successed').fadeOut(3000);
+            $('.update_page_successed').show();
+            $('.update_page_successed').fadeOut(3000);
 
         },
         // 2つめは通信失敗時のコールバック

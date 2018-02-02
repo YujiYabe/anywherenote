@@ -69,16 +69,16 @@ function makePageList() {
 
     var parent_note_table = $('#parent_note_table');
 
-    var note_table = $('<div>'); parent_note_table.append(note_table); note_table.addClass('container'); //table.attr('id', note_address); table.attr('data-address', note_address); 
-    var note_tr = $('<div>'); note_table.append(note_tr); note_tr.addClass('row');
-    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text("追加");
-    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text("優先度");
-    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-3'); note_td.text("ノート名");
-    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-4'); note_td.text("ノート格納パス");
-    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text("削除");
+    // var note_table = $('<div>'); parent_note_table.append(note_table); note_table.addClass('container'); //table.attr('id', note_address); table.attr('data-address', note_address); 
+    var note_tr = $('<div>'); parent_note_table.append(note_tr); note_tr.addClass('note_tr');
+
+    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_1'); note_td.text("追加");
+    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_2'); note_td.text("優先度");
+    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_3'); note_td.text("ノート名");
+    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_4'); note_td.text("ノート格納パス");
+    var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_5'); note_td.text("削除");
 
 
-    var note_tbody = $('<tbody>'); note_table.append(note_tbody);
 
     $.each(json_return_value["DataSet"], function (index, val) {
         var note_id = json_return_value["DataSet"][index]["NoteDBID"];
@@ -93,28 +93,34 @@ function makePageList() {
         $('#addPagebutton').attr('name', note_address);
 
 
-        var h5 = $('<h5>'); note_table.append(h5);
-        var note_tr = $('<div>'); note_table.append(note_tr); note_tr.addClass('row');
+        // var h5 = $('<h5>'); parent_note_table.append(h5);
+        var note_tr = $('<div>'); parent_note_table.append(note_tr); note_tr.addClass('note_tr');
 
-        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text("変更"); note_td.addClass("btn btn-info"); note_td.attr('onclick', 'updateNote(this);');
 
-        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text(note_star);
-        var parent_span = $('<span>'); note_tr.append(parent_span);
+        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_1'); note_td.text("変更"); note_td.addClass("btn btn-info"); note_td.attr('onclick', 'updateNote(this);');
+        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_2');
+        var span = $('<span>'); note_td.append(span); span.text(note_star); span.hide();
 
+        var parent_div = $('<div>'); note_td.append(parent_div);
+
+        var left_pane_note_star = '';
         for (var starint = 1; starint <= 3; starint++) {
 
-            var span = $('<span>'); parent_span.append(span); span.attr('data-number', starint); span.addClass('ratingstar'); span.attr('onclick', 'changeRateStar(this)'); // span.attr('hover', 'intentChangeRateStar(this)');
+            var span = $('<span>'); parent_div.append(span); span.attr('data-number', starint); span.addClass('ratingstar'); span.attr('onclick', 'changeRateStar(this)'); // span.attr('hover', 'intentChangeRateStar(this)');
             if (starint <= note_star) {
                 span.text('★');
+                left_pane_note_star = left_pane_note_star + '★';
             } else {
                 span.text('☆');
+                left_pane_note_star = left_pane_note_star + '☆';
             }
         }
 
-        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-3');
+        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_3');
         var note_input = $('<input>'); note_td.append(note_input); note_input.val(note_name); note_input.attr('data-note_id', note_id); note_input.addClass("form-control");
-        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-4'); note_td.text(note_address);
-        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('col-1'); note_td.text("削除"); note_td.addClass("btn btn-danger"); note_td.attr('onclick', 'deleteNote(this);');
+        var message_span = $('<span>'); note_td.append(message_span); message_span.hide(); message_span.text('更新しました');
+        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_4'); note_td.text(note_address);
+        var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_5'); note_td.text("削除"); note_td.addClass("btn btn-danger"); note_td.attr('onclick', 'deleteNote(this);');
 
         var element = $('#table_parent');
 
@@ -124,6 +130,7 @@ function makePageList() {
 
         var span = $('<div>'); element.append(span); span.addClass("btn btn-primary btn-lg notedb_button"); span.attr('data-target_table', note_id); span.attr('onclick', 'switchShowHideDataList(this);');
         var child_span = $('<div>'); span.append(child_span); child_span.addClass("notedb_datetime"); child_span.text(note_updatetime);
+        var child_span = $('<div>'); span.append(child_span); child_span.addClass("notedb_datetime"); child_span.text(left_pane_note_star);
         var child_span = $('<div>'); span.append(child_span); child_span.addClass(""); child_span.text(note_name);
         var child_span = $('<div>'); span.append(child_span); child_span.addClass("notedb_address"); child_span.text(note_address);
 
@@ -176,15 +183,11 @@ function makePageList() {
 
             var tr = $('<tr>'); tbody.append(tr); tr.attr('data-note_id', note_id); tr.addClass('page_item'); tr.attr('data-page_id', page_list[item]['ID']);
 
-
-
             var td = $('<td>'); tr.append(td);
             var parent_div = $('<div>'); td.append(parent_div); parent_div.addClass('btn btn-info'); parent_div.attr('onclick', 'showDataToRightPane(this)');
 
             var div = $('<div>'); parent_div.append(div); div.text(updateDateTime);
             var div = $('<div>'); parent_div.append(div); div.text(page_list[item]['page_title']);
-
-
 
             var td = $('<td>'); tr.append(td); td.hide(); td.text(updateDateTime);
             var td = $('<td>'); tr.append(td); td.hide(); td.text(page_list[item]['ID']);

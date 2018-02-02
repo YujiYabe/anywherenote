@@ -200,15 +200,53 @@ body{
 					// display: flex;
 				}
 				#flexbox_note_body {
+					// display: flex;
 					background-color : whitesmoke ;
 					margin: 1px;
 					width: 99%;
 					overflow:auto;
-					.ratingstar{
-						color : black ;
-					}
-					.ratingstar:hover{
-						color : orange ;
+					
+					#parent_note_table {
+						display: flex;
+						flex-direction: column;
+						width: 90%;
+
+						.note_tr{
+							width: 100%;
+							display: flex;
+							padding: 5px;
+
+							.note_td_1{
+								width: 10%;
+
+							}
+							.note_td_2{
+								width: 10%;
+
+								.ratingstar{
+									color : black ;
+								}
+								.ratingstar:hover{
+									color : orange ;
+									cursor: pointer;
+								}
+
+
+							}
+							.note_td_3{
+								width: 35%;
+
+							}
+							.note_td_4{
+								width: 35%;
+
+							}
+							.note_td_5{
+								width: 10%;
+
+							}
+								
+						}
 					}
 				}
 
