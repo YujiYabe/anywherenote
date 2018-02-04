@@ -33,6 +33,7 @@ const useDBMSName = "sqlite3"          // 使用DBMS
 const dataDirName = "data"             // htmlやjs、DBファイル等格納先ディレクトリ
 const confDBName = "config.db"         // ローカル設定DBファイル名
 const userConfFile = "userconfig.json" // ローカル設定DBファイル名
+const isEnableLogMode = false
 
 const fileDirName = "file"   // ページ内にアップロードするディレクトリ名
 const noteDBName = "note.db" // ノート保存先DBファイル名
@@ -339,12 +340,30 @@ func UpdateNotePost(c echo.Context) error {
 func UpdatePagePost(c echo.Context) error {
 	printEventLog("start", "ページ更新 開始")
 
+	day := time.Now()
+	operationAt := day.Format(dateTimeFormat)
+
 	// ページの更新
 	sndArg := make(map[string]string)
 	sndArg["noteAddress"] = c.FormValue("note_address")
 	sndArg["pageID"] = c.FormValue("page_id")
 	sndArg["pageTitle"] = c.FormValue("page_title")
 	sndArg["pageBody"] = c.FormValue("page_body")
+
+	sndArg["createdAt"] = operationAt
+	sndArg["updatedAt"] = operationAt
+
+	// created_at、updated_atに指定がある場合→テスト用
+
+	if c.FormValue("created_at") != "" {
+		sndArg["createdAt"] = c.FormValue("created_at")
+		// printEventLog("debug", c.FormValue("created_at"))
+	}
+
+	if c.FormValue("updated_at") != "" {
+		sndArg["updatedAt"] = c.FormValue("updated_at")
+		// printEventLog("debug", c.FormValue("updated_at"))
+	}
 
 	updatePage(sndArg)
 

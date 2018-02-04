@@ -19,24 +19,26 @@ import (
 )
 
 var (
-	oNoteForm1 = map[string]string{ "note_id":"1", "note_address":"C:\\gotest", "note_name":"create_note" }
+	oNoteForm1 = map[string]string{ "note_id":"1", "note_address":"C:\\gotest", "note_name":"create_note", "created_at":"2018/01/01 01:01:01" }
 	oNoteForm2 = map[string]string{ "note_id":"1", "note_address":"C:\\gotest", "note_name":"change_note_name" }
 	oPageForm1 = map[string]string{ 
 		"note_address":"C:\\gotest", 
 		"page_id":"1", 
 		"page_title":"first_page_title", 
 		"page_body":"first_page_body",
+		"created_at":"2018/01/01 01:01:01",
+		"updated_at":"2018/01/01 01:01:01",
 	 }
 
 	xNoteForm1 = map[string]string{ "note_id":"1", "note_address":"C:\\nothingpath", "note_name":"create_note" }
 
 	// oExpectedString = "\"{\\\"RtnCode\\\":\\\"0\\\",\\\"DataSet\\\":[{\\\"NoteDBID\\\":1,\\\"NoteDBName\\\":\\\"create_note\\\",\\\"NoteDBAddress\\\":\\\"C:\\\\\\\\gotest\\\",\\\"NoteDBUpdateTime\\\":\\\"2018-01-22T08:13:03.2009784+09:00\\\",\\\"list\\\":[{\\\"ID\\\":1,\\\"CreatedAt\\\":\\\"2018-01-22T08:13:03.1869419+09:00\\\",\\\"UpdatedAt\\\":\\\"2018-01-22T08:13:03.1869419+09:00\\\",\\\"DeletedAt\\\":null,\\\"page_title\\\":\\\"\\\",\\\"page_body\\\":\\\"\\\"}]}],\\\"SlctPst\\\":{\\\"NoteID\\\":1,\\\"PageID\\\":1}}\""
-	isEnableTestLoadPage   = false
-	isEnableTestLiveCheck  = false
+	isEnableTestLoadPage   = true
+	isEnableTestLiveCheck  = true
 	isEnableTestAddNote    = true
-	isEnableTestAddPage    = false
-	isEnableTestUpdateNote = false
-	isEnableTestUpdatePage = false
+	isEnableTestAddPage    = true
+	isEnableTestUpdateNote = true
+	isEnableTestUpdatePage = true
 	isEnableTestDeletePage = false
 	isEnableTestDeleteNote = false
 )
@@ -61,7 +63,7 @@ func init() {
 
 
 	//テスト実行前にファイルを削除
-    testDBAddress := oNoteForm1["note_address"] + "\\note.db"
+    testDBAddress := oNoteForm1["note_address"] + directorySeparator + noteDBName
 
 	// if err1 == nil{
 	if err1 := osCheckFile( testDBAddress ); err1 == nil {
@@ -78,13 +80,23 @@ func init() {
 			log.Println( err2 )
 		}
 	}
-	time.Sleep( 5 * time.Second )
 
+
+	for {
+		time.Sleep( 1 * time.Millisecond )
+		// log.Println( "waiting" )
+		
+		if err1 := osCheckFile( confDBAddress ); err1 != nil {
+			break
+		}
+
+	}
 
 
     loadTemplates()
     checkConfig()
 	
+
 } //--------------------------------------------
 
 
@@ -214,6 +226,8 @@ func TestUpdatePage(t *testing.T) {
 		f.Set("page_id"		 , oPageForm1["page_id"]		)
 		f.Set("page_title"	 , oPageForm1["page_title"]		)
 		f.Set("page_body"	 , oPageForm1["page_body"]		)
+		f.Set("created_at"	 , oPageForm1["created_at"]		)
+		f.Set("updated_at"	 , oPageForm1["updated_at"]		)
 
 
 		req := httptest.NewRequest(echo.POST, "/UpdatePagePost", strings.NewReader(f.Encode()))

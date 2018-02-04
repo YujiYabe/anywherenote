@@ -61,7 +61,7 @@ type UserConfig struct {
 func getAllNoteAddress() []Conf {
 	confdb := setupDB(confDBAddress)
 	defer confdb.Close()
-	confdb.LogMode(true)
+	confdb.LogMode(isEnableLogMode)
 
 	var conf []Conf
 	// confdb.Select("id, NoteAddress").Find(&conf)
@@ -85,7 +85,7 @@ func getData(selectPosition SelectPosition) string {
 
 	confdb := setupDB(confDBAddress)
 	defer confdb.Close()
-	confdb.LogMode(true)
+	confdb.LogMode(isEnableLogMode)
 
 	var count int
 	var conf []Conf
@@ -130,7 +130,7 @@ func getData(selectPosition SelectPosition) string {
 		// DBのオープン
 		notedb := setupDB(noteDBAddress)
 		defer notedb.Close()
-		notedb.LogMode(true)
+		notedb.LogMode(isEnableLogMode)
 
 		NoteList := []Note{}
 
@@ -183,7 +183,7 @@ func addFileToPage(rcvArg map[string]string) error {
 	// DBのオープン
 	notedb := setupDB(noteDBAddress)
 	defer notedb.Close()
-	notedb.LogMode(true)
+	notedb.LogMode(isEnableLogMode)
 	// __________________________________
 	// DB内容取得
 	note := Note{}
@@ -210,7 +210,7 @@ func addPage(rcvArg map[string]string) error {
 	// DBのオープン
 	notedb := setupDB(noteDBAddress)
 	defer notedb.Close()
-	notedb.LogMode(true)
+	notedb.LogMode(isEnableLogMode)
 
 	notedb.AutoMigrate(&Note{})
 
@@ -240,7 +240,7 @@ func updateNote(rcvArg map[string]string) error {
 	// 設定DBのオープン
 	confdb := setupDB(confDBAddress)
 	defer confdb.Close()
-	confdb.LogMode(true)
+	confdb.LogMode(isEnableLogMode)
 
 	var conf Conf
 	confdb.Where("id = ?", noteID).First(&conf)
@@ -261,6 +261,11 @@ func updatePage(rcvArg map[string]string) error {
 	pageTitle := rcvArg["pageTitle"]
 	pageBody := rcvArg["pageBody"]
 
+	createdAt, _ := time.Parse(dateTimeFormat, rcvArg["createdAt"])
+	updatedAt, _ := time.Parse(dateTimeFormat, rcvArg["updatedAt"])
+
+	// printEventLog("debug", updatedAt)
+
 	if pageTitle == "" {
 		pageTitle = " "
 	}
@@ -274,13 +279,34 @@ func updatePage(rcvArg map[string]string) error {
 	// DBのオープン
 	notedb := setupDB(noteDBAddress)
 	defer notedb.Close()
-	notedb.LogMode(true)
+	notedb.LogMode(isEnableLogMode)
 
 	// __________________________________
 	// DB内容取得
-	NoteList := []Note{}
+	// NoteList := []Note{}
 
-	notedb.Model(&NoteList).Where("id = ?", pageID).Update(&Note{PageTitle: pageTitle, PageBody: pageBody})
+	// notedb.Model(&NoteList).Where("id = ?", pageID).Update(&Note{PageTitle: pageTitle, PageBody: pageBody, CreatedAt: createdAt, UpdatedAt: updatedAt})
+	// notedb.Model(&NoteList).Where("id = ?", pageID).Update(&Note{: , : , : })
+
+	NoteList := Note{
+		PageTitle: pageTitle,
+		PageBody:  pageBody,
+		Model:     gorm.Model{CreatedAt: createdAt, UpdatedAt: updatedAt},
+	}
+	NoteList.UpdatedAt = updatedAt
+
+	printEventLog("debug", updatedAt)
+
+	notedb.Model(Note{}).Where("id = ?", pageID).Update(NoteList) // こっちで+1日になる
+
+	// model = ModelA{
+	// 	ID:   100,
+	// 	name: "mary",
+	// }
+	// model.UpdatedAt = time.Now().AddDate(0, 0, 1) // Now + 1日にする.
+
+	// db.Save(&model) // これはUpdatedAtはtime.Now()になってしまう。
+	// db.Model(ModelA{}).Where("id = ?", model.ID).Update(model) // こっちで+1日になる
 
 	return nil
 } //--------------------------------------------
@@ -295,7 +321,7 @@ func deleteNote(rcvArg map[string]string) error {
 	// 設定DBのオープン
 	confdb := setupDB(confDBAddress)
 	defer confdb.Close()
-	confdb.LogMode(true)
+	confdb.LogMode(isEnableLogMode)
 
 	var conf Conf
 
@@ -316,7 +342,7 @@ func deletePage(rcvArg map[string]string) error {
 	// DBのオープン
 	notedb := setupDB(noteDBAddress)
 	defer notedb.Close()
-	notedb.LogMode(true)
+	notedb.LogMode(isEnableLogMode)
 
 	// __________________________________
 	// DB内容取得
@@ -332,7 +358,7 @@ func updateNoteFromPage(noteAddress string) {
 	// 設定DBのオープン
 	confdb := setupDB(confDBAddress)
 	defer confdb.Close()
-	confdb.LogMode(true)
+	confdb.LogMode(isEnableLogMode)
 
 	var conf Conf
 
@@ -347,7 +373,7 @@ func updateNoteFromPage(noteAddress string) {
 func dbApplyType(targetDBAddress string, targetStruct interface{}) {
 	db := setupDB(targetDBAddress)
 	defer db.Close()
-	db.LogMode(true)
+	db.LogMode(isEnableLogMode)
 
 	// Migrate the schema
 	db.AutoMigrate(targetStruct)
