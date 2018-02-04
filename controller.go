@@ -37,7 +37,7 @@ const userConfFile = "userconfig.json" // ローカル設定DBファイル名
 const fileDirName = "file"   // ページ内にアップロードするディレクトリ名
 const noteDBName = "note.db" // ノート保存先DBファイル名
 
-const dateTimeFormat = "2006-01-02 15:04:05" // 日時フォーマット
+const dateTimeFormat = "2006/01/02 15:04:05" // 日時フォーマット
 
 // レイアウト適用済のテンプレートを保存するmap
 var templates map[string]*template.Template
@@ -98,7 +98,6 @@ func main() {
 	for _, value := range rValue {
 		v := uint64(value.ID)
 		noteID := strconv.FormatUint(v, 10)
-
 		e.Static("/"+noteID, value.NoteAddress+directorySeparator+fileDirName)
 	}
 
@@ -267,10 +266,21 @@ func AddNotePost(c echo.Context) error {
 	conf.NoteAddress = c.FormValue("note_address")
 	conf.NoteStar = 3
 
+	// created_at、updated_atに指定がある場合→テスト用
+	if c.FormValue("created_at") != "" {
+		tempCreatedAt, _ := time.Parse(dateTimeFormat, c.FormValue("created_at"))
+		conf.CreatedAt = tempCreatedAt
+	}
+
+	if c.FormValue("updated_at") != "" {
+		tempUpdatedAt, _ := time.Parse(dateTimeFormat, c.FormValue("updated_at"))
+		conf.UpdatedAt = tempUpdatedAt
+	}
+
 	// INSERTを実行
 	confdb.Create(&conf)
 
-	// ★追加したアドレスのスタティックパスを追加
+	// ★追加したアドレスのスタティックパスを追加→アプリ再起動
 	// v := uint64(value.ID)
 	// noteID := strconv.FormatUint(v, 10)
 	// e.Static("/"+noteID, value.NoteAddress + directorySeparator + fileDirName)

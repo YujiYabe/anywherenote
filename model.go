@@ -215,7 +215,7 @@ func addPage(rcvArg map[string]string) error {
 	notedb.AutoMigrate(&Note{})
 
 	var note Note
-	t := time.Now().Format("2006/01/02 15:04:05")
+	t := time.Now().Format(dateTimeFormat)
 	s := t + " created"
 
 	note.PageTitle = s

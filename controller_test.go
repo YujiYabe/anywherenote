@@ -31,7 +31,14 @@ var (
 	xNoteForm1 = map[string]string{ "note_id":"1", "note_address":"C:\\nothingpath", "note_name":"create_note" }
 
 	// oExpectedString = "\"{\\\"RtnCode\\\":\\\"0\\\",\\\"DataSet\\\":[{\\\"NoteDBID\\\":1,\\\"NoteDBName\\\":\\\"create_note\\\",\\\"NoteDBAddress\\\":\\\"C:\\\\\\\\gotest\\\",\\\"NoteDBUpdateTime\\\":\\\"2018-01-22T08:13:03.2009784+09:00\\\",\\\"list\\\":[{\\\"ID\\\":1,\\\"CreatedAt\\\":\\\"2018-01-22T08:13:03.1869419+09:00\\\",\\\"UpdatedAt\\\":\\\"2018-01-22T08:13:03.1869419+09:00\\\",\\\"DeletedAt\\\":null,\\\"page_title\\\":\\\"\\\",\\\"page_body\\\":\\\"\\\"}]}],\\\"SlctPst\\\":{\\\"NoteID\\\":1,\\\"PageID\\\":1}}\""
-
+	isEnableTestLoadPage   = false
+	isEnableTestLiveCheck  = false
+	isEnableTestAddNote    = true
+	isEnableTestAddPage    = false
+	isEnableTestUpdateNote = false
+	isEnableTestUpdatePage = false
+	isEnableTestDeletePage = false
+	isEnableTestDeleteNote = false
 )
 
 
@@ -43,12 +50,13 @@ func init() {
     }
 
     // 設定ファイルの読み込み
-    file, err := ioutil.ReadFile( dataDirName + directorySeparator + "config.json" )
+	userConfigFile, err := ioutil.ReadFile(dataDirName + directorySeparator + "public" + directorySeparator + userConfFile)
+    // file, err := ioutil.ReadFile( dataDirName + directorySeparator + "config.json" )
     if err != nil {
         panic(err)
     }
 
-    json.Unmarshal(file, &userConfig)
+    json.Unmarshal(userConfigFile, &userConfig)
 
 
 
@@ -81,30 +89,34 @@ func init() {
 
 
 func TestLoadPage(t *testing.T) {
-	// Setup
-	e := echo.New()
-	req := httptest.NewRequest(echo.GET, "/", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	if isEnableTestLoadPage{
+		// Setup
+		e := echo.New()
+		req := httptest.NewRequest(echo.GET, "/", nil)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
 
-	// Assertions
-	if assert.NoError(t, LiveCheckGet(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-		// assert.Equal(t, userJSON, rec.Body.String())
+		// Assertions
+		if assert.NoError(t, LiveCheckGet(c)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+			// assert.Equal(t, userJSON, rec.Body.String())
+		}
 	}
 }
 
 func TestLiveCheck(t *testing.T) {
-	// Setup
-	e := echo.New()
-	req := httptest.NewRequest(echo.GET, "/livecheck", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	if isEnableTestLiveCheck{
+			// Setup
+		e := echo.New()
+		req := httptest.NewRequest(echo.GET, "/livecheck", nil)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
 
-	// Assertions
-	if assert.NoError(t, LiveCheckGet(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-		// assert.Equal(t, userJSON, rec.Body.String())
+		// Assertions
+		if assert.NoError(t, LiveCheckGet(c)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+			// assert.Equal(t, userJSON, rec.Body.String())
+		}
 	}
 }
 
@@ -112,153 +124,164 @@ func TestLiveCheck(t *testing.T) {
 
 
 func TestAddNote(t *testing.T) {
+	if isEnableTestAddNote{
 
-	// Setup
-	e := echo.New()
+		// Setup
+		e := echo.New()
 
-	f := make(url.Values)
-	f.Set("note_name", oNoteForm1["note_name"])
-	f.Set("note_address", oNoteForm1["note_address"])
+		f := make(url.Values)
+		f.Set("note_name", oNoteForm1["note_name"])
+		f.Set("note_address", oNoteForm1["note_address"])
 
-	req := httptest.NewRequest(echo.POST, "/AddNotePost", strings.NewReader(f.Encode()))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+		req := httptest.NewRequest(echo.POST, "/AddNotePost", strings.NewReader(f.Encode()))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
 
 
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
 
-	// Assertions
-	if assert.NoError(t, AddNotePost(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-		// assert.Equal(t, oNoteForm1, rec.Body.String())
+		// Assertions
+		if assert.NoError(t, AddNotePost(c)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+			// assert.Equal(t, oNoteForm1, rec.Body.String())
+		}
 	}
 }
 
 func TestAddPage(t *testing.T) {
+	if isEnableTestAddPage{
 
-	// Setup
-	e := echo.New()
+		// Setup
+		e := echo.New()
+
+		f := make(url.Values)
+
+		f.Set("note_id", oNoteForm1["note_id"])
+		f.Set("note_address", oNoteForm1["note_address"])
+
+		req := httptest.NewRequest(echo.POST, "/AddPagePost", strings.NewReader(f.Encode()))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
 
 
-	f := make(url.Values)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
 
-	f.Set("note_id", oNoteForm1["note_id"])
-	f.Set("note_address", oNoteForm1["note_address"])
-
-	req := httptest.NewRequest(echo.POST, "/AddPagePost", strings.NewReader(f.Encode()))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
-
-
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-
-	// Assertions
-	if assert.NoError(t, AddPagePost(c)) {
-		assert.Equal(t, http.StatusCreated, rec.Code)
-		// assert.Equal(t, oExpectedString, rec.Body.String())
+		// Assertions
+		if assert.NoError(t, AddPagePost(c)) {
+			assert.Equal(t, http.StatusCreated, rec.Code)
+			// assert.Equal(t, oExpectedString, rec.Body.String())
+		}
 	}
 }
 
 
 
 func TestUpdateNote(t *testing.T) {
+	if isEnableTestUpdateNote{
+		// Setup
+		e := echo.New()
 
-	// Setup
-	e := echo.New()
+		f := make(url.Values)
 
-	f := make(url.Values)
-
-	f.Set("note_id", oNoteForm2["note_id"])
-	f.Set("note_name", oNoteForm2["note_name"])
-
-
-	req := httptest.NewRequest(echo.POST, "/UpdateNotePost", strings.NewReader(f.Encode()))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+		f.Set("note_id", oNoteForm2["note_id"])
+		f.Set("note_name", oNoteForm2["note_name"])
 
 
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+		req := httptest.NewRequest(echo.POST, "/UpdateNotePost", strings.NewReader(f.Encode()))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
 
-	// Assertions
-	if assert.NoError(t, UpdateNotePost(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-		// assert.Equal(t, userJSON, rec.Body.String())
+
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		// Assertions
+		if assert.NoError(t, UpdateNotePost(c)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+			// assert.Equal(t, userJSON, rec.Body.String())
+		}
 	}
 }
 
 
 func TestUpdatePage(t *testing.T) {
+	if isEnableTestUpdatePage{
 
-	// Setup
-	e := echo.New()
+		// Setup
+		e := echo.New()
 
-	f := make(url.Values)
-	f.Set("note_address" , oPageForm1["note_address"]	)
-	f.Set("page_id"		 , oPageForm1["page_id"]		)
-	f.Set("page_title"	 , oPageForm1["page_title"]		)
-	f.Set("page_body"	 , oPageForm1["page_body"]		)
-
-
-	req := httptest.NewRequest(echo.POST, "/UpdatePagePost", strings.NewReader(f.Encode()))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+		f := make(url.Values)
+		f.Set("note_address" , oPageForm1["note_address"]	)
+		f.Set("page_id"		 , oPageForm1["page_id"]		)
+		f.Set("page_title"	 , oPageForm1["page_title"]		)
+		f.Set("page_body"	 , oPageForm1["page_body"]		)
 
 
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+		req := httptest.NewRequest(echo.POST, "/UpdatePagePost", strings.NewReader(f.Encode()))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
 
-	// Assertions
-	if assert.NoError(t, UpdatePagePost(c)) {
-		assert.Equal(t, http.StatusCreated , rec.Code)
-		// assert.Equal(t, userJSON, rec.Body.String())
+
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		// Assertions
+		if assert.NoError(t, UpdatePagePost(c)) {
+			assert.Equal(t, http.StatusCreated , rec.Code)
+			// assert.Equal(t, userJSON, rec.Body.String())
+		}
 	}
 }
 
 func TestDeletePage(t *testing.T) {
+	if isEnableTestDeletePage{
 
-	// Setup
-	e := echo.New()
+		// Setup
+		e := echo.New()
 
-	f := make(url.Values)
+		f := make(url.Values)
 
-	f.Set("note_address", oPageForm1["note_address"])
-	f.Set("page_id", oPageForm1["page_id"])
-
-
-	req := httptest.NewRequest(echo.POST, "/DeletePagePost", strings.NewReader(f.Encode()))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+		f.Set("note_address", oPageForm1["note_address"])
+		f.Set("page_id", oPageForm1["page_id"])
 
 
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+		req := httptest.NewRequest(echo.POST, "/DeletePagePost", strings.NewReader(f.Encode()))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
 
-	// Assertions
-	if assert.NoError(t, DeletePagePost(c)) {
-		assert.Equal(t, http.StatusCreated, rec.Code)
-		// assert.Equal(t, userJSON, rec.Body.String())
+
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		// Assertions
+		if assert.NoError(t, DeletePagePost(c)) {
+			assert.Equal(t, http.StatusCreated, rec.Code)
+			// assert.Equal(t, userJSON, rec.Body.String())
+		}
 	}
 }
 
 
 func TestDeleteNote(t *testing.T) {
+	if isEnableTestDeleteNote{
 
-	// Setup
-	e := echo.New()
+		// Setup
+		e := echo.New()
 
-	f := make(url.Values)
+		f := make(url.Values)
 
-	f.Set("note_id", oNoteForm1["note_id"])
-
-
-	req := httptest.NewRequest(echo.POST, "/DeleteNotePost", strings.NewReader(f.Encode()))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+		f.Set("note_id", oNoteForm1["note_id"])
 
 
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+		req := httptest.NewRequest(echo.POST, "/DeleteNotePost", strings.NewReader(f.Encode()))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
 
-	// Assertions
-	if assert.NoError(t, DeleteNotePost(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-		// assert.Equal(t, userJSON, rec.Body.String())
+
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		// Assertions
+		if assert.NoError(t, DeleteNotePost(c)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+			// assert.Equal(t, userJSON, rec.Body.String())
+		}
 	}
 }
+
