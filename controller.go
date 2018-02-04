@@ -94,9 +94,11 @@ func main() {
 
 	// ノートアドレスとノートIDを紐づけて静的ファイルパスを設定
 	rValue := getAllNoteAddress()
+
 	for _, value := range rValue {
 		v := uint64(value.ID)
 		noteID := strconv.FormatUint(v, 10)
+
 		e.Static("/"+noteID, value.NoteAddress+directorySeparator+fileDirName)
 	}
 
@@ -263,7 +265,7 @@ func AddNotePost(c echo.Context) error {
 
 	conf.NoteName = c.FormValue("note_name")
 	conf.NoteAddress = c.FormValue("note_address")
-	conf.NoteStar = 1
+	conf.NoteStar = 3
 
 	// INSERTを実行
 	confdb.Create(&conf)

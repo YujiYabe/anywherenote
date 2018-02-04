@@ -64,8 +64,8 @@ func getAllNoteAddress() []Conf {
 	confdb.LogMode(true)
 
 	var conf []Conf
-	confdb.Select("id, address").Find(&conf)
-	// confdb.Find(&conf)
+	// confdb.Select("id, NoteAddress").Find(&conf)
+	confdb.Find(&conf)
 	return conf
 
 } //--------------------------------------------
@@ -108,7 +108,7 @@ func getData(selectPosition SelectPosition) string {
 		return stringjsonreturnmap
 	}
 
-	confdb.Order("note_star desc").Find(&conf)
+	confdb.Order("note_star desc, note_name asc").Find(&conf)
 	// confdb.Find(&conf).Order("note_star desc, id desc")
 	// "age desc, name"
 	// 選択中のノートIDがなければ最新のノートIDを返却
@@ -215,9 +215,12 @@ func addPage(rcvArg map[string]string) error {
 	notedb.AutoMigrate(&Note{})
 
 	var note Note
+	t := time.Now().Format("2006/01/02 15:04:05")
+	s := t + " created"
 
-	note.PageTitle = ""
+	note.PageTitle = s
 	note.PageBody = ""
+	note.PageStar = 3
 
 	// INSERTを実行
 	notedb.Create(&note)
@@ -324,6 +327,7 @@ func deletePage(rcvArg map[string]string) error {
 
 // updateNoteFromPage のコメントアウト
 func updateNoteFromPage(noteAddress string) {
+	printEventLog("start", "updateNoteFromPage 終了")
 
 	// 設定DBのオープン
 	confdb := setupDB(confDBAddress)
@@ -332,11 +336,11 @@ func updateNoteFromPage(noteAddress string) {
 
 	var conf Conf
 
-	confdb.Where("address = ?", noteAddress).First(&conf)
+	confdb.Where("note_address = ?", noteAddress).First(&conf)
 
 	conf.NoteAddress = noteAddress
 	confdb.Save(&conf)
-
+	printEventLog("end", "updateNoteFromPage 終了")
 } //--------------------------------------------
 
 //--------------------------------------------

@@ -6,30 +6,30 @@ $(function () {
     makePageList();
     // getUserConfig();
 
-    $(".ratingstar").hover(
-        function () {
-            // $(this).append($("<span> ***</span>"));
-            // console.log("a");
+    // $(".ratingstar").hover(
+    //     function () {
+    //         // $(this).append($("<span> ***</span>"));
+    //         // console.log("a");
 
-            $(this).siblings().text('☆');
-            $(this).prevAll().text('★');
-            $(this).text('★');
-        },
-        function () {
-            var selected_int = $(this).parent().prevAll().eq(0).text();
-            var parent = $(this).parent();
+    //         $(this).siblings().text('☆');
+    //         $(this).prevAll().text('★');
+    //         $(this).text('★');
+    //     },
+    //     function () {
+    //         var selected_int = $(this).parent().prevAll().eq(0).text();
+    //         var parent = $(this).parent();
 
-            for (var starint = 1; starint <= 3; starint++) {
+    //         for (var starint = 1; starint <= 3; starint++) {
 
-                var targetspan = parent.find('[data-number=' + starint + ']');
-                if (starint <= selected_int) {
-                    targetspan.text('★');
-                } else {
-                    targetspan.text('☆');
-                }
-            }
-        }
-    );
+    //             var targetspan = parent.find('[data-number=' + starint + ']');
+    //             if (starint <= selected_int) {
+    //                 targetspan.text('★');
+    //             } else {
+    //                 targetspan.text('☆');
+    //             }
+    //         }
+    //     }
+    // );
 
 
 });
@@ -82,7 +82,7 @@ function makePageList() {
 
     $.each(json_return_value["DataSet"], function (index, val) {
         var note_id = json_return_value["DataSet"][index]["NoteDBID"];
-        var note_star = json_return_value["DataSet"][index]["NoteDBStar"];
+        // var note_star = json_return_value["DataSet"][index]["NoteDBStar"];
         var note_name = json_return_value["DataSet"][index]["NoteDBName"];
         var note_address = json_return_value["DataSet"][index]["NoteDBAddress"];
         // var temp_note_updatetime = json_return_value["DataSet"][index]["NoteDBUpdateTime"];
@@ -99,22 +99,22 @@ function makePageList() {
 
         var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_1'); note_td.text("変更"); note_td.addClass("btn btn-info"); note_td.attr('onclick', 'updateNote(this);');
         var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_2');
-        var span = $('<span>'); note_td.append(span); span.text(note_star); span.hide();
+        // var span = $('<span>'); note_td.append(span); span.text(note_star); span.hide();
 
         var parent_div = $('<div>'); note_td.append(parent_div);
 
-        var left_pane_note_star = '';
-        for (var starint = 1; starint <= 3; starint++) {
+        // var left_pane_note_star = '';
+        // for (var starint = 1; starint <= 3; starint++) {
 
-            var span = $('<span>'); parent_div.append(span); span.attr('data-number', starint); span.addClass('ratingstar'); span.attr('onclick', 'changeRateStar(this)'); // span.attr('hover', 'intentChangeRateStar(this)');
-            if (starint <= note_star) {
-                span.text('★');
-                left_pane_note_star = left_pane_note_star + '★';
-            } else {
-                span.text('☆');
-                left_pane_note_star = left_pane_note_star + '☆';
-            }
-        }
+        //     var span = $('<span>'); parent_div.append(span); span.attr('data-number', starint); span.addClass('ratingstar'); span.attr('onclick', 'changeRateStar(this)'); // span.attr('hover', 'intentChangeRateStar(this)');
+        //     if (starint <= note_star) {
+        //         span.text('★');
+        //         left_pane_note_star = left_pane_note_star + '★';
+        //     } else {
+        //         span.text('☆');
+        //         left_pane_note_star = left_pane_note_star + '☆';
+        //     }
+        // }
 
         var note_td = $('<div>'); note_tr.append(note_td); note_td.addClass('note_td_3');
         var note_input = $('<input>'); note_td.append(note_input); note_input.val(note_name); note_input.attr('data-note_id', note_id); note_input.addClass("form-control");
@@ -129,9 +129,8 @@ function makePageList() {
         //---------------
 
         var span = $('<div>'); element.append(span); span.addClass("btn btn-primary btn-lg notedb_button"); span.attr('data-target_table', note_id); span.attr('onclick', 'switchShowHideDataList(this);');
-        var child_span = $('<div>'); span.append(child_span); child_span.addClass("notedb_datetime"); child_span.text(note_updatetime);
-        var child_span = $('<div>'); span.append(child_span); child_span.addClass("notedb_datetime"); child_span.text(left_pane_note_star);
         var child_span = $('<div>'); span.append(child_span); child_span.addClass(""); child_span.text(note_name);
+        // var child_span = $('<div>'); span.append(child_span); child_span.addClass("notedb_datetime"); child_span.text(left_pane_note_star + ' ' + note_updatetime);
         var child_span = $('<div>'); span.append(child_span); child_span.addClass("notedb_address"); child_span.text(note_address);
 
 
@@ -172,11 +171,24 @@ function makePageList() {
         var th = $('<th>'); tr.append(th); th.hide(); th.text('ID');
         var th = $('<th>'); tr.append(th); th.hide(); th.text('title');
         var th = $('<th>'); tr.append(th); th.hide(); th.text('body');
+        // var th = $('<th>'); tr.append(th); th.hide(); th.text('star');
 
         var tbody = $('<tbody>'); table.append(tbody);
 
 
         for (var item in page_list) {
+            // var page_star = page_list[item]['page_star'];
+            // var left_pane_page_star = '';
+            // for (var starint = 1; starint <= 3; starint++) {
+
+            //     if (starint <= page_star) {
+            //         // span_page_star.text('★');
+            //         left_pane_page_star = left_pane_page_star + '★';
+            //     } else {
+            //         // span_page_star.text('☆');
+            //         left_pane_page_star = left_pane_page_star + '☆';
+            //     }
+            // }
 
             var temp_date = Date.parse(page_list[item]['UpdatedAt']);
             var updateDateTime = moment(temp_date).format('YYYY/MM/DD HH:mm:ss');
@@ -184,10 +196,11 @@ function makePageList() {
             var tr = $('<tr>'); tbody.append(tr); tr.attr('data-note_id', note_id); tr.addClass('page_item'); tr.attr('data-page_id', page_list[item]['ID']);
 
             var td = $('<td>'); tr.append(td);
-            var parent_div = $('<div>'); td.append(parent_div); parent_div.addClass('btn btn-info'); parent_div.attr('onclick', 'showDataToRightPane(this)');
+            var parent_div = $('<div>'); td.append(parent_div); parent_div.addClass('btn btn-info note_object'); parent_div.attr('onclick', 'showDataToRightPane(this)');
 
-            var div = $('<div>'); parent_div.append(div); div.text(updateDateTime);
-            var div = $('<div>'); parent_div.append(div); div.text(page_list[item]['page_title']);
+            // var div = $('<div>'); parent_div.append(div); div.addClass('left_pane_page_object'); div.text(left_pane_page_star);
+            var div = $('<div>'); parent_div.append(div); div.addClass('left_pane_page_object'); div.text(page_list[item]['page_title']);
+            // var div = $('<div>'); parent_div.append(div); div.addClass('left_pane_page_object'); div.text(updateDateTime);
 
             var td = $('<td>'); tr.append(td); td.hide(); td.text(updateDateTime);
             var td = $('<td>'); tr.append(td); td.hide(); td.text(page_list[item]['ID']);
@@ -196,6 +209,7 @@ function makePageList() {
             var temp_page_body = page_list[item]['page_body'].replace(new RegExp('\/\/note_id\/\/', "g"), note_id);
 
             var td = $('<td>'); tr.append(td); td.hide(); td.html(temp_page_body);
+            var td = $('<td>'); tr.append(td); td.hide(); td.html(temp_page_body);
 
 
             // 選択済のページを表示
@@ -203,7 +217,7 @@ function makePageList() {
                 select_note_id == note_id &&
                 select_page_id == page_list[item]['ID']
             ) {
-                tr.addClass("currentItem");
+                // tr.addClass("currentItem");
                 $('#note_id').text(note_id);
                 $('#note_name').text(note_name);
                 $('#note_address').text(note_address);
