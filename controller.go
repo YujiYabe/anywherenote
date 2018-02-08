@@ -349,7 +349,9 @@ func UpdatePagePost(c echo.Context) error {
 	sndArg["pageID"] = c.FormValue("page_id")
 	sndArg["pageTitle"] = c.FormValue("page_title")
 	sndArg["pageBody"] = c.FormValue("page_body")
+	printEventLog("debug", c.FormValue("page_body"))
 
+		
 	sndArg["createdAt"] = operationAt
 	sndArg["updatedAt"] = operationAt
 
