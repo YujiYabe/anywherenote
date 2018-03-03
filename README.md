@@ -35,14 +35,20 @@
 [lnx64_v0.3]: https://drive.google.com/open?id=1CUXeo3Bqpv4dZ2bPPdICKCsTA7uATE9U "Linux64_v0.3"
 [lnx32_v0.3]: https://drive.google.com/open?id=1wQQMQPkS-JnH3JRVvB4aV5jyhVMeZO8Z "Linux32_v0.3"
 
+[win64_v0.4]: https://drive.google.com/open?id=18m2e1vAmuYwBbDqT5bHe-hDhLDpDUGRv "Windows64_v0.4"
+[win32_v0.4]: https://drive.google.com/open?id=1TDEPDdpAqqiisPqghZhpPGqlTgMD4_MN "Windows32_v0.4"
+[lnx64_v0.4]: https://drive.google.com/open?id=1UhSlPL8vnStTO9NPa7YXHhWB7ecc4ils "Linux64_v0.4"
+[lnx32_v0.4]: https://drive.google.com/open?id=1fnscO6IIXO0AVZDvIJkdi69dBtVnEm9X "Linux32_v0.4"
+
 
 ## ダウンロード
+|      | Windows 64bit | Windows 32bit | Linux 64bit  | Linux 32bit  |
+|:-----|:--------------|:--------------|:-------------|:-------------|
+| v0.1 | [win64_v0.1]  | [win32_v0.1]  | [lnx64_v0.1] | [lnx32_v0.1] |
+| v0.2 | [win64_v0.2]  | [win32_v0.2]  | [lnx64_v0.2] | [lnx32_v0.2] |
+| v0.3 | [win64_v0.3]  | [win32_v0.3]  | [lnx64_v0.3] | [lnx32_v0.3] |
+| v0.4 | [win64_v0.4]  | [win32_v0.4]  | [lnx64_v0.4] | [lnx32_v0.4] |
 
-|      | Windows 64bit | Windows 32bit | Linux 64bit  | Linux 32bit  | Macintosh  |
-|:-----|:--------------|:--------------|:-------------|:-------------|:-----------|
-| v0.1 | [win64_v0.1]  | [win32_v0.1]  | [lnx64_v0.1] | [lnx32_v0.1] | 準備中     |
-| v0.2 | [win64_v0.2]  | [win32_v0.2]  | [lnx64_v0.2] | [lnx32_v0.2] | 準備中     |
-| v0.3 | [win64_v0.3]  | [win32_v0.3]  | [lnx64_v0.3] | [lnx32_v0.3] | 準備中     |
    
   
 
@@ -58,8 +64,8 @@
 
 ## 今後のタスク
 - [x] ファイルアップロード・ダウンロード機能追加  
+- [x] テストコード追加  
 - [ ] FireFox対応  
 - [ ] Android、iOS対応（願望)  
-- [ ] テストコード追加  
-- [ ] react.js導入 
+- [ ] vue.js導入 
   
