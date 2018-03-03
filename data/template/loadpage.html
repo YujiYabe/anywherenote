@@ -1,9 +1,15 @@
-<!-- -->{{define "content"}}
-<!-- -->{{.}}
+<!-- ============================================================ -->
+<!-- -->{{define "userconfig"}}
+<!-- -->{{.stringjsonconfigmap}}
 <!-- -->{{end}}
 
-<!-- -->{{define "left_pane"}}
+<!-- ============================================================ -->
+<!-- -->{{define "content"}}
+<!-- -->{{.stringjsonreturnmap}}
+<!-- -->{{end}}
 
+<!-- ============================================================ -->
+<!-- -->{{define "left_pane"}}
 
 <div id="flexbox_left_button_switch_note">
     <div class="col-lg-12 btn btn-info" onclick="switchRightPane('flexbox_note_pane');">ノート編集</div>
@@ -14,21 +20,18 @@
     </form>
 </div>
 
-
 <div id="flexbox_left_body">
     <span id='table_parent'></span>
 </div>
-
-
 
 <!-- -->{{end}}
 
 
 
 
+<!-- ============================================================ -->
 <!-- -->{{define "right_pane"}}
 
-<!-- ============================================================ -->
 <div id="flexbox_page_pane" class="right_pane_content" style="display: none;">
 
     <!-- style="display: none;" -->
@@ -43,19 +46,23 @@
 
     <div id="flexbox_page_head_2">
         <button onclick="updatePage()" class="btn btn-success">更新</button>
-        <span id="page_star"></span>
-        <span id="page_star_show"></span>
 
         <span>last updated</span>
-        <span class="update_time"></span>
+        <span id="update_time"></span>
         <span class='update_page_successed' style="display: none;">更新しました</span>
         <button onclick="deletePage()" class="btn btn-danger float-right">削除</button>
     </div>
 
 
     <div id="flexbox_page_head_3">
-        <input id='page_title' type="text" class="form-control" placeholder="タイトル" />
+        <div id="page_star_div"></div>
 
+        <div id="page_title_div">
+            <input id='page_title' type="text" data-star_int='0' class="form-control input-sm" placeholder="タイトル" />
+        </div>
+    </div>
+
+    <div id="flexbox_page_head_4">
         <div id="flexbox_page_head_3_tool">
             <button onclick="switch_rght_body()" class="btn btn-info ">ファイルアップロード</button>
         </div>
@@ -80,7 +87,6 @@
 
     </div>
 
-
 </div>
 <!-- ============================================================ -->
 <div id="flexbox_note_pane" class="right_pane_content">
@@ -94,25 +100,22 @@
         <span>ノート格納パス</span>
         <input id='new_note_address' type=" text " class="form-control " />
 
-        <div onclick="addNote() " class="btn btn-info" style="margin: 4px 0px;">追加</div>
+        <div onclick="createNote() " class="btn btn-info" style="margin: 4px 0px;">追加</div>
 
         <span>ノート追加直後はアップロードは可能ですがファイルダウンロードにはアプリ再起動が必要です。</span>
 
     </div>
     <br>
+    <h3>既存ノート編集</h3>
+
     <div id="flexbox_note_body">
         <div id="parent_note_table"></div>
     </div>
+    <br>
+
+    <div onclick="window.location.reload();" class="btn btn-warning" style="margin: 4px 0px; width:120px">設定リロード</div>
 
 </div>
-
-
-
-
-
-
-<!-- ============================================================ -->
-
 
 
 

@@ -11,6 +11,7 @@ import (
 
 	"encoding/json"
 	// "fmt"
+
 	"io/ioutil"
 	"os"
 
@@ -32,12 +33,13 @@ var (
 const useDBMSName = "sqlite3"          // 使用DBMS
 const dataDirName = "data"             // htmlやjs、DBファイル等格納先ディレクトリ
 const confDBName = "config.db"         // ローカル設定DBファイル名
-const userConfFile = "userconfig.json" // ローカル設定DBファイル名
+const userConfFile = "userconfig.json" // ローカル設定jsonファイル名
+const isEnableLogMode = false
 
 const fileDirName = "file"   // ページ内にアップロードするディレクトリ名
 const noteDBName = "note.db" // ノート保存先DBファイル名
 
-const dateTimeFormat = "2006-01-02 15:04:05" // 日時フォーマット
+const dateTimeFormat = "2006/01/02 15:04:05" // 日時フォーマット
 
 // レイアウト適用済のテンプレートを保存するmap
 var templates map[string]*template.Template
@@ -96,17 +98,16 @@ func main() {
 	rValue := getAllNoteAddress()
 
 	for _, value := range rValue {
-		v := uint64(value.ID)
+		v := uint64(value.NoteID)
 		noteID := strconv.FormatUint(v, 10)
-
 		e.Static("/"+noteID, value.NoteAddress+directorySeparator+fileDirName)
 	}
 
 	// 各ルーティングに対するハンドラを設定
 	e.GET("/", LoadPageGet)
 	e.GET("/livecheck", LiveCheckGet)
-	e.POST("/addnote", AddNotePost)
-	e.POST("/addpage", AddPagePost)
+	e.POST("/createnote", CreateNotePost)
+	e.POST("/createpage", CreatePagePost)
 	e.POST("/updatenote", UpdateNotePost)
 	e.POST("/updatepage", UpdatePagePost)
 	e.POST("/deletenote", DeleteNotePost)
@@ -118,6 +119,8 @@ func main() {
 	// 無効であればサーバモードとして起動
 	if userConfig.IsEnableAppMode {
 		open.Run("http://localhost:" + userConfig.UsePortNumber)
+
+		printEventLog("deb", "xxxxxxx")
 		go calcTime()
 	}
 
@@ -169,18 +172,11 @@ func UploadFilePost(c echo.Context) error {
 
 	if contains(imgExtList, file.Filename[pos:]) {
 		addFile = addFile + "<img class='image_style' src='//note_id///" + file.Filename + "'>"
+
 	} else {
-		// <div class="sam13"><a href="">テスト</a></div>
-
-		// addFile = addFile + "<div class='file_style btn btn-warning'>" + file.Filename + "</div>"
-
-		// addFile = addFile + "<a href='//note_id//' class='file_style'>" + file.Filename + "</a>"
-		// addFile = addFile + "<a href='//note_id//' onclick='file_download(this);'>" + file.Filename + "</a>"
-		// addFile = addFile + "<a  href='//note_id///" + file.Filename + "' onclick='fileDownload(this);'>" + file.Filename + "</a>"
-		// addFile = addFile + "<a  href='.///note_id///" + file.Filename + "' download='" + file.Filename + "'>" + file.Filename + "</a>"
-
-		addFile = addFile + "<a  href='//note_id///" + file.Filename + "' class='fileDownload'><div contenteditable='false' class='btn btn-warning'>" + file.Filename + "</div></a>"
-
+		addFile = addFile + "<a  href='//note_id///" + file.Filename + "' class='fileDownload'>"
+		addFile = addFile + "<div contenteditable='false' class='btn btn-warning'>" + file.Filename + "</div>"
+		addFile = addFile + "</a>"
 	}
 	addFile = addFile + "<br><br><br>"
 
@@ -213,19 +209,33 @@ func LoadPageGet(c echo.Context) error {
 	selectPosition.NoteID = 0
 	selectPosition.PageID = 0
 
-	returnjson := getData(selectPosition)
+	stringjsonreturnmap := getData(selectPosition)
+
+	jsonconfigmap, err := json.Marshal(userConfig)
+
+	if err != nil {
+		panic("not convert json array")
+	}
+
+	stringjsonconfigmap := string(jsonconfigmap)
+	// printEventLog("debug", stringjsonreturnmap)
+	// printEventLog("debug", stringjsonconfigmap)
+
+	// printEventLog("debug", reflect.TypeOf(stringjsonconfigmap))
+
+	var returnslice = map[string]string{"stringjsonconfigmap": stringjsonconfigmap, "stringjsonreturnmap": stringjsonreturnmap}
 
 	printEventLog("end", "データ取得 終了")
-	return c.Render(http.StatusOK, "loadpage", returnjson)
+	return c.Render(http.StatusOK, "loadpage", returnslice)
 
 } //--------------------------------------------
 
-//AddNotePost のコメントアウト
+//CreateNotePost のコメントアウト
 // ディレクトリの存在確認
 // DBファイルの存在確認
 // ┣ファイルが存在しなければ新たに作成
 // 設定DBにノートDBの情報を追加
-func AddNotePost(c echo.Context) error {
+func CreateNotePost(c echo.Context) error {
 	printEventLog("start", "ノート追加 開始")
 
 	noteAddress := c.FormValue("note_address")
@@ -255,44 +265,34 @@ func AddNotePost(c echo.Context) error {
 		}
 	}
 
-	//____________________________________
-	// 設定DBに追加
-	confdb := setupDB(confDBAddress)
-	defer confdb.Close()
-	confdb.LogMode(true)
+	//対象のノートを追加
+	sndArg := make(map[string]string)
+	sndArg["noteName"] = c.FormValue("note_name")
+	sndArg["noteAddress"] = c.FormValue("note_address")
+	sndArg["noteUpdate"] = c.FormValue("note_update")
+	// printEventLog("debug", sndArg)
 
-	var conf Conf
-
-	conf.NoteName = c.FormValue("note_name")
-	conf.NoteAddress = c.FormValue("note_address")
-	conf.NoteStar = 3
-
-	// INSERTを実行
-	confdb.Create(&conf)
-
-	// ★追加したアドレスのスタティックパスを追加
-	// v := uint64(value.ID)
-	// noteID := strconv.FormatUint(v, 10)
-	// e.Static("/"+noteID, value.NoteAddress + directorySeparator + fileDirName)
+	createNote(sndArg)
 
 	printEventLog("end", "ノート追加 終了")
 	return nil
 
 } //--------------------------------------------
 
-// AddPagePost のコメントアウト
+// CreatePagePost のコメントアウト
 // 対象のノートにページを追加
 // 返却jsonに対象のノートIDを追加
 // 最新のデータセットを取得
 // jsonを返却
-func AddPagePost(c echo.Context) error {
+func CreatePagePost(c echo.Context) error {
 	printEventLog("start", "ページ追加 開始")
 
 	//対象のノートにページを追加
 	sndArg := make(map[string]string)
 	sndArg["noteAddress"] = c.FormValue("note_address")
+	sndArg["pageUpdate"] = c.FormValue("page_update")
 
-	addPage(sndArg)
+	createPage(sndArg)
 
 	// 返却jsonに対象のノートIDを追加
 	var selectPosition = SelectPosition{}
@@ -316,6 +316,8 @@ func UpdateNotePost(c echo.Context) error {
 	sndArg["postNoteID"] = c.FormValue("note_id")
 	sndArg["noteName"] = c.FormValue("note_name")
 	sndArg["noteStar"] = c.FormValue("note_star")
+	sndArg["noteUpdate"] = c.FormValue("note_update")
+
 	updateNote(sndArg)
 
 	printEventLog("end", "ノート更新 終了")
@@ -335,15 +337,15 @@ func UpdatePagePost(c echo.Context) error {
 	sndArg["pageID"] = c.FormValue("page_id")
 	sndArg["pageTitle"] = c.FormValue("page_title")
 	sndArg["pageBody"] = c.FormValue("page_body")
+	sndArg["pageStar"] = c.FormValue("page_star")
+	sndArg["pageUpdate"] = c.FormValue("page_update")
 
 	updatePage(sndArg)
-
-	// 設定DBにある更新したノートの更新日時を変更
-	updateNoteFromPage(c.FormValue("note_address"))
 
 	// 返却jsonに対象のノートIDを追加
 	var selectPosition = SelectPosition{}
 	selectPosition.NoteID = convertStringToUint(c.FormValue("note_id"))
+	selectPosition.PageID = convertStringToUint(c.FormValue("page_id"))
 
 	returnValue := getData(selectPosition)
 

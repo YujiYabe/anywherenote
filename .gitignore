@@ -1,7 +1,7 @@
 *.db
-*.memo
 *.exe
 *.run
 *.app
 *.xlsx
 *.xls
+*.memo

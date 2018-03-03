@@ -35,32 +35,33 @@ func checkConfig() {
 
 func printEventLog(flagName string, message interface{}) {
 
-	separateLine := "------------------------------------------------------------------------------"
-	if flagName == "start" {
-		log.Println(separateLine)
-		log.Println(message)
+	if isEnableLogMode {
+		separateLine := "------------------------------------------------------------------------------"
+		if flagName == "start" {
+			log.Println(separateLine)
+			log.Println(message)
 
-	} else if flagName == "end" {
-		log.Println(message)
-		log.Println(separateLine)
+		} else if flagName == "end" {
+			log.Println(message)
+			log.Println(separateLine)
 
-	} else if flagName == "returnFuncStatus" {
-		log.Println(separateLine)
-		log.Println(message)
-		log.Println(separateLine)
+		} else if flagName == "returnFuncStatus" {
+			log.Println(separateLine)
+			log.Println(message)
+			log.Println(separateLine)
 
-	} else {
-		// for debug
-		log.Println(separateLine)
-		log.Println(separateLine)
-		log.Println(separateLine)
-		log.Println(flagName)
-		log.Println(message)
-		log.Println(separateLine)
-		log.Println(separateLine)
-		log.Println(separateLine)
+		} else {
+			// for debug
+			log.Println(separateLine)
+			log.Println(separateLine)
+			log.Println(separateLine)
+			log.Println(flagName)
+			log.Println(message)
+			log.Println(separateLine)
+			log.Println(separateLine)
+			log.Println(separateLine)
+		}
 	}
-
 } //--------------------------------------------
 
 //--------------------------------------------
@@ -83,12 +84,11 @@ func calcTime() {
 		old, _ := time.Parse(dateTimeFormat, recieveString)
 
 		if !old.After(now) { // old <= now --- ! old > now
-			// if userConfig.IsEnableAppMode {
-				log.Println("アプリ終了")
-				endProcess()
-			// }
+			log.Println("アプリ終了")
+			endProcess()
 		}
 	}
+
 } //--------------------------------------------
 
 // --------------------------------------------
@@ -97,4 +97,3 @@ func convertStringToUint(s string) uint {
 	ui := uint(i)
 	return ui
 } //--------------------------------------------
-

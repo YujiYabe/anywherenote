@@ -24,7 +24,7 @@
 
     <script src="/public/js/additional.js?ver=1232"></script>
     <script src="/public/js/ajax.js?ver=12302"></script>
-    <script src="/public/js/livecheck.js?ver=12302"></script>
+    <script src="/public/js/livecheck.js?ver=123302"></script>
     <script src="/public/js/edit.js?ver=12302"></script>
 
     <link rel="stylesheet/less" href="/public/css/additional.less" type="text/css">
@@ -56,8 +56,9 @@
 
 
     <!-- style="display: none;" -->
-    <span id='source_return_value' style="display: none;">{{template "content" .}}</span>
-    <span id='source_user_config' style="display: none;"></span>
+    <span style="display: none;" id='source_user_config'>{{template "userconfig" .}}</span>
+    <br>
+    <span  style="display: none;"id='source_dataset_list'>{{template "content" .}}</span>
 
 
 </body>

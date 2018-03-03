@@ -13,28 +13,26 @@ import (
 
 // Conf 初期読み込み用設定
 type Conf struct {
-	gorm.Model
-	NoteStar    int    `json:"note_star"`
-	NoteName    string `json:"note_name"`
-	NoteAddress string `json:"note_address"`
+	NoteID      uint   `json:"NoteID" gorm:"primary_key"`
+	NoteStar    int    `json:"NoteStar"`
+	NoteName    string `json:"NoteName"`
+	NoteAddress string `json:"NoteAddress"`
+	NoteUpdate  string `json:"NoteUpdate"`
 } //--------------------------------------------
 
 // Note ページの内容
 type Note struct {
-	gorm.Model
-	PageTitle string `json:"page_title"`
-	PageBody  string `json:"page_body"`
-	PageStar  int    `json:"page_star"`
+	PageID     uint   `json:"PageID" gorm:"primary_key"`
+	PageStar   int    `json:"PageStar"`
+	PageTitle  string `json:"PageTitle"`
+	PageBody   string `json:"PageBody"`
+	PageUpdate string `json:"PageUpdate"`
 } //--------------------------------------------
 
 // DataSet DBファイルの情報とノート情報のセット
 type DataSet struct {
-	NoteDBID         uint   `json:"NoteDBID"`
-	NoteDBStar       int    `json:"NoteDBStar"`
-	NoteDBName       string `json:"NoteDBName"`
-	NoteDBAddress    string `json:"NoteDBAddress"`
-	NoteDBUpdateTime time.Time
-	List             []Note `json:"list"`
+	Conf
+	List []Note `json:"list"`
 }
 
 // SelectPosition 選択中情報
@@ -50,25 +48,13 @@ type ReturnValue struct {
 	SlctPst SelectPosition `json:"SlctPst"`
 } //--------------------------------------------
 
-// UserConfig
+// UserConfig json形式のユーザ設定ファイル
 type UserConfig struct {
 	IsEnableAppMode     bool          `json:"IsEnableAppMode"`
 	WaitSecondLiveCheck time.Duration `json:"WaitSecondLiveCheck"`
 	WaitSecondInterval  time.Duration `json:"WaitSecondInterval"`
 	UsePortNumber       string        `json:"UsePortNumber"`
 }
-
-func getAllNoteAddress() []Conf {
-	confdb := setupDB(confDBAddress)
-	defer confdb.Close()
-	confdb.LogMode(true)
-
-	var conf []Conf
-	// confdb.Select("id, NoteAddress").Find(&conf)
-	confdb.Find(&conf)
-	return conf
-
-} //--------------------------------------------
 
 func setupDB(dbAddress string) *gorm.DB {
 	db, err := gorm.Open(useDBMSName, dbAddress)
@@ -78,6 +64,18 @@ func setupDB(dbAddress string) *gorm.DB {
 	return db
 }
 
+func getAllNoteAddress() []Conf {
+	confdb := setupDB(confDBAddress)
+	defer confdb.Close()
+	confdb.LogMode(isEnableLogMode)
+
+	var conf []Conf
+	// confdb.Select("id, NoteAddress").Find(&conf)
+	confdb.Find(&conf)
+	return conf
+
+} //--------------------------------------------
+
 // getData →ノート情報、ページ情報を取得
 func getData(selectPosition SelectPosition) string {
 
@@ -85,7 +83,7 @@ func getData(selectPosition SelectPosition) string {
 
 	confdb := setupDB(confDBAddress)
 	defer confdb.Close()
-	confdb.LogMode(true)
+	confdb.LogMode(isEnableLogMode)
 
 	var count int
 	var conf []Conf
@@ -114,7 +112,7 @@ func getData(selectPosition SelectPosition) string {
 	// 選択中のノートIDがなければ最新のノートIDを返却
 	if selectPosition.NoteID == 0 {
 		if len(conf) != 0 {
-			selectPosition.NoteID = conf[0].ID
+			selectPosition.NoteID = conf[0].NoteID
 		}
 	}
 
@@ -130,17 +128,19 @@ func getData(selectPosition SelectPosition) string {
 		// DBのオープン
 		notedb := setupDB(noteDBAddress)
 		defer notedb.Close()
-		notedb.LogMode(true)
+		notedb.LogMode(isEnableLogMode)
 
 		NoteList := []Note{}
 
-		notedb.Order("updated_at desc").Find(&NoteList)
+		// notedb.Order("updated_at desc").Find(&NoteList)
+		// notedb.Select("page_id, page_star, page_title, page_body, page_update").Order("page_star desc, page_title asc").Find(&NoteList)
+		notedb.Order("page_star desc, page_title asc").Find(&NoteList)
 
-		DataSetList.NoteDBID = value.ID
-		DataSetList.NoteDBStar = value.NoteStar
-		DataSetList.NoteDBName = value.NoteName
-		DataSetList.NoteDBAddress = value.NoteAddress
-		DataSetList.NoteDBUpdateTime = value.UpdatedAt
+		DataSetList.NoteID = value.NoteID
+		DataSetList.NoteStar = value.NoteStar
+		DataSetList.NoteName = value.NoteName
+		DataSetList.NoteAddress = value.NoteAddress
+		DataSetList.NoteUpdate = value.NoteUpdate
 		DataSetList.List = NoteList
 
 		data2.DataSet = append(data2.DataSet, DataSetList)
@@ -148,9 +148,9 @@ func getData(selectPosition SelectPosition) string {
 		// 選択中のページIDがなければ最新のページIDを返却
 		if selectPosition.PageID == 0 {
 
-			if value.ID == selectPosition.NoteID && len(NoteList) != 0 {
+			if value.NoteID == selectPosition.NoteID && len(NoteList) != 0 {
 
-				selectPosition.PageID = NoteList[0].ID
+				selectPosition.PageID = NoteList[0].PageID
 
 			}
 		}
@@ -183,11 +183,11 @@ func addFileToPage(rcvArg map[string]string) error {
 	// DBのオープン
 	notedb := setupDB(noteDBAddress)
 	defer notedb.Close()
-	notedb.LogMode(true)
+	notedb.LogMode(isEnableLogMode)
 	// __________________________________
 	// DB内容取得
 	note := Note{}
-	notedb.Where("id = ?", pageID).Find(&note)
+	notedb.Where("page_id = ?", pageID).Find(&note)
 
 	// printEventLog("debug2",note.PageBody)
 	// printEventLog("debug2",addFile)
@@ -198,34 +198,65 @@ func addFileToPage(rcvArg map[string]string) error {
 	return nil
 
 } //--------------------------------------------
+// createPage →ページ情報を追加
+func createNote(rcvArg map[string]string) error {
 
-// addPage →ページ情報を追加
-func addPage(rcvArg map[string]string) error {
-
-	//指定したディレクトリにDBファイルを作成
+	noteName := rcvArg["noteName"]
 	noteAddress := rcvArg["noteAddress"]
+	noteUpdate := rcvArg["noteUpdate"]
+
+	//____________________________________
+	// 設定DBに追加
+	confdb := setupDB(confDBAddress)
+	defer confdb.Close()
+	confdb.LogMode(isEnableLogMode)
+
+	var conf Conf
+
+	conf.NoteName = noteName
+	conf.NoteAddress = noteAddress
+	conf.NoteStar = 3
+	conf.NoteUpdate = noteUpdate
+
+	// INSERTを実行
+	confdb.Create(&conf)
+
+	return nil
+} //--------------------------------------------
+
+// createPage →ページ情報を追加
+func createPage(rcvArg map[string]string) error {
+
+	noteAddress := rcvArg["noteAddress"]
+	pageUpdate := rcvArg["pageUpdate"]
 
 	noteDBAddress := noteAddress + directorySeparator + noteDBName
 
 	// DBのオープン
 	notedb := setupDB(noteDBAddress)
 	defer notedb.Close()
-	notedb.LogMode(true)
+	notedb.LogMode(isEnableLogMode)
 
 	notedb.AutoMigrate(&Note{})
 
 	var note Note
-	t := time.Now().Format("2006/01/02 15:04:05")
-	s := t + " created"
+	// t := time.Now().Format(dateTimeFormat)
+	// s := t + " created"
+	// note.PageTitle = s
 
-	note.PageTitle = s
+	note.PageTitle = ""
 	note.PageBody = ""
 	note.PageStar = 3
+	note.PageUpdate = pageUpdate
 
-	// INSERTを実行
 	notedb.Create(&note)
 
-	updateNoteFromPage(noteAddress)
+	sndArg := make(map[string]string)
+
+	sndArg["noteAddress"] = noteAddress
+	sndArg["noteUpdate"] = pageUpdate
+
+	updateNoteFromPage(sndArg)
 
 	return nil
 } //--------------------------------------------
@@ -236,17 +267,20 @@ func updateNote(rcvArg map[string]string) error {
 	noteName := rcvArg["noteName"]
 	noteStar, _ := strconv.Atoi(rcvArg["noteStar"])
 	noteID, _ := strconv.Atoi(rcvArg["postNoteID"])
+	noteUpdate := rcvArg["noteUpdate"]
 
 	// 設定DBのオープン
 	confdb := setupDB(confDBAddress)
 	defer confdb.Close()
-	confdb.LogMode(true)
+	confdb.LogMode(isEnableLogMode)
+	printEventLog("debug", noteID)
 
 	var conf Conf
-	confdb.Where("id = ?", noteID).First(&conf)
+	confdb.Where("note_id = ?", noteID).First(&conf)
 
 	conf.NoteName = noteName
 	conf.NoteStar = noteStar
+	conf.NoteUpdate = noteUpdate
 
 	confdb.Save(&conf)
 
@@ -260,6 +294,10 @@ func updatePage(rcvArg map[string]string) error {
 	pageID := rcvArg["pageID"]
 	pageTitle := rcvArg["pageTitle"]
 	pageBody := rcvArg["pageBody"]
+	pageUpdate := rcvArg["pageUpdate"]
+	pageStar, _ := strconv.Atoi(rcvArg["pageStar"])
+
+	// printEventLog("debug", updatedAt)
 
 	if pageTitle == "" {
 		pageTitle = " "
@@ -269,18 +307,28 @@ func updatePage(rcvArg map[string]string) error {
 		pageBody = " "
 	}
 
+	NoteList := Note{
+		PageTitle:  pageTitle,
+		PageBody:   pageBody,
+		PageStar:   pageStar,
+		PageUpdate: pageUpdate,
+	}
+
 	noteDBAddress := noteAddress + directorySeparator + noteDBName
 
 	// DBのオープン
 	notedb := setupDB(noteDBAddress)
 	defer notedb.Close()
-	notedb.LogMode(true)
+	notedb.LogMode(isEnableLogMode)
 
-	// __________________________________
-	// DB内容取得
-	NoteList := []Note{}
+	notedb.Model(Note{}).Where("page_id = ?", pageID).Update(NoteList)
 
-	notedb.Model(&NoteList).Where("id = ?", pageID).Update(&Note{PageTitle: pageTitle, PageBody: pageBody})
+	sndArg := make(map[string]string)
+
+	sndArg["noteAddress"] = noteAddress
+	sndArg["noteUpdate"] = pageUpdate
+
+	updateNoteFromPage(sndArg)
 
 	return nil
 } //--------------------------------------------
@@ -295,11 +343,11 @@ func deleteNote(rcvArg map[string]string) error {
 	// 設定DBのオープン
 	confdb := setupDB(confDBAddress)
 	defer confdb.Close()
-	confdb.LogMode(true)
+	confdb.LogMode(isEnableLogMode)
 
 	var conf Conf
 
-	confdb.Where("id = ?", noteID).Delete(&conf)
+	confdb.Where("note_id = ?", noteID).Delete(&conf)
 
 	return nil
 } //--------------------------------------------
@@ -316,29 +364,33 @@ func deletePage(rcvArg map[string]string) error {
 	// DBのオープン
 	notedb := setupDB(noteDBAddress)
 	defer notedb.Close()
-	notedb.LogMode(true)
+	notedb.LogMode(isEnableLogMode)
 
 	// __________________________________
 	// DB内容取得
-	notedb.Where("id = ?", pageID).Delete(&Note{})
+	notedb.Where("page_id = ?", pageID).Delete(&Note{})
 
 	return nil
 } //--------------------------------------------
 
 // updateNoteFromPage のコメントアウト
-func updateNoteFromPage(noteAddress string) {
+func updateNoteFromPage(rcvArg map[string]string) {
 	printEventLog("start", "updateNoteFromPage 終了")
+
+	noteAddress := rcvArg["noteAddress"]
+	noteUpdate := rcvArg["noteUpdate"]
 
 	// 設定DBのオープン
 	confdb := setupDB(confDBAddress)
 	defer confdb.Close()
-	confdb.LogMode(true)
+	confdb.LogMode(isEnableLogMode)
 
 	var conf Conf
 
 	confdb.Where("note_address = ?", noteAddress).First(&conf)
 
 	conf.NoteAddress = noteAddress
+	conf.NoteUpdate = noteUpdate
 	confdb.Save(&conf)
 	printEventLog("end", "updateNoteFromPage 終了")
 } //--------------------------------------------
@@ -347,7 +399,7 @@ func updateNoteFromPage(noteAddress string) {
 func dbApplyType(targetDBAddress string, targetStruct interface{}) {
 	db := setupDB(targetDBAddress)
 	defer db.Close()
-	db.LogMode(true)
+	db.LogMode(isEnableLogMode)
 
 	// Migrate the schema
 	db.AutoMigrate(targetStruct)

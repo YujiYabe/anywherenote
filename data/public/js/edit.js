@@ -54,7 +54,7 @@ function load_drop_zone() {
         parallelUploads: 1,
         success: function (event, res, xhr) {
 
-            $('#source_return_value').html(res);
+            $('#source_dataset_list').html(res);
 
             // remake_table();
             makePageList();
